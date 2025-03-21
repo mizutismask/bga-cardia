@@ -11,13 +11,13 @@
 
 $gameinfos = [
     // Name of the game in English (will serve as the basis for translation)
-    'game_name' => "My Great Game",
+    'game_name' => "Cardia",
 
     // Game publisher (use empty string if there is no publisher)
-    'publisher' => 'My Publishing Company',
+    'publisher' => 'Hans in Luck',
 
     // Url of game publisher website
-    'publisher_website' => 'http://www.mypublishingcompany.com/',
+    'publisher_website' => 'https://www.hans-im-glueck.de/',
 
     // Board Game Geek ID of the publisher
     'publisher_bgg_id' => 1234,
@@ -26,7 +26,7 @@ $gameinfos = [
     'bgg_id' => 0,
 
     // Players configuration that can be played (ex: 2 to 4 players)
-    'players' => [2, 3, 4],
+    'players' => [2],
 
     // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
     // NB: the automatic lobby will try first the lowest number of players if this is not specified. So you _have to_ specify this parameter if the lowest player number is not compatible with the default options.
