@@ -1,0 +1,85 @@
+// hack to move to the framework
+.preference_choice .row-data.row-data-large {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+
+	.row-label {
+		white-space: normal;
+	}
+
+	.row-value {
+		flex: 1;
+		margin-left: unset;
+		min-width: 200px;
+	}
+}
+
+/* make space between buttons on touch devices */
+@media (hover: none) {
+	#page-title .action-button.bgabutton,
+	#page-title .bgabutton {
+		margin-bottom: 8px;
+		margin-top: 8px;
+	}
+}
+
+$playerQuickNavColor: #cdcec9;
+
+.show-player-tableau {
+	a {
+		color: $playerQuickNavColor;
+	}
+	height: 26px;
+	grid-column: 2 !important;
+	z-index: 1;
+	justify-self: end;
+	color: $playerQuickNavColor;
+	svg {
+		height: 100%;
+		width: auto;
+	}
+}
+.anchor-up {
+	a {
+		color: $playerQuickNavColor;
+	}
+	height: 25px;
+	width: 25px;
+	position: absolute;
+	right: 35px;
+	margin-top: -40px;
+	svg {
+		height: 100%;
+		width: auto;
+		color: inherit;
+	}
+}
+
+#generalactions {
+	$gaPlayerQuickNavColor: black;
+	.show-player-tableau {
+		a {
+			color: $gaPlayerQuickNavColor;
+		}
+		height: 18px;
+		width: 11px;
+		display: inline-block;
+		margin-left: 5px;
+		color: $gaPlayerQuickNavColor;
+		vertical-align: text-bottom;
+	}
+}
+
+.inherit-color {
+	color: inherit;
+}
+/*
+//to override star icon everywhere in the result tab
+#pagesection_gameresult .fa-star {
+	@include sunIcon;
+	&::before {
+		content: none;
+	}
+}
+*/

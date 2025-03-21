@@ -1,0 +1,89 @@
+#score {
+    display: none;
+    justify-content: center;
+    $border-color: #459dbe;
+    $shadow-color: #054259;
+    $winner-color: gold;
+
+    #table-wrapper {
+        padding: 40px;
+        //background: url('img/score-background.png');//todo find something
+        background-size: 100% 100%;
+
+        table {
+
+            tbody {
+                tr {
+                    border-top: 1px solid $border-color;
+                }
+            }
+
+            td, th {
+                &:not(:first-child) {
+                    border-left: 1px solid $border-color;
+                }
+            }
+
+            tr {
+                height: 40px;
+
+                th {
+                    text-align: center;
+                    color: white;
+                    text-shadow: 0px 0px 1px $shadow-color, 0px 0px 2px $shadow-color, 0px 0px 3px $shadow-color;
+                    padding: 8px;
+                }
+
+                td {
+                    width: 100px;
+                    text-align: center;
+
+                    &:not(:first-child) {
+                        font-size: 150%;
+                        color: white;
+                        text-shadow: 0px 0px 1px $shadow-color, 0px 0px 2px $shadow-color, 0px 0px 3px $shadow-color;
+                    }
+
+                    &.player-name {
+                        color: $shadow-color;
+                        width: 181px;
+                        font-weight: bold;
+                        text-shadow: 0px 0px 1px white, 0px 0px 2px white, 0px 0px 3px white;
+                        word-break: break-all;
+                        text-overflow: ellipsis;
+                        font-size: 120%;
+                    }
+
+                    &.total {
+                        font-weight: bold;
+                    }
+                    &.highlight {
+						color: $winner-color;
+					}
+                    
+                }
+            }
+        }
+    }
+    
+    .score-number {
+		transition: color 0.5s ease-in-out;
+
+		&.animatedScore {
+			color: red !important;
+			/*animation:  grow-then-shrink-animation 3s ;*/
+		}
+	}
+}
+
+@keyframes bonus-card-animation {
+	0% {
+		transform: scale(0.15);
+	}
+	50% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(0.15);
+	}
+}

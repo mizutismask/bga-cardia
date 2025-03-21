@@ -1,0 +1,156 @@
+@use 'sass:list';
+
+$cardSizeModifier: 0.2;
+$CARD_WIDTH: calc(941px * $cardSizeModifier); //also change in stock-utils.ts
+$CARD_HEIGHT: calc(626px * $cardSizeModifier);
+$CARD_RATIO: list.slash(941, 626);
+
+
+@mixin selected-element {
+	box-shadow: 0 0 5px 5px rgb(200, 255, 47);
+}
+
+@mixin card-border{
+	border-radius: 3%;
+}
+
+//(classic BGA colors) :
+$player-colors: (
+	'red': 'ff0000',
+	'green': '008000',
+	'blue': '0000ff',
+	'yellow': 'ffa500',
+	'purple': '982fff'
+);
+
+$main-color: #965e17;
+
+@import 'animations';
+@import 'playerboards';
+@import 'game-steps/game-steps';
+@import 'bga-hacks/bga-hacks';
+@import 'end-score/end-score';
+@import 'player-table/player-table';
+@import '../node_modules/bga-cards/bga-cards';
+@import '../node_modules/bga-help/bga-help';
+
+html {
+	/*background: rgb(21, 104, 134);
+    background-repeat: no-repeat;
+    background-size: 100%;*/
+
+	background-image: url('img/background.jpg');
+	background-attachment: fixed;
+	background-position: 50%;
+	background-size: cover;
+}
+
+.hidden {
+	display: none !important;
+}
+
+#custom-game-area {
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+@mixin selected-element {
+	box-shadow: 0 0 5px 5px rgb(200, 255, 47);
+}
+
+.bga-cards_selected-card {
+	@include selected-element;
+}
+
+.cardia-card {
+	.card-side {
+		@include card-border;
+	}
+}
+
+.deck {
+	&[data-empty='true'] {
+		@include card-border;
+		outline: 2px dashed $main-color;
+	}
+}
+
+.card {
+	position: relative;
+	width: $CARD_WIDTH;
+	height: $CARD_HEIGHT;
+}
+
+.card-stock {
+	.slot {
+		@include card-border;
+		aspect-ratio: $CARD_RATIO;
+		width: $CARD_WIDTH;
+		background: hsla(0, 0%, 100%, 0.4);
+		outline: 1px solid hsla(0, 0%, 100%, 0.6);
+	}
+
+	.board-card {
+		aspect-ratio: $CARD_RATIO;
+		//width: $CARD_WIDTH;
+	}
+}
+
+.touch-device .css-icon.card-info {
+	display: inline-flex;
+}
+
+.css-icon {
+	width: 25px;
+	height: 25px;
+	color: white;
+	background-color: $main-color;
+	border: 2px solid white;
+	border-radius: 15px;
+	text-align: center;
+	font-weight: bolder;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	pointer-events: auto;
+
+	&.card-info {
+		display: none;
+		width: 25px;
+		height: 25px;
+		position: relative;
+		top: 10px;
+		left: 10px;
+	}
+
+	&.card-info-small {
+		display: none;
+		width: 11px;
+		height: 11px;
+		position: relative;
+		top: 5px;
+		left: 5px;
+		font-size: x-small;
+	}
+}
+
+.card .card-sides .card-side.front .card-info {
+	pointer-events: all;
+}
+
+.log {
+	.log-icon {
+		display: inline-block;
+		vertical-align: middle;
+		width: 30px;
+		height: 27px;
+	}
+}
+
+.counter-left-part {
+	margin-right: -5px;
+}

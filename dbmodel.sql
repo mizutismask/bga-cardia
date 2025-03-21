@@ -1,7 +1,7 @@
 
 -- ------
 -- BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
--- Cardia implementation : © <Your name here> <Your email address here>
+-- Cardia implementation : © Séverine Kamycki <mizutismask@gmail.com>
 -- 
 -- This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
 -- See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -33,3 +33,24 @@
 -- Example 2: add a custom field to the standard "player" table
 -- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
 
+CREATE TABLE IF NOT EXISTS `card` (
+    `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `card_type` varchar(16) NOT NULL,
+    `card_type_arg` int(11) NOT NULL,   
+    `card_location` varchar(20) NOT NULL,
+    `card_location_arg` int(11) NOT NULL,
+    PRIMARY KEY (`card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--Action log to resolve things in correct order
+CREATE TABLE IF NOT EXISTS `context_log` (
+ `id` int NOT NULL AUTO_INCREMENT,
+ `player` int(10) NOT NULL,
+ `state` varchar(32) NOT NULL, 
+ `action` varchar(32) NOT NULL,
+ `param1` varchar(20),
+ `param2` varchar(20),
+ `param3` varchar(20),
+ `resolved` INT(1) UNSIGNED NOT NULL DEFAULT '0',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
