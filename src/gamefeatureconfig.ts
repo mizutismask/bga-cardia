@@ -6,19 +6,19 @@ class GameFeatureConfig {
     constructor() {}
 
     /** Adds the spy icon in other players miniboard. */
-    private _spyOnOtherPlayerBoard: boolean = true;
+    private _spyOnOtherPlayerBoard: boolean = false;
 
     /** Adds the spy active player icon in the main action bar. */
-    private _spyOnActivePlayerInGeneralActions: boolean = true;
+    private _spyOnActivePlayerInGeneralActions: boolean = false;
 
     /** Adds colored <> around the player name in miniboards to show who are the previous and next players. */
-    private _showPlayerOrderHints: boolean = true;
+    private _showPlayerOrderHints: boolean = false;
 
     /** Shows a player help card in the player miniboard. */
     private _showPlayerHelp: boolean = true;
 
     /** Shows a first player icon in the player miniboard */
-    private _showFirstPlayer: boolean = true;
+    private _showFirstPlayer: boolean = false;
 
     public get showFirstPlayer(): boolean {
         return this._showFirstPlayer;
