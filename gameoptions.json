@@ -1,1 +1,37 @@
-{}
+{
+	"101": {
+		"name": "Deck choice",
+		"values": {
+			"1": {
+				"name": "Deck I",
+				"description": "Recommended for beginners"
+			},
+			"2": {
+				"name": "Deck II 💀",
+				"description": "Advanced deck",
+				"nobeginner ": true
+			}
+		},
+		"default": 1
+	},
+	"102": {
+		"name": "Sceneries",
+		"values": {
+			"0": {
+				"name": "None",
+				"description": "None"
+			},
+			"1": {
+				"name": "I",
+				"description": "💀",
+				"nobeginner ": true
+			},
+			"2": {
+				"name": "II (💀)",
+				"description": "Always target risky missions when available",
+				"nobeginner ": true
+			}
+		},
+		"default": 1
+	}
+}
