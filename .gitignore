@@ -1,0 +1,7 @@
+.vscode
+.history
+node_modules
+package-lock.json
+misc/.~lock.material.ods#
+harmonies.css
+harmonies.js
