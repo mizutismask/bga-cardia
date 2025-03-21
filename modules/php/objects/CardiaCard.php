@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\cardia\objects;
+namespace Bga\Games\Cardia\objects;
 
 /**
  * A Wizard is a physical card. It contains informations from matching WizardCard, with technical informations like id and location.
@@ -9,7 +9,7 @@ namespace Bga\Games\cardia\objects;
  * Type : the Wizard type
  * Type arg :  player color
  */
-class WizardCard extends WizardCardInfo {
+class CardiaToken extends CardiaCardInfo {
     public int $id;
     public string $location;
     public int $location_arg;

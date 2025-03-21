@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\cardia;
+namespace Bga\Games\Cardia;
 
 use Deck;
 
@@ -12,7 +12,7 @@ class DeckManager {
     protected $materialType;
     protected $tableName;
 
-    public function __construct(Game $game, $tableName, string $deck, string $cast, string $materialType, array $castParameters = []) {
+    public function __construct(Game $game, string $tableName, Deck $deck, string $cast, string $materialType, array $castParameters = []) {
         $this->deck = $deck;
         $this->game = $game;
         $this->cast = __NAMESPACE__ .'\\objects\\'. $cast; //fully qualified name because of namespaces

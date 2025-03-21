@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\cardia\objects;
+namespace Bga\Games\Cardia\objects;
 
 enum TokenType: string {
     case SIGIL = 'S';

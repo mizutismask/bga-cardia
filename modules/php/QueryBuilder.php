@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\cardia;
+namespace Bga\Games\Cardia;
 
 class QueryBuilder extends \APP_DbObject {
   private $table,

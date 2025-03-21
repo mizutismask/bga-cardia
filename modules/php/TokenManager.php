@@ -1,10 +1,10 @@
 <?php
 
-namespace Bga\Games\cardia;
+namespace Bga\Games\Cardia;
 
-const TABLE_ACTION_CARD = "action_card";
+const TABLE_TOKEN = "token";
 
-class CardManager extends DeckManager {
+class TokenManager extends DeckManager {
 
 
     public function pickInitialActionCards() {

@@ -1,40 +1,37 @@
 <?php
 
-namespace Bga\Games\cardia;
+namespace Bga\Games\Cardia;
+
+use Bga\Games\cardia\objects\TokenType;
 
 trait ExpansionTrait {
 
-    function getExpansion() {
-        // return $this->isExpertMode() () ? CAT_DOG : EXPANSION;
+    function getDeck() {
+        return $this->tableOptions->get(101);
+    }
+
+    function getScenery() {
+        return $this->tableOptions->get(102);
     }
 
     function getCardsToGenerate() {
         $cards = [];
-        $expansion = $this->getExpansion();
+        $expansion = $this->getDeck();
 
-        switch ($expansion) {
-            default:
-                foreach ($this->DESTINATIONS[1] as $typeArg => $destination) {
-                    if ($typeArg != 0) { //starting point is excluded
-                        $cards[] = ['type' => 1, 'type_arg' => $typeArg, 'nbr' => 1];
-                    }
-                }
-                break;
+        foreach ($this->CARDIA_CARDS[$expansion] as $typeArg => $card) {
+            $cards[] = ['type' => $typeArg, 'type_arg' => 1, 'nbr' => 1];
+            $cards[] = ['type' => $typeArg, 'type_arg' => 2, 'nbr' => 1];
         }
 
         return $cards;
     }
 
-    /**
-     * Return the number of destinations cards shown at the beginning.
-     */
-    function getInitialDestinationCardNumber(): int {
-        $playerCount = $this->getPlayerCount();
-        switch ($this->getExpansion()) {
-            default:
-                if ($playerCount == 2 || $playerCount == 3)
-                    return 12;
-                return 9;
-        }
+    function getTokensToGenerate() {
+        $tokens = [];
+
+        $tokens[] = ['type' => TokenType::SIGIL->value, 'type_arg' => 0, 'nbr' => 11];
+        $tokens[] = ['type' => TokenType::ONGOING->value, 'type_arg' => 0, 'nbr' => 6];
+
+        return $tokens;
     }
 }

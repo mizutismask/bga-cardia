@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\cardia\objects;
+namespace Bga\Games\Cardia\objects;
 
 enum Faction: string {
     case GREEN = 'G'; //BROTHERHOOD

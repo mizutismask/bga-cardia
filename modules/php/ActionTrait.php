@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\cardia;
+namespace Bga\Games\Cardia;
 
 use \Bga\GameFramework\Actions\Types\IntArrayParam;
 use GameState;

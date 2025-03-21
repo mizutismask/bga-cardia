@@ -1,5 +1,6 @@
 <?php
-namespace Bga\Games\cardia\objects;
+
+namespace Bga\Games\Cardia\objects;
 enum Element: string
 {
     case FIRE = 'F';

@@ -38,8 +38,10 @@ class Game extends \Table {
     use ExpansionTrait;
     use ContextTrait;
 
-    private Deck $destinations;
+    private Deck $cards;
+    private Deck $tokens;
     private CardManager $cardManager;
+    private TokenManager $tokenManager;
 
     function __construct() {
         // Your global variables labels:
@@ -58,11 +60,13 @@ class Game extends \Table {
             //    "my_second_game_variant" => 101,
             //      ...
         ));
-        /* $this->destinations = $this->getNew("module.common.deck");
-        $this->destinations->init("destination");
-        $this->destinations->autoreshuffle = true; 
-        $this->cardManager = new CardManager($this, TABLE_NAME, $this->destinations, "Destination", MATERIAL_TYPE_CARD);
-    */
+        $this->cards = $this->getNew("module.common.deck");
+        $this->cards->init("card");
+        $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "CardiaCard", MATERIAL_TYPE_CARD);
+
+        $this->tokens = $this->getNew("module.common.deck");
+        $this->tokens->init("token");
+        $this->tokenManager = new TokenManager($this, TABLE_TOKEN, $this->tokens, "CardiaToken", MATERIAL_TYPE_TOKEN);
     }
 
     protected function getGameName() {
@@ -133,8 +137,10 @@ class Game extends \Table {
     }
 
     function setupSharedItems() {
-        // $this->cardManager->createCards($this->getCardsToGenerate());
+        $this->cardManager->createCards($this->getCardsToGenerate());
+        $this->tokenManager->createCards($this->getTokensToGenerate());
     }
+
     /*
         getAllDatas: 
         
@@ -168,7 +174,7 @@ class Game extends \Table {
         }
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
-        $result['expansion'] = $this->getExpansion();
+        $result['expansion'] = $this->getDeck();
         if ($isEnd) {
             $maxScore = max(array_map(fn($player) => intval($player['score']), $result['players']));
             $result['winners'] = array_keys(array_filter($result['players'], fn($player) => intval($player['score'] == $maxScore)));

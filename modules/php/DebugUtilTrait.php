@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\cardia;
+namespace Bga\Games\Cardia;
 
 trait DebugUtilTrait {
 

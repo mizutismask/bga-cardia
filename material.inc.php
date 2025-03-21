@@ -1,5 +1,8 @@
 <?php
-//use Bga\Games\wizardsCup\objects\Element;
+
+use Bga\Games\Cardia\objects\CardiaCardInfo;
+use Bga\Games\wizardsCup\objects\PowerType;
+
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
@@ -20,42 +23,29 @@
  *
  */
 
-/*
- $this->GRID_CARDS = [
+
+$this->CARDIA_CARDS = [
   1 => [
-    //activities
-    1 => new BoardCardInfo(3, [FART => 1, STRUT => 2]),
-    2 => new BoardCardInfo(2, [SNIF => 1, PEE => 1]),
-    3 => new BoardCardInfo(3, [SNIF => 1, DISAPPROVE => 2]),
-    4 => new BoardCardInfo(3, [SNIF => 1, PEE => 1, BARK => 1]),
-    5 => new BoardCardInfo(2, [FART => 1, DISAPPROVE => 1]),
-    6 => new BoardCardInfo(3, [BARK => 2, PEE => 1]),
-    7 => new BoardCardInfo(1, [STRUT => 1]),
-    8 => new BoardCardInfo(2, [BARK => 1,FART => 1]),
-    9 => new BoardCardInfo(3, [BARK => 2, STRUT => 1]),
-    10 => new BoardCardInfo(4, [SNIF => 2, PEE => 2]),
-    11 => new BoardCardInfo(3, [STRUT => 1, BARK => 1, FART => 1]),
-    12 => new BoardCardInfo(3, [SNIF => 1, FART => 2]),
-    13 => new BoardCardInfo(2, [SNIF => 1, DISAPPROVE => 1]),
-    14 => new BoardCardInfo(3, [DISAPPROVE => 3]),
-    15 => new BoardCardInfo(2, [STRUT => 2]),
-    16 => new BoardCardInfo(4, [PEE => 2, BARK => 1, FART => 1]),
+    //deck 1
+    1  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    2  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    3  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    4  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    5  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    6  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    7  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    8  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    9  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    10 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    11 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    12 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    13 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    14 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    15 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    16 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
   ],
   2 => [
-    //places
-    1 => new BoardCardInfo(),//basket
-    2 => new BoardCardInfo(),//neighborhood
-    3 => new BoardCardInfo(),//lounge
-    4 => new BoardCardInfo(),//sandbox
-    5 => new BoardCardInfo(),//sandcastle
-    6 => new BoardCardInfo(),//theme park
-    7 => new BoardCardInfo(),//library
-    8 => new BoardCardInfo(),//restaurant
-    9 => new BoardCardInfo(),//festival
-    10 => new BoardCardInfo(),//supermarket
-    11 => new BoardCardInfo(),//pool
-    12 => new BoardCardInfo(),//slide
+    //deck 2
   ],
-];
 
-*/
+];
