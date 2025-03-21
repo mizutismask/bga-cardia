@@ -12,6 +12,7 @@ declare var g_archive_mode: string
 declare function _(str: string): string
 
 type Faction = 'G' | 'Y' | 'R' | 'B'
+type TokenType = 'S' | 'O'
 
 // remove this if you don't use cards. If you do, make sure the types are correct . By default, some number are send as string, I suggest to cast to right type in PHP.
 interface Card {
