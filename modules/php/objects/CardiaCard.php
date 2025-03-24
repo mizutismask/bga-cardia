@@ -9,7 +9,7 @@ namespace Bga\Games\Cardia\objects;
  * Type : the Wizard type
  * Type arg :  player color
  */
-class CardiaToken extends CardiaCardInfo {
+class CardiaCard extends CardiaCardInfo {
     public int $id;
     public string $location;
     public int $location_arg;
@@ -22,8 +22,8 @@ class CardiaToken extends CardiaCardInfo {
         array_key_exists('location_arg', $dbCard) ? $this->location_arg = intval($dbCard['location_arg']) : null;
         array_key_exists('type', $dbCard) ? $this->type = intval($dbCard['type']) : null;
         array_key_exists('type_arg', $dbCard) ? $this->type_arg = intval($dbCard['type_arg']) : null;
-        $materialInfo = $additionalParameters[0];
-        $wizardCard = $materialInfo[$this->type][$this->type_arg];
+        $materialInfo = $additionalParameters["material"];
+        $wizardCard = $materialInfo[$additionalParameters["deck"]][$this->type];
         $this->value = $wizardCard->value;
         $this->power = $wizardCard->power;
         $this->name = $wizardCard->name;

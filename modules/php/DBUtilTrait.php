@@ -90,4 +90,8 @@ trait DBUtilTrait {
     function dbArrayParam($arrayp) {
         return '"' . implode('","', $arrayp) . '"';
     }
+
+    function refreshGlobalValue($global_id) {
+        return $this->getUniqueValueFromDB("select global_value from global where global_id='$global_id'");
+    }
 }

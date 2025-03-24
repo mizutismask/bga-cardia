@@ -2,7 +2,7 @@
 
 namespace Bga\Games\Cardia;
 
-use Bga\Games\cardia\objects\TokenType;
+use Bga\Games\Cardia\objects\TokenType;
 
 trait ExpansionTrait {
 
@@ -19,7 +19,7 @@ trait ExpansionTrait {
         $expansion = $this->getDeck();
 
         foreach ($this->CARDIA_CARDS[$expansion] as $typeArg => $card) {
-            $cards[] = ['type' => $typeArg, 'type_arg' => 1, 'nbr' => 1];
+            $cards[] = ['type' => $typeArg, 'type_arg' => 1, 'nbr' => 1]; //type_arg is player order
             $cards[] = ['type' => $typeArg, 'type_arg' => 2, 'nbr' => 1];
         }
 
