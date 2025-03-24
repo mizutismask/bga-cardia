@@ -1,6 +1,6 @@
 <?php
 
-use Bga\Games\cardia\Game;
+use Bga\Games\Cardia\Game;
 
 define("APP_GAMEMODULE_PATH", "../misc/"); // include path to stubs, which defines "table.game.php" and other classes
 

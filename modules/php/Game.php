@@ -22,11 +22,12 @@ declare(strict_types=1);
 namespace Bga\Games\Cardia;
 
 use Deck;
+use Bga\Games\Cardia\objects\CardiaCard;
 
-require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
+//require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 require_once("constants.inc.php");
 
-class Game extends \Table {
+class Game extends \Bga\GameFramework\Table {
     use UtilTrait;
     use PlayerUtilTrait;
     use DBUtilTrait;
@@ -42,6 +43,7 @@ class Game extends \Table {
     private Deck $tokens;
     private CardManager $cardManager;
     private TokenManager $tokenManager;
+    public $CARDIA_CARDS;
 
     function __construct() {
         // Your global variables labels:
@@ -62,7 +64,7 @@ class Game extends \Table {
         ));
         $this->cards = $this->getNew("module.common.deck");
         $this->cards->init("card");
-        $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "CardiaCard", MATERIAL_TYPE_CARD);
+        $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "CardiaCard", MATERIAL_TYPE_CARD, ["material" => $this->CARDIA_CARDS, "deck" => $this->refreshGlobalValue(101)]);//get deck from table options
 
         $this->tokens = $this->getNew("module.common.deck");
         $this->tokens->init("token");
@@ -81,8 +83,7 @@ class Game extends \Table {
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame($players, $options = [])
-    {
+    protected function setupNewGame($players, $options = []) {
         // Set the colors of the players with HTML color code. The default below is red/green/blue/orange/brown. The
         // number of colors defined here must correspond to the maximum number of players allowed for the gams.
         $gameinfos = $this->getGameinfos();
@@ -124,14 +125,15 @@ class Game extends \Table {
         // TODO: setup the initial game situation here
         $this->setupTable($players);
 
-         // Activate first player once everything has been initialized and ready.
-         $this->activeNextPlayer();
+        // Activate first player once everything has been initialized and ready.
+        $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
     }
 
     function setupTable($players) {
         $this->setupSharedItems();
+        $this->cardManager->pickInitialCards();
         foreach ($players as $playerId => $player) {
         }
     }
@@ -169,8 +171,11 @@ class Game extends \Table {
         //$result['hand'] = $this->cardManager->getPlayerHand($currentPlayerId);
 
         foreach ($result['players'] as $playerId => &$player) {
-            $player['playerNo'] = intval($player['playerNo']);
-            // $player['cardsCount'] = intval($this->actionCards->countCardInLocation("hand", $playerId));
+            $currentPlayerOrder = intval($player['playerNo']);
+            $player['playerNo'] = $currentPlayerOrder;
+            $player['discard'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_DISCARD);
+            $player['hand'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_HAND);
+            $player['sigilCount'] = $this->tokenManager->getSigilCount($currentPlayerOrder);
         }
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
