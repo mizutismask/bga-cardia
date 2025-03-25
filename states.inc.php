@@ -77,8 +77,20 @@ $basicGameStates = [
         "action" => "stDuelReveal",
         "updateGameProgression" => false,
         "transitions" => [
-            //"hasOptionalPower" => ST_FINISH_DUEL,
-            //"solve" => ST_DUEL_SOLVING,
+            "finishDuel" => ST_FINISH_DUEL,
+            "looserAbility" => ST_LOOSER_ABILITY,
+        ],
+    ],
+
+    ST_FINISH_DUEL => [
+        "name" => "finishDuel",
+        "description" => "",
+        "type" => "game",
+        "action" => "stFinishDuel",
+        "updateGameProgression" => false,
+        "transitions" => [
+            "nextRound" => ST_NEXT_ROUND,
+            "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
         ],
     ],
 
@@ -107,8 +119,21 @@ $playerActionsGameStates = [
             "actChooseDuelCard",
         ],
         "transitions" => [
-            "nextPlayer" => ST_NEXT_PLAYER,
-            "continue" => ST_PLAYER_CHOOSE_DUEL_CARD,
+            "duelReveal" => ST_DUEL_REVEAL,
+        ]
+    ],
+
+    ST_LOOSER_ABILITY => [
+        "name" => "looserAbility",
+        "description" => clienttranslate('${actplayer} must resolve his ability'),
+        "descriptionmyturn" => clienttranslate('${you}  must resolve your ability'),
+        "type" => "activeplayer",
+        //"args" => "argChooseDuelCard",
+        "possibleactions" => [
+            //"actLooserAbility",
+        ],
+        "transitions" => [
+            "finishDuel" => ST_FINISH_DUEL,
         ]
     ],
 ];
@@ -133,6 +158,19 @@ $gameGameStates = [
         "transitions" => [
             "nextPlayer" => ST_PLAYER_CHOOSE_DUEL_CARD,
             "endScore" => ST_END_SCORE,
+        ],
+    ],
+
+    ST_NEXT_ROUND => [
+        "name" => "nextRound",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNextRound",
+        "updateGameProgression" => true,
+        "transitions" => [
+            "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
+            'endGame' => ST_END_GAME,
+            "debugEndGame" => ST_DEBUG_END_GAME,
         ],
     ],
 

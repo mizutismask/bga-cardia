@@ -9,11 +9,42 @@ const TABLE_CARD = "card";
 class CardManager extends DeckManager {
 
 
-    public function pickInitialCards() {
+    public function dealHands($notify= false) {
         $players = $this->game->loadPlayersBasicInfos();
         foreach ($players as $playerId => $player) {
             $cards = array_slice($this->getCardsOfTypeArgFromLocationOrderBy(TABLE_CARD, $player['player_no'], 'deck', "card_location_arg", true), 0, 5);
             $this->deck->moveCards(array_map(fn($c) => $c->id, $cards), "hand", $playerId);
+
+            if($notify){
+                $this->game->notifyPlayer($playerId, "materialMove",  "", [
+                    'playerId' => $playerId,
+                    'type' => $this->materialType,
+                    'from' => MATERIAL_LOCATION_DECK,
+                    'to' => MATERIAL_LOCATION_HAND,
+                    'toArg' => $playerId,
+                    'material' => $this->cast($this->deck->getCards(array_map(fn($c) => $c->id, $cards))),
+                ]);
+            }
+        }
+    }
+
+    public function pickAdditionalCard() {
+        $players = $this->game->loadPlayersBasicInfos();
+        foreach ($players as $playerId => $player) {
+            $cards = $this->getCardsOfTypeArgFromLocationOrderBy(TABLE_CARD, $player['player_no'], 'deck', "card_location_arg", true);
+            if ($cards) {
+                $c = $cards[0];
+                $this->deck->moveCard($c->id, "hand", $playerId);
+
+                $this->game->notifyPlayer($playerId, "materialMove",  "", [
+                    'playerId' => $playerId,
+                    'type' => $this->materialType,
+                    'from' => MATERIAL_LOCATION_DECK,
+                    'to' => MATERIAL_LOCATION_HAND,
+                    'toArg' => $playerId,
+                    'material' => $this->cast([($this->deck->getCard($c->id))]),
+                ]);
+            }
         }
     }
 
@@ -33,5 +64,12 @@ class CardManager extends DeckManager {
 
     public function getModifierValueOnCard(int $cardId): int {
         return $this->game->getUniqueIntValueFromDB("SELECT card_modifier FROM card WHERE card_id = $cardId");
+    }
+
+    public function resetDecks() {
+        $this->deck->moveAllCardsInLocation("discard", "deck");
+        $this->deck->moveAllCardsInLocation("hand", "deck");
+        $this->deck->shuffle("deck");
+        $this->dealHands(true);
     }
 }

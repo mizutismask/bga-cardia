@@ -133,8 +133,9 @@ class Game extends \Bga\GameFramework\Table {
 
     function setupTable($players) {
         $this->setupSharedItems();
-        $this->cardManager->pickInitialCards();
+        $this->cardManager->dealHands();
         $this->globals->set(GLB_DUEL_COUNT, 0);
+        $this->globals->set(GLBL_ROUND, 1);
         foreach ($players as $playerId => $player) {
         }
     }

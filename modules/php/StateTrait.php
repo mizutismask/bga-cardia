@@ -34,6 +34,7 @@ trait StateTrait {
         $duelCount = $this->globals->inc(GLB_DUEL_COUNT);
         $maxCard = null;
         $minCard = null;
+        $stateTransition = 'finishDuel';
 
         foreach ($playersIds as $playerId) {
             $card = $this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId);
@@ -62,11 +63,13 @@ trait StateTrait {
             ]);
 
             $this->tokenManager->addSigilOnCard($maxCard->id);
+            $stateTransition = 'looserAbility';
         } else {
             $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
             ]);
         }
+        $this->gamestate->nextState($stateTransition);
     }
 
     function getCardValue(CardiaCard &$card, bool $withModifiers = true): int {
@@ -85,17 +88,118 @@ trait StateTrait {
         return $value;
     }
 
-    function hasReachedEndOfGameRequirements($playerId): bool {
-        $playersIds = $this->getPlayersIds();
-
-        $end = false; //todo
-        if ($end && intval($this->getGameStateValue(LAST_TURN) == 0)) {
-            $this->setGameStateValue(LAST_TURN, $this->getLastPlayer()); //we play until the last player to finish the round
-            if (!$this->isLastPlayer($playerId)) {
-                $this->notifyWithName('lastTurn', clienttranslate('${player_name} has no more destination cards, finishing round !'), []);
+    /**
+     * If only player has 5 sigils or both have at least 5 sigils but one player has more than the other, end of round.
+     * @return void 
+     */
+    function stFinishDuel() {
+        $winner = $this->getSigilCountWinner();
+        if (!$winner) {
+            $winner = $this->getNoPlayableCardWinner();
+            if ($winner == -1) {
+                self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on sigils count, end of round'), []);
             }
         }
-        return $end;
+
+        $nextState = $winner ? 'nextRound' : 'chooseDuelCard';
+
+        if ($winner) {
+            $this->incPlayerScore($winner, 1, clienttranslate('${player_name} wins the round !'), ["player_name" => $this->getPlayerName($winner)]);
+        } else {
+            $this->cardManager->pickAdditionalCard();
+        }
+        $this->gamestate->nextState($nextState);
+    }
+
+    function getSigilCountWinner(): int {
+        $playersIds = $this->getPlayersIds();
+        $sigilCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSigilCount($id), $playersIds));
+        $winner = null;
+
+        //filter players with at least 5 sigils
+        $playersWith5Sigils = array_filter($sigilCounts, fn($count) => $count >= 5);
+
+        //check if every player from playersWith5Sigils has the same sigils count
+        $tieOn5SigilsOrMore = count(array_unique($playersWith5Sigils)) === 1;
+        if (!$playersWith5Sigils || $tieOn5SigilsOrMore) {
+            //no winner yet
+        } else {
+            if (count($playersWith5Sigils) == 1) {
+                //if only player has 5 sigils, he wins
+                $winner = array_key_first($playersWith5Sigils);
+            } else {
+                //winner is the player with the most sigils
+                $maxSigils = max($playersWith5Sigils);
+                $winners = array_keys(array_filter($playersWith5Sigils, fn($count) => $count == $maxSigils));
+                $winner = $winners[0];
+            }
+        }
+        return $winner;
+    }
+
+    function getNoPlayableCardWinner() {
+        $winner = null;
+        $playersIds = $this->getPlayersIds();
+
+        //if no card in hand and no card in deck, won’t be able to play
+        $cardsCount = array_combine($playersIds, array_map(
+            fn($id) => $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($id), MATERIAL_LOCATION_DECK)
+                + $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($id), MATERIAL_LOCATION_HAND),
+            $playersIds
+        ));
+
+        //if only one player has cards, he wins
+        $playersWithCards = array_filter($cardsCount, fn($count) => $count > 0);
+        if (count($playersWithCards) == 1) {
+            $winner = array_key_first($playersWithCards);
+        } else if (count($playersWithCards) == 0) {
+            //if no player has cards, the player with the most sigils wins
+            $playersIds = $this->getPlayersIds();
+            $sigilCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSigilCount($id), $playersIds));
+            $maxSigils = max($sigilCounts);
+            $winners = array_keys(array_filter($sigilCounts, fn($count) => $count == $maxSigils));
+            if (count($winners) == 1) {
+                $winner = $winners[0];
+            } else {
+                $winner = -1;
+            }
+        }
+        return $winner;
+    }
+
+    function stNextRound() {
+        $players = $this->loadPlayersBasicInfos();
+        $currentRound = $this->globals->get(GLBL_ROUND);
+
+        if ($this->hasReachedEndOfGameRequirements()) {
+            if ($this->isStudio()) {
+                $this->gamestate->nextState('debugEndGame');
+            } else {
+                $this->gamestate->nextState('endGame');
+            }
+        } else {
+            $this->globals->set(GLB_DUEL_COUNT, 0);
+            $this->globals->inc(GLBL_ROUND, 1);
+            $currentRound++;
+
+            self::notifyAllPlayers('msg', clienttranslate('&#10148; Round ${round}'), ["round" => $currentRound]);
+            $this->cardManager->resetDecks();
+            $this->gamestate->nextState('chooseDuelCard');
+        }
+    }
+
+    function endOfRoundReset() {
+        $this->globals->set(GLB_DUEL_COUNT, 0);
+    }
+
+    function hasReachedEndOfGameRequirements(): bool {
+        $playersIds = $this->getPlayersIds();
+        foreach ($playersIds as $playerId) {
+            if ($this->getPlayerScore($playerId) == 2) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function stNextPlayer() {
