@@ -1,6 +1,6 @@
 // <reference path="../card-manager.ts"/>
 class CardsManager extends CardsManagerBase<CardiaCard> {
-	constructor(public game: CardiaGame) {
+	constructor(public game: CardiaGame, private deckNumber: number) {
 		super(game, {
 			animationManager: game.animationManager,
 			getId: (card) => `cardia-card-${card.id}`,
@@ -10,8 +10,8 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 				div.dataset.cardType = '' + card.type
 			},
 			setupFrontDiv: (card: CardiaCard, div: HTMLElement) => {
-				this.setFrontBackground(div as HTMLDivElement, card.type_arg)
-				
+				this.setFrontBackground(div as HTMLDivElement, card.type)
+
 				const tokensId = `${super.getId(card)}-tokens`
 				div.id = `${super.getId(card)}-front`
 
@@ -66,7 +66,7 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 	}
 
 	private setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
-		const imageUrl = `${g_gamethemeurl}img/cardia-card-background.jpg`
+		const imageUrl = `${g_gamethemeurl}img/deck${this.deckNumber}.jpg`
 		cardDiv.style.backgroundImage = `url('${imageUrl}')`
 		const imagePosition = cardType - 1
 		const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW)

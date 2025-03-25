@@ -28,6 +28,7 @@ interface CardiaCard extends Card {}
 interface CardiaPlayer extends Player {
 	playerNo: number
 	cardsCount: number
+	hand: CardiaCard[]
 }
 
 interface CardiaGamedatas {

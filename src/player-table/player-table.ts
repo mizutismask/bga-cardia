@@ -2,7 +2,7 @@
  * Player table.
  */
 class PlayerTable {
-	public handStock: HandStock<CardiaCard>
+	public handStock: LineStock<CardiaCard>
 
 	constructor(private game: CardiaGame, player: CardiaPlayer) {
 		const isMyTable = player.id === game.getPlayerId().toString()
@@ -25,12 +25,8 @@ class PlayerTable {
 	}
 
 	private initHand(player: CardiaPlayer) {
-		this.handStock = new HandStock<CardiaCard>(this.game.cardsManager, $('hand-' + player.id), {
-			sort: sortFunction('type_arg', '-type'),
-			inclination: 8,
-			cardShift: '10px',
-			cardOverlap: '75px'
-		})
+		this.handStock = new LineStock<CardiaCard>(this.game.cardsManager, $('hand-' + player.id), {})
 		this.handStock.setSelectionMode('single')
+		this.handStock.addCards(player.hand)
 	}
 }

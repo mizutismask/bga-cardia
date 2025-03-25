@@ -16,7 +16,7 @@
  */
 declare const playSound
 
-const IMAGE_ITEMS_PER_ROW = 10
+const IMAGE_ITEMS_PER_ROW = 4
 const ACTION_TIMER_DURATION = 6
 
 class Cardia extends BaseGame implements CardiaGame {
@@ -51,7 +51,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.gamedatas = gamedatas
 		log('gamedatas', gamedatas)
 
-		this.cardsManager = new CardsManager(this)
+		this.cardsManager = new CardsManager(this, this.gamedatas.expansion)
 		this.animationManager = new AnimationManager(this)
 
 		if (gamedatas.lastTurn) {

@@ -1,9 +1,9 @@
 @use 'sass:list';
 
-$cardSizeModifier: 0.2;
-$CARD_WIDTH: calc(941px * $cardSizeModifier); //also change in stock-utils.ts
-$CARD_HEIGHT: calc(626px * $cardSizeModifier);
-$CARD_RATIO: list.slash(941, 626);
+$cardSizeModifier: 0.9;
+$CARD_WIDTH: calc(220px * $cardSizeModifier); //also change in stock-utils.ts
+$CARD_HEIGHT: calc(342px * $cardSizeModifier);
+$CARD_RATIO: list.slash(220px, 342px);
 
 
 @mixin selected-element {
