@@ -8,3 +8,6 @@ Typically, this directory should contain less than 10 files (beside
 box graphics and publisher images), with no file larger than 4 Mb.
 
 See: http://en.doc.boardgamearena.com/Game_art:_img_directory for more details.
+
+montage `ls -v .` -tile 4 -geometry 220x342+0+0 deck1.jpg
+montage `ls -v .` -tile 4 -geometry 342x220+0+0 locations.jpg
