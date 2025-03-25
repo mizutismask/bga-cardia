@@ -2,8 +2,11 @@
 
 namespace Bga\Games\Cardia;
 
+use Bga\Games\Cardia\objects\CardiaCard;
+
 /**
  * @property CardManager cardManager
+ * @property TokenManager $tokenManager
  */
 trait StateTrait {
 
@@ -24,6 +27,62 @@ trait StateTrait {
         }
 
         $this->gamestate->nextState('');
+    }
+
+    function stDuelReveal() {
+        $playersIds = $this->getPlayersIds();
+        $duelCount = $this->globals->inc(GLB_DUEL_COUNT);
+        $maxCard = null;
+        $minCard = null;
+
+        foreach ($playersIds as $playerId) {
+            $card = $this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId);
+            $this->cardManager->playCard($card, $playerId, $duelCount);
+            if ($minCard === null) {
+                $minCard = $card;
+                $maxCard = $card;
+            }
+            $value = $this->getCardValue($card);
+            if ($value > $maxCard->modifiedValue) {
+                $maxCard = $card;
+            }
+            if ($value < $minCard->modifiedValue) {
+                $minCard = $card;
+            }
+        }
+
+        if ($minCard->id != $maxCard->id) {
+            $operator = ">";
+            $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}: ${winnerValue} ${operator} ${looserValue}'), [
+                'winnerValue' => $maxCard->modifiedValue,
+                'looserValue' => $minCard->modifiedValue,
+                'operator' => $operator,
+                'cardName1' => $maxCard->name,
+                'cardName2' => $minCard->name,
+            ]);
+
+            $this->tokenManager->addSigilOnCard($maxCard->id);
+        } else {
+            $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
+                'winnerValue' => $maxCard->modifiedValue,
+            ]);
+        }
+    }
+
+    function getCardValue(CardiaCard &$card, bool $withModifiers = true): int {
+        $value = $card->value;
+        //$this->dump('*************getCardValue', $card);
+        //$this->dump('*************initial value**', $value);
+        if ($withModifiers) {
+            $applies = true;
+            if ($applies) {
+                $value += $this->cardManager->getModifierValueOnCard($card->id);
+                $card->modifiedValue = $value;
+            }
+        }
+
+        $this->dump('*************final value**', $value);
+        return $value;
     }
 
     function hasReachedEndOfGameRequirements($playerId): bool {

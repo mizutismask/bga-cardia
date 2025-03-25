@@ -10,13 +10,9 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 				div.dataset.cardType = '' + card.type
 			},
 			setupFrontDiv: (card: CardiaCard, div: HTMLElement) => {
-				this.setBackground(
-					div as HTMLDivElement,
-					card.type_arg,
-					`${g_gamethemeurl}img/cardia-card-background.jpg`,
-					IMAGE_ITEMS_PER_ROW
-				)
-				//this.setDivAsCard(div as HTMLDivElement, card.type);
+				this.setFrontBackground(div as HTMLDivElement, card.type_arg)
+				
+				const tokensId = `${super.getId(card)}-tokens`
 				div.id = `${super.getId(card)}-front`
 
 				//add help
@@ -31,7 +27,26 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 					;(this.game as any).addTooltipHtml(info.id, tooltipContent)
 					this.game.addTooltipOnClickHelpButton(info.id, tooltipContent)
 				}
+
+				//adds tokens locations
+				if (!$(tokensId)) {
+					const container: HTMLDivElement = document.createElement('div')
+					container.id = tokensId
+					container.classList.add('tokens-location-wrapper')
+					div.appendChild(container)
+
+					const modifiers: HTMLDivElement = document.createElement('div')
+					modifiers.id = `${super.getId(card)}-modifiers`
+					modifiers.classList.add('card-modifiers')
+					container.appendChild(modifiers)
+
+					const sigils: HTMLDivElement = document.createElement('div')
+					sigils.id = `${super.getId(card)}-sigils`
+					sigils.classList.add('card-sigils')
+					container.appendChild(sigils)
+				}
 			},
+
 			setupBackDiv: (card: CardiaCard, div: HTMLElement) => {
 				div.style.backgroundImage = `url('${g_gamethemeurl}img/cardia-card-background.jpg')`
 			}
@@ -48,5 +63,17 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 
 	public getDesc(card: CardiaCard) {
 		return 'todo'
+	}
+
+	private setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
+		const imageUrl = `${g_gamethemeurl}img/cardia-card-background.jpg`
+		cardDiv.style.backgroundImage = `url('${imageUrl}')`
+		const imagePosition = cardType - 1
+		const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW)
+		const xBackgroundPercent = (imagePosition - row * IMAGE_ITEMS_PER_ROW) * 100
+		const yBackgroundPercent = row * 100
+		cardDiv.style.backgroundPositionX = `-${xBackgroundPercent}%`
+		cardDiv.style.backgroundPositionY = `-${yBackgroundPercent}%`
+		cardDiv.style.backgroundSize = `${IMAGE_ITEMS_PER_ROW * 100}%`
 	}
 }

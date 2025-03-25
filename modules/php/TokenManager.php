@@ -22,6 +22,23 @@ class TokenManager extends DeckManager {
         ";
         return intval($this->deck->getUniqueValueFromDB($sql));
     }
+
+    public function addSigilOnCard(int $cardId) {
+        $sigils = $this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_DECK);
+        if(!$sigils) {
+            throw new \BgaUserException(self::_("No more sigils"));
+        }
+        $sigil = $sigils[0];
+        $this->deck->moveCard($sigil->id, MATERIAL_LOCATION_CARD, $cardId);
+        $this->game->notifyWithName("materialMove",  "", [
+            'type' => MATERIAL_TYPE_TOKEN,
+            'from' => MATERIAL_LOCATION_DECK,
+            'to' => MATERIAL_LOCATION_CARD,
+            'toArg' => $cardId,
+            'material' => $this->cast([$this->deck->getCard($sigil->id)]),
+        ]);
+    }
+
     public function pickInitialActionCards() {
         $this->initRiver(4);
     }

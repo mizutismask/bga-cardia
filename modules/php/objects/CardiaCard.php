@@ -23,9 +23,9 @@ class CardiaCard extends CardiaCardInfo {
         array_key_exists('type', $dbCard) ? $this->type = intval($dbCard['type']) : null;
         array_key_exists('type_arg', $dbCard) ? $this->type_arg = intval($dbCard['type_arg']) : null;
         $materialInfo = $additionalParameters["material"];
-        $wizardCard = $materialInfo[$additionalParameters["deck"]][$this->type];
+        /*$wizardCard = $materialInfo[$additionalParameters["deck"]][$this->type];
         $this->value = $wizardCard->value;
         $this->power = $wizardCard->power;
-        $this->name = $wizardCard->name;
+        $this->name = $wizardCard->name;*/
     }
 }

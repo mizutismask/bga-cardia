@@ -3,6 +3,8 @@
 /*
  * BGA constants 
  */
+const GLB_LAST_CHOSEN_CARD = 'lastChosenCard';
+const GLB_DUEL_COUNT = 'duelCount';
 define("GS_PLAYER_TURN_NUMBER", 'playerturn_nbr');
 
 /*
@@ -15,9 +17,11 @@ const MATERIAL_TYPE_FIRST_PLAYER_TOKEN = "FIRST_PLAYER_TOKEN";
 
 const MATERIAL_LOCATION_HAND = "HAND";
 const MATERIAL_LOCATION_DECK = "DECK";
+const MATERIAL_LOCATION_CARD = "CARD";
 const MATERIAL_LOCATION_STOCK = "STOCK";
 const MATERIAL_LOCATION_DISCARD = "DISCARD";
 const MATERIAL_LOCATION_RIVER = "RIVER";
+const MATERIAL_LOCATION_ENCOUNTER = "ENCOUNTER";
 
 /* 
  * Game constants 
@@ -35,7 +39,8 @@ define('EXPANSION', 0); // 0 => base game
 define('ST_BGA_GAME_SETUP', 1);
 define('ST_DEAL_INITIAL_SETUP', 10);
 
-define('ST_PLAYER_CHOOSE_ACTION', 30);
+define('ST_PLAYER_CHOOSE_DUEL_CARD', 30);
+define('ST_DUEL_REVEAL', 31);
 
 define('ST_NEXT_PLAYER', 80);
 define('ST_NEXT_REVEAL', 81);

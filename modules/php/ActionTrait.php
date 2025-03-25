@@ -3,6 +3,7 @@
 namespace Bga\Games\Cardia;
 
 use \Bga\GameFramework\Actions\Types\IntArrayParam;
+use Bga\Games\Cardia\objects\CardiaCard;
 use GameState;
 use Globals;
 
@@ -16,27 +17,18 @@ trait ActionTrait {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
-
-    /**
-     * @param int[] $cardIds
-     */
-    function actSelectInSet(int $version, #[IntArrayParam] array $cardIds) {
+    function actChooseDuelCard(int $version, int $cardId) {
         $this->checkVersion($version);
-        $this->checkAction('actSelectInSet');
+        $this->checkAction('chooseDuelCard');
         $playerId = $this->getMostlyActivePlayerId();
-        $playerOrder = $this->getPlayerPosition($playerId);
+        $card = $this->getActionCardFromDb($this->cardManager->getCard($cardId));
+        $this->userAssertTrue($this->_("This card is not in your hand"), $card->location == "hand" && $card->location_arg == $playerId);
 
-        /*$this->orderDeck($cardIds, false, 'actSelectInSet', MATERIAL_LOCATION_SET);
+        $this->chooseDuelCard($this->getMostlyActivePlayerId(), $card);
+    }
 
-        $this->notifyPlayer($playerId, "materialMove", '', [
-            'type' => MATERIAL_TYPE_CARD,
-            'from' => MATERIAL_LOCATION_SET,
-            'fromArg' => $playerId,
-            'to' => MATERIAL_LOCATION_DECK,
-            'toArg' => $playerId,
-            'material' => $this->cardManager->getCards($cardIds),
-        ]);
-        $this->cardManager->setWaitingCard($playerId, $playerOrder);*/
+    function chooseDuelCard(int $playerId, CardiaCard $card) {
+        $this->globals->set(GLB_LAST_CHOSEN_CARD . "_".$playerId, $card);
         $this->gamestate->setPlayerNonMultiactive($playerId, '');
     }
 

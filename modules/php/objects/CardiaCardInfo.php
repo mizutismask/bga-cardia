@@ -9,6 +9,7 @@ use Bga\Games\wizardsCup\objects\PowerType;
  */
 class CardiaCardInfo {
     public int $value;
+    public int $modifiedValue;
     public PowerType $power;
     public string $name; //translated
 

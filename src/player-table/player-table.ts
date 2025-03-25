@@ -2,7 +2,7 @@
  * Player table.
  */
 class PlayerTable {
-	private handStock: LineStock<CardiaCard>
+	public handStock: HandStock<CardiaCard>
 
 	constructor(private game: CardiaGame, player: CardiaPlayer) {
 		const isMyTable = player.id === game.getPlayerId().toString()
@@ -25,22 +25,12 @@ class PlayerTable {
 	}
 
 	private initHand(player: CardiaPlayer) {
-		const smallWidth = window.matchMedia('(max-width: 830px)').matches
-		var baseSettings = {
-			center: true,
-			gap: '10px'
-		}
-		if (smallWidth) {
-			baseSettings['direction'] = 'row' as 'row'
-			baseSettings['wrap'] = 'nowrap' as 'nowrap'
-		} else {
-			baseSettings['direction'] = 'column' as 'column'
-			baseSettings['wrap'] = 'wrap' as 'wrap'
-		}
-
-		//log('smallWidth', smallWidth, baseSettings)
-
-		this.handStock = new LineStock<CardiaCard>(this.game.cardsManager, $('hand-' + player.id), baseSettings)
+		this.handStock = new HandStock<CardiaCard>(this.game.cardsManager, $('hand-' + player.id), {
+			sort: sortFunction('type_arg', '-type'),
+			inclination: 8,
+			cardShift: '10px',
+			cardOverlap: '75px'
+		})
 		this.handStock.setSelectionMode('single')
 	}
 }

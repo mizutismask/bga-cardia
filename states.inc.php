@@ -70,6 +70,19 @@ $basicGameStates = [
         "transitions" => ["endGame" => ST_END_GAME],
     ],
 
+    ST_DUEL_REVEAL => [
+        "name" => "duelReveal",
+        "description" => "",
+        "type" => "game",
+        "action" => "stDuelReveal",
+        "updateGameProgression" => false,
+        "transitions" => [
+            //"hasOptionalPower" => ST_FINISH_DUEL,
+            //"solve" => ST_DUEL_SOLVING,
+        ],
+    ],
+
+
     // Final state.
     // Please do not modify.
     ST_END_GAME => [
@@ -83,20 +96,19 @@ $basicGameStates = [
 
 $playerActionsGameStates = [
 
-    ST_PLAYER_CHOOSE_ACTION => [
-        "name" => "chooseAction",
-        "description" => clienttranslate('${actplayer} must start/continue an expedition or use tickets'),
-        "descriptionmyturn" => clienttranslate('${you} must start/continue an expedition or use tickets'),
-        "descriptionLoop" => clienttranslate('${actplayer} made a loop and has to continue the expedition'),
-        "descriptionmyturnLoop" => clienttranslate('${you} made a loop and have to continue the expedition from any point'),
-        "type" => "activeplayer",
-        "args" => "argChooseAction",
+    ST_PLAYER_CHOOSE_DUEL_CARD => [
+        "name" => "chooseDuelCard",
+        "description" => clienttranslate('${actplayer} must choose a card for the next encounter'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a card for the next encounter'),
+        "type" => "multipleactiveplayer",
+        //"args" => "argChooseDuelCard",
+        'action' => 'stMakeEveryoneActive',
         "possibleactions" => [
-            "actPass",
+            "actChooseDuelCard",
         ],
         "transitions" => [
             "nextPlayer" => ST_NEXT_PLAYER,
-            "continue" => ST_PLAYER_CHOOSE_ACTION,
+            "continue" => ST_PLAYER_CHOOSE_DUEL_CARD,
         ]
     ],
 ];
@@ -119,7 +131,7 @@ $gameGameStates = [
         "action" => "stNextPlayer",
         "updateGameProgression" => true,
         "transitions" => [
-            "nextPlayer" => ST_PLAYER_CHOOSE_ACTION,
+            "nextPlayer" => ST_PLAYER_CHOOSE_DUEL_CARD,
             "endScore" => ST_END_SCORE,
         ],
     ],

@@ -11,12 +11,7 @@ trait ArgsTrait {
     //////////// Game state arguments
     ////////////
 
-    /*
-        Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
-        These methods function is to return some additional information that is specific to the current
-        game state.
-    */
-    /*function argChooseAdditionalDestinations() {
+    /*function argChooseDuelCard() {
         $playerId = intval($this->getActivePlayerId());
 
         $destinations = $this->getPickedDestinationCards($playerId);
@@ -29,8 +24,8 @@ trait ArgsTrait {
                 ]
             ],
         ];
-    }
-*/
+    }*/
+
 
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());

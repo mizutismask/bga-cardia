@@ -283,24 +283,24 @@ class Cardia extends BaseGame implements CardiaGame {
 
 		if ((this as any).isCurrentPlayerActive()) {
 			switch (stateName) {
-				case 'chooseAction':
-					this.statusBar.addActionButton(_('Validate'), () => this.selectInSetAction(), {})
-					this.setActionBarChooseAction(false)
+				case 'chooseDuelCard':
+					this.statusBar.addActionButton(_('Validate'), () => this.chooseDuelCardAction(), {})
+					//this.setActionBarChooseAction(false)
 					break
 			}
 		}
 	}
 
-	private selectInSetAction() {
-		/*
-		if (this.playerSet.getSelection().length == 5) {
-			this.takeAction('actSelectInSet', {
-				cardIds: this.getSelectedIdsAsParam(this.playerSet)
-			})
-		} else {
-			;(this as any).showMessage(_('You have to select 5 cards'), 'error')
-		}
-		*/
+	private chooseDuelCardAction() {
+		this.ensureStockSelection(
+			[this.playerTables[this.getPlayerId()].handStock],
+			_('You have to select a card'),
+			() => {
+				this.takeAction('actChooseDuelCard', {
+					cardId: this.playerTables[this.getPlayerId()].handStock.getSelection()[0].id
+				})
+			}
+		)
 	}
 
 	///////////////////////////////////////////////////

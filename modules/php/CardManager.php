@@ -17,7 +17,21 @@ class CardManager extends DeckManager {
         }
     }
 
-    /*public function moveActionCardToPlayerHand($cardId, $playerId, bool $faceDown = false) {
-        $this->moveCardToPlayerHand($cardId, $playerId, $faceDown, clienttranslate('${player_name} takes an action card'));
-    }*/
+    public function playCard(CardiaCard $card, $playerId, $duelCount) {
+        $this->deck->moveCard($card->id, MATERIAL_LOCATION_ENCOUNTER, $duelCount);
+        $this->game->notifyWithName("materialMove",  clienttranslate('${player_name} plays ${cardName}'), [
+            'playerId' => $playerId,
+            'type' => $this->materialType,
+            'from' => MATERIAL_LOCATION_HAND,
+            'to' => MATERIAL_LOCATION_ENCOUNTER,
+            'toArg' => $duelCount,
+            'material' => $this->cast([($this->deck->getCard($card->id))]),
+            'cardName' => $card->name,
+            'i18n' => ['cardName'],
+        ]);
+    }
+
+    public function getModifierValueOnCard(int $cardId): int {
+        return $this->game->getUniqueIntValueFromDB("SELECT card_modifier FROM card WHERE card_id = $cardId");
+    }
 }
