@@ -71,7 +71,7 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 	private setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
 		const imageUrl = `${g_gamethemeurl}img/deck${this.deckNumber}.jpg`
 		cardDiv.style.backgroundImage = `url('${imageUrl}')`
-		const imagePosition = cardType - 1
+		const imagePosition = Number(cardType.toString().slice(1))-1;
 		const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW)
 		const xBackgroundPercent = (imagePosition - row * IMAGE_ITEMS_PER_ROW) * 100
 		const yBackgroundPercent = row * 100

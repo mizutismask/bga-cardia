@@ -18,9 +18,11 @@ trait ExpansionTrait {
         $cards = [];
         $expansion = $this->getDeck();
 
-        foreach ($this->CARDIA_CARDS[$expansion] as $typeArg => $card) {
-            $cards[] = ['type' => $typeArg, 'type_arg' => 1, 'nbr' => 1]; //type_arg is player order
-            $cards[] = ['type' => $typeArg, 'type_arg' => 2, 'nbr' => 1];
+        foreach ($this->CARDIA_CARDS as $typeArg => $card) {
+            if (str_starts_with($typeArg, $expansion)) {
+                $cards[] = ['type' => $typeArg, 'type_arg' => 1, 'nbr' => 1]; //type_arg is player order
+                $cards[] = ['type' => $typeArg, 'type_arg' => 2, 'nbr' => 1];
+            }
         }
 
         return $cards;
