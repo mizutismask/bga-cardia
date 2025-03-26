@@ -19,6 +19,40 @@ declare const playSound
 const IMAGE_ITEMS_PER_ROW = 4
 const ACTION_TIMER_DURATION = 6
 
+const HIRED_BLADE = 1;
+const VOID_MAGE = 2;
+const SURGEON = 3;
+const MEDIATOR = 4;
+const SABOTEUR = 5;
+const FORTUNE_TELLER = 6;
+const PALACE_GUARD = 7;
+const JUDGE = 8;
+const AMBUSHER = 9;
+const PUPPETEER = 10;
+const CLOCKMAKER = 11;
+const TREASURER = 12;
+const SWAMP_GUARDIAN = 13;
+const MAGISTRA = 14;
+const INVENTOR = 15;
+const DJINN = 16;
+
+const POISONER = 1;
+const KINESIS_MAGE = 2;
+const ENVOY = 3;
+const TAX_COLLECTOR = 4;
+const REVOLUTIONARY = 5;
+const LIBRARIAN = 6;
+const PRODIGY = 7;
+const ARISTOCRAT = 8;
+const BLACKMAILER = 9;
+const ILLUSIONIST = 10;
+const ENGINEER = 11;
+const COUNSELOR = 12;
+const WITCH_KING = 13;
+const ELEMENTAL = 14;
+const MECHANICAL_DJINN = 15;
+const SUCCESSOR = 16;
+
 class Cardia extends BaseGame implements CardiaGame {
 	public cardsManager: CardsManager
 	private originalTextChooseAction: string

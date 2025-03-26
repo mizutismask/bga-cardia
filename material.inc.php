@@ -1,7 +1,8 @@
 <?php
 
 use Bga\Games\Cardia\objects\CardiaCardInfo;
-use Bga\Games\wizardsCup\objects\PowerType;
+use Bga\Games\Cardia\objects\Faction;
+use Bga\Games\Cardia\objects\PowerType;
 
 /**
  *------
@@ -27,25 +28,41 @@ use Bga\Games\wizardsCup\objects\PowerType;
 $this->CARDIA_CARDS = [
   1 => [
     //deck 1
-    1  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    2  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    3  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    4  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    5  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    6  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    7  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    8  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    9  => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    10 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    11 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    12 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    13 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    14 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    15 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
-    16 => new CardiaCardInfo(3, PowerType::IMMEDIATE, self::_("Dancer")),
+    1  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::GREEN, self::_("Hired Blade")),
+    2  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Void Mage")),
+    3  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Surgeon")),
+    4  => new CardiaCardInfo(3, PowerType::ONGOING, Faction::BLUE, self::_("Mediator")),
+    5  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::GREEN, self::_("Saboteur")),
+    6  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Fortune Teller")),
+    7  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Palace Guard")),
+    8  => new CardiaCardInfo(3, PowerType::ONGOING, Faction::BLUE, self::_("Judge")),
+    9  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::GREEN, self::_("Ambusher")),
+    10 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Puppeteer")),
+    11 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Clockmaker")),
+    12 => new CardiaCardInfo(3, PowerType::ONGOING, Faction::BLUE, self::_("Treasurer")),
+    13 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::GREEN, self::_("Swamp Guardian")),
+    14 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Magistra")),
+    15 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Inventor")),
+    16 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::BLUE, self::_("DJinn")),
   ],
   2 => [
     //deck 2
+    1  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::GREEN, self::_("Poisoner")),
+    2  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Kinesis Mage")),
+    3  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Envoy")),
+    4  => new CardiaCardInfo(3, PowerType::ONGOING, Faction::BLUE, self::_("Tax Collector")),
+    5  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::GREEN, self::_("Revolutionary")),
+    6  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Librarian")),
+    7  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Prodigy")),
+    8  => new CardiaCardInfo(3, PowerType::ONGOING, Faction::BLUE, self::_("Aristocrat")),
+    9  => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::GREEN, self::_("Blackmailer")),
+    10 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Illusionist")),
+    11 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Engineer")),
+    12 => new CardiaCardInfo(3, PowerType::ONGOING, Faction::BLUE, self::_("Counselor")),
+    13 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::GREEN, self::_("Witch King")),
+    14 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Elemental")),
+    15 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Mechanical Djinn")),
+    16 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::BLUE, self::_("Successor")),
   ],
 
 ];

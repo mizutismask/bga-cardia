@@ -23,7 +23,13 @@ interface Card {
 	type: number
 	type_arg: number
 }
-interface CardiaCard extends Card {}
+interface CardiaCard extends Card {
+	name: string //translated
+	faction: Faction
+	value: number
+	modifiedValue: number
+	powerType: PowerType
+}
 
 interface CardiaPlayer extends Player {
 	playerNo: number

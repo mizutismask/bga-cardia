@@ -1,5 +1,5 @@
 <?php
-namespace Bga\Games\wizardsCup\objects;
+namespace Bga\Games\Cardia\objects;
 enum PowerType: string
 {
     case IMMEDIATE = 'I';
