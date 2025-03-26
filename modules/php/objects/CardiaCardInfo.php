@@ -10,13 +10,13 @@ use Bga\Games\Cardia\objects\PowerType;
 class CardiaCardInfo {
     public int $value;
     public int $modifiedValue;
-    public PowerType $power;
+    public PowerType $powerType;
     public Faction $faction;
     public string $name; //translated
 
-    public function __construct(int $value, PowerType $power, Faction $faction, string $name) {
+    public function __construct(int $value, PowerType $powerType, Faction $faction, string $name) {
         $this->value = $value;
-        $this->power = $power;
+        $this->powerType = $powerType;
         $this->name = $name;
         $this->faction = $faction;
     }

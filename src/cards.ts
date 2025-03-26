@@ -54,14 +54,14 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 	}
 
 	public getCardName(card: CardiaCard) {
-		return `<div class="card-name">${card.name}</div>`
+		return `<div class="cstm-card-name">${card.name}</div>`
 	}
 
 	public getTooltipContent(): TooltipElement[] {
 		return [
 			{ title: '', contentProvider: (c: CardiaCard) => this.getCardName(c) },
 			{
-				title: _('Power'),
+				title: "",
 				contentProvider: (c: CardiaCard) =>
 					this.getPowerDesc(c) + '<br><br>' + this.getPowerTypeDesc(c.powerType) + '<br><br>'
 			}
@@ -84,11 +84,11 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 		switch (powerType) {
 			case 'I':
 				return _(
-					'<b>Immediate power</b>: The effect of this Magic power is triggered <b>only once, as soon</b> as the card is placed in the Duel zone.'
+					'<b>Instant ability</b>: When you activate an instant ability, resolve it immediately once.'
 				)
 			case 'O':
 				return _(
-					'<b>Permanent power</b>: The effect of this Magic power is applied <b>as long as</b> the card is in the Duel zone.'
+					'<b>Ongoing ability</b>: The effect is enabled as long as there is an ongoing token on it.'
 				)
 			default:
 				return 'unexpected power type ' + powerType

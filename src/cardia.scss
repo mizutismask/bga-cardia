@@ -61,6 +61,13 @@ html {
 	box-shadow: 0 0 5px 5px rgb(200, 255, 47);
 }
 
+.cstm-card-name{
+	font-style: oblique;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 1.5em;
+}
+
 .bga-cards_selected-card {
 	@include selected-element;
 }
