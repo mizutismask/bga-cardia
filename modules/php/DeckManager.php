@@ -96,7 +96,7 @@ class DeckManager {
     }
     
     public function countCardsOfTypeArgFromLocation(string $tableName, int $typeArg, string $location) {
-        $sql = "SELECT count(id) FROM $tableName where card_location = '$location' and card_type_arg = '$typeArg'";
+        $sql = "SELECT count(card_id) FROM $tableName where card_location = '$location' and card_type_arg = '$typeArg'";
         return $this->game->getUniqueIntValueFromDB($sql);
     }
 

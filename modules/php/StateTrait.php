@@ -31,13 +31,13 @@ trait StateTrait {
 
     function stDuelReveal() {
         $playersIds = $this->getPlayersIds();
-        $duelCount = $this->globals->inc(GLB_DUEL_COUNT);
+        $duelCount = $this->globals->inc(GLB_DUEL_COUNT, 1);
         $maxCard = null;
         $minCard = null;
         $stateTransition = 'finishDuel';
 
         foreach ($playersIds as $playerId) {
-            $card = $this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId);
+            $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
             $this->cardManager->playCard($card, $playerId, $duelCount);
             if ($minCard === null) {
                 $minCard = $card;
@@ -111,7 +111,7 @@ trait StateTrait {
         $this->gamestate->nextState($nextState);
     }
 
-    function getSigilCountWinner(): int {
+    function getSigilCountWinner(): ?int {
         $playersIds = $this->getPlayersIds();
         $sigilCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSigilCount($id), $playersIds));
         $winner = null;

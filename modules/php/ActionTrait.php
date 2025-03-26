@@ -19,16 +19,16 @@ trait ActionTrait {
     //////////// 
     function actChooseDuelCard(int $version, int $cardId) {
         $this->checkVersion($version);
-        $this->checkAction('chooseDuelCard');
+        $this->checkAction('actChooseDuelCard');
         $playerId = $this->getMostlyActivePlayerId();
-        $card = $this->getActionCardFromDb($this->cardManager->getCard($cardId));
+        $card = $this->cardManager->getCard($cardId);
         $this->userAssertTrue($this->_("This card is not in your hand"), $card->location == "hand" && $card->location_arg == $playerId);
 
         $this->chooseDuelCard($this->getMostlyActivePlayerId(), $card);
     }
 
     function chooseDuelCard(int $playerId, CardiaCard $card) {
-        $this->globals->set(GLB_LAST_CHOSEN_CARD . "_".$playerId, $card);
+        $this->globals->set(GLB_LAST_CHOSEN_CARD . "_".$playerId, json_encode($card));
         $this->gamestate->setPlayerNonMultiactive($playerId, '');
     }
 
