@@ -72,3 +72,39 @@ const LAST_TURN = 'LAST_TURN';
     Stats
 */
 //define('STAT_POINTS_WITH_PLAYER_COMPLETED_DESTINATIONS', 'pointsWithPlayerCompletedDestinations');
+
+
+//cards
+const HIRED_BLADE = 101;
+const VOID_MAGE = 102;
+const SURGEON = 103;
+const MEDIATOR = 104;
+const SABOTEUR = 105;
+const FORTUNE_TELLER = 106;
+const PALACE_GUARD = 107;
+const JUDGE = 108;
+const AMBUSHER = 109;
+const PUPPETEER = 110;
+const CLOCKMAKER = 111;
+const TREASURER = 112;
+const SWAMP_GUARDIAN = 113;
+const MAGISTRA = 114;
+const INVENTOR = 115;
+const DJINN = 116;
+
+const POISONER = 201;
+const KINESIS_MAGE = 202;
+const ENVOY = 203;
+const TAX_COLLECTOR = 204;
+const REVOLUTIONARY = 205;
+const LIBRARIAN = 206;
+const PRODIGY = 207;
+const ARISTOCRAT = 208;
+const BLACKMAILER = 209;
+const ILLUSIONIST = 210;
+const ENGINEER = 211;
+const COUNSELOR = 212;
+const WITCH_KING = 213;
+const ELEMENTAL = 214;
+const MECHANICAL_DJINN = 215;
+const SUCCESSOR = 216;

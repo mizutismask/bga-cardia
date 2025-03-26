@@ -19,39 +19,39 @@ declare const playSound
 const IMAGE_ITEMS_PER_ROW = 4
 const ACTION_TIMER_DURATION = 6
 
-const HIRED_BLADE = 101;
-const VOID_MAGE = 102;
-const SURGEON = 103;
-const MEDIATOR = 104;
-const SABOTEUR = 105;
-const FORTUNE_TELLER = 106;
-const PALACE_GUARD = 107;
-const JUDGE = 108;
-const AMBUSHER = 109;
-const PUPPETEER = 110;
-const CLOCKMAKER = 111;
-const TREASURER = 112;
-const SWAMP_GUARDIAN = 113;
-const MAGISTRA = 114;
-const INVENTOR = 115;
-const DJINN = 116;
+const HIRED_BLADE = 101
+const VOID_MAGE = 102
+const SURGEON = 103
+const MEDIATOR = 104
+const SABOTEUR = 105
+const FORTUNE_TELLER = 106
+const PALACE_GUARD = 107
+const JUDGE = 108
+const AMBUSHER = 109
+const PUPPETEER = 110
+const CLOCKMAKER = 111
+const TREASURER = 112
+const SWAMP_GUARDIAN = 113
+const MAGISTRA = 114
+const INVENTOR = 115
+const DJINN = 116
 
-const POISONER = 201;
-const KINESIS_MAGE = 202;
-const ENVOY = 203;
-const TAX_COLLECTOR = 204;
-const REVOLUTIONARY = 205;
-const LIBRARIAN = 206;
-const PRODIGY = 207;
-const ARISTOCRAT = 208;
-const BLACKMAILER = 209;
-const ILLUSIONIST = 210;
-const ENGINEER = 211;
-const COUNSELOR = 212;
-const WITCH_KING = 213;
-const ELEMENTAL = 214;
-const MECHANICAL_DJINN = 215;
-const SUCCESSOR = 216;
+const POISONER = 201
+const KINESIS_MAGE = 202
+const ENVOY = 203
+const TAX_COLLECTOR = 204
+const REVOLUTIONARY = 205
+const LIBRARIAN = 206
+const PRODIGY = 207
+const ARISTOCRAT = 208
+const BLACKMAILER = 209
+const ILLUSIONIST = 210
+const ENGINEER = 211
+const COUNSELOR = 212
+const WITCH_KING = 213
+const ELEMENTAL = 214
+const MECHANICAL_DJINN = 215
+const SUCCESSOR = 216
 
 class Cardia extends BaseGame implements CardiaGame {
 	public cardsManager: CardsManager
@@ -549,34 +549,35 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	notif_materialMove(notif: Notif<NotifMaterialMove>) {
 		log('notif_materialMove', notif)
-		/*switch (notif.args.type) {
-			case "MISSION":
-				const cards = notif.args.material as Array<MissionCard>
-				this.notif_missionMove(cards, notif)
+		switch (notif.args.type) {
+			case 'CARD':
+				const cards = notif.args.material as Array<CardiaCard>
+				this.notif_cardMove(cards, notif)
 				break
 			default:
 				console.error('Material type move not handled', notif)
 				break
-		}*/
+		}
 	}
 
-	/*private notif_missionMove(cards: MissionCard[], notif: Notif<NotifMaterialMove>) {
+	private notif_cardMove(cards: CardiaCard[], notif: Notif<NotifMaterialMove>) {
 		const card = cards.at(0)
 		switch (notif.args.to) {
-			case "DISCARD":
-				if (notif.args.fromArg == notif.args.toArg) {
-					this.festivalStocks[notif.args.toArg].flipCard(card)
-					if (notif.args?.soldOut) this.playCustomSound('clap', false)
-				} else {
-					this.festivalStocks[notif.args.toArg].addCard(card)
-				}
+			case 'DISCARD':
+				/*if (notif.args.fromArg == notif.args.toArg) {
+					this.playerTables[notif.args.toArg].handStock.flipCard(card)
+				} else {*/
+				this.playerTables[notif.args.toArg].handStock.addCard(card)
+				//}
 				break
-
+			case 'HAND':
+				this.playerTables[notif.args.toArg].handStock.addCard(card)
+				break
 			default:
-				console.error('Festival move destination not handled', notif)
+				console.error('Card move destination not handled', notif)
 				break
 		}
-	}*/
+	}
 
 	/**
 	 * Highlight winner for end score.
