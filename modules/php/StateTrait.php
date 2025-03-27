@@ -3,6 +3,7 @@
 namespace Bga\Games\Cardia;
 
 use Bga\Games\Cardia\objects\CardiaCard;
+use Bga\Games\Cardia\objects\TokenType;
 
 /**
  * @property CardManager cardManager
@@ -70,6 +71,52 @@ trait StateTrait {
             ]);
         }
         $this->gamestate->nextState($stateTransition);
+    }
+
+    function isAbilityNeedingInteraction(CardiaCard $card): bool {
+        $abilitiesNeedingInteraction = [VOID_MAGE, PALACE_GUARD, AMBUSHER, SWAMP_GUARDIAN, MAGISTRA, INVENTOR];
+        return in_array($card->id, $abilitiesNeedingInteraction);
+    }
+
+
+
+    function applyAbility(CardiaCard $card, array $duels) {
+        switch ($card->id) {
+            case HIRED_BLADE:
+                $opposing = $this->cardManager->getOpposingCard($card, $duels);
+                $this->discardDuelCard($card);
+                $this->discardDuelCard($opposing);
+                break;
+            case MEDIATOR:
+                $opposing = $this->cardManager->getOpposingCard($card, $duels);
+                $this->tokenManager->discardTokenOfTypeOnCard($opposing, TokenType::SIGIL);
+                break;
+            case SABOTEUR:
+                for ($i = 0; $i < 2; $i++) {
+                    $top = $this->getTopOfLocationForTypeArg(TABLE_CARD, MATERIAL_LOCATION_DECK, $card->type_arg == 1 ? 2 : 1);
+                    if ($top) {
+                        $this->tokenManager->discardCard(0, $top->id);
+                    }
+                }
+                break;
+            case PUPPETEER:
+                $opposing = $this->cardManager->getOpposingCard($card, $duels);
+                $this->discardDuelCard($opposing);
+                $opponentHand = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $opposing->type_arg, MATERIAL_LOCATION_HAND);
+                $replacement = $this->getRandomValue($opponentHand);
+                $opponentId = $this->getPlayerIdFromPosition($opposing->type_arg);
+                $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opponentId, true, $opponentId);
+                //todo recalculate winner
+                break;
+        }
+    }
+
+    function discardDuelCard(CardiaCard $card) {
+        $this->tokensManager->discardTokensOnDuelCard($card);
+        $this->cardManager->discardDuelCard($card);
+        $this->notifyWithName('msg', clienttranslate('${cardName} is discarded'), [
+            'cardName' => $card->name,
+        ]);
     }
 
     function getCardValue(CardiaCard &$card, bool $withModifiers = true): int {

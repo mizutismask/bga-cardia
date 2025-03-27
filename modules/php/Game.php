@@ -170,6 +170,7 @@ class Game extends \Bga\GameFramework\Table {
         $result['turnOrderClockwise'] = true;
         $result['version'] = $this->getGameVersion();
         $result['counters'] = $this->argCounters();
+        $result['duels'] = $this->cardManager->getDuelsList();
         //$result['hand'] = $this->cardManager->getPlayerHand($currentPlayerId);
 
         foreach ($result['players'] as $playerId => &$player) {

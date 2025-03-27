@@ -2,6 +2,7 @@
 
 namespace Bga\Games\Cardia;
 
+use Bga\Games\Cardia\objects\CardiaCard;
 use Bga\Games\Cardia\objects\TokenType;
 
 const TABLE_TOKEN = "token";
@@ -37,6 +38,25 @@ class TokenManager extends DeckManager {
             'toArg' => $cardId,
             'material' => [$this->getCard($sigil->id)],
         ]);
+    }
+
+    public function discardTokenOfTypeOnCard(CardiaCard $card, TokenType $tokenType) {
+        $tokens = $this->deck->getCardsOfTypeInLocation($tokenType->value, $card->id, MATERIAL_LOCATION_CARD);
+        foreach($tokens as $token){
+            $this->deck->moveCard($token->id, MATERIAL_LOCATION_DISCARD);
+            $this->game->notifyWithName("materialMove", "", [
+                'type' => MATERIAL_TYPE_TOKEN,
+                'from' => MATERIAL_LOCATION_CARD,
+                'fromArg' => $card->id,
+                'to' => MATERIAL_LOCATION_DISCARD,
+                'material' => [$this->getCard($token->id)],
+            ]);
+        }
+    }
+
+    public function discardTokensOnDuelCard(CardiaCard $card){
+        $this->discardTokenOfTypeOnCard($card, TokenType::SIGIL);
+        $this->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
     }
 
     public function pickInitialActionCards() {

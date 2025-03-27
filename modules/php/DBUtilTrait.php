@@ -57,7 +57,7 @@ trait DBUtilTrait {
         }
         $fields = implode(' , ', $fields);
 
-        $query = "SELECT $fields FROM $tableName WHERE `card_location` = '$location' AND `card_type_arg` = $typeArg AND `card_location_arg` = (SELECT MIN(card_location_arg) FROM $tableName WHERE card_location = '$location' AND card_type_arg = $typeArg)";
+        $query = "SELECT $fields FROM $tableName WHERE `card_location` = '$location' AND `card_type_arg` = $typeArg AND `card_location_arg` = (SELECT MAX(card_location_arg) FROM $tableName WHERE card_location = '$location' AND card_type_arg = $typeArg)";
         return $this->getObjectListFromDB($query)[0] ?? null;
     }
     
@@ -68,7 +68,7 @@ trait DBUtilTrait {
         }
         $fields = implode(' , ', $fields);
 
-        $query = "SELECT $fields FROM $tableName WHERE `card_location` = '$location' AND `card_type_arg` = $typeArg AND `card_location_arg` = (SELECT MAX(card_location_arg) FROM $tableName WHERE card_location = '$location' AND card_type_arg = $typeArg)";
+        $query = "SELECT $fields FROM $tableName WHERE `card_location` = '$location' AND `card_type_arg` = $typeArg AND `card_location_arg` = (SELECT MIN(card_location_arg) FROM $tableName WHERE card_location = '$location' AND card_type_arg = $typeArg)";
         return $this->getObjectListFromDB($query)[0] ?? null;
     }
 
