@@ -1,6 +1,6 @@
 @use 'sass:list';
 
-$cardSizeModifier: 0.9;
+$cardSizeModifier: 0.75;
 $CARD_WIDTH: calc(220px * $cardSizeModifier); //also change in stock-utils.ts
 $CARD_HEIGHT: calc(342px * $cardSizeModifier);
 $CARD_RATIO: list.slash(220px, 342px);
