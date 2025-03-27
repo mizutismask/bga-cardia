@@ -129,7 +129,7 @@ interface NotifImportantMessageArgs {
 	temporary: boolean
 }
 
-type MoveLocation = 'HAND' | 'DECK' | 'STOCK' | 'TABLE' | 'DISCARD'
+type MoveLocation = 'HAND' | 'DECK' | 'STOCK' | 'TABLE' | 'DISCARD'| 'ENCOUNTER'
 
 interface NotifMaterialMove {
 	type: 'CARD' | 'TOKEN' | 'FIRST_PLAYER_TOKEN'

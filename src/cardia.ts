@@ -250,6 +250,9 @@ class Cardia extends BaseGame implements CardiaGame {
 			case 'endScore':
 				this.onEnteringEndScore()
 				break
+			case 'stDuelReveal':
+				//this.centralZone.createDuelStock(null, null)
+				break
 		}
 		if (this.gameFeatures.spyOnActivePlayerInGeneralActions) {
 			this.addArrowsToActivePlayer(args)
@@ -575,6 +578,15 @@ class Cardia extends BaseGame implements CardiaGame {
 				break
 			case 'HAND':
 				this.playerTables[notif.args.toArg].handStock.addCard(card)
+				break
+			case 'ENCOUNTER':
+				let stock = this.centralZone.duelStocks[notif.args.toArg]
+				if (!stock) {
+					this.centralZone.createDuelStock(null, null)//one for the current duel
+					this.centralZone.createDuelStock(null, null)//one to prepare the next
+					stock = this.centralZone.duelStocks[notif.args.toArg]
+				}
+				stock.addCard(card)
 				break
 			default:
 				console.error('Card move destination not handled', notif)

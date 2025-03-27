@@ -1,13 +1,17 @@
 .central-zone {
-    .card-stock{
-        --direction: column !important;
-    }
+	display: flex;
+	gap: 10px;
+    
+	.card-stock {
+		--direction: column !important;
+	}
 }
 
 @media screen and (orientation: portrait) {
-    .central-zone {
-        .card-stock{
-            --direction: row !important;
-        }
-    }
+	.central-zone {
+		flex-direction: column;
+		.card-stock {
+			--direction: row !important;
+		}
+	}
 }

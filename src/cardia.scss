@@ -3,7 +3,7 @@
 $cardSizeModifier: 0.75;
 $CARD_WIDTH: calc(220px * $cardSizeModifier); //also change in stock-utils.ts
 $CARD_HEIGHT: calc(342px * $cardSizeModifier);
-$CARD_RATIO: list.slash(220px, 342px);
+$CARD_RATIO: list.slash(220, 342);
 
 
 @mixin selected-element {
@@ -23,7 +23,7 @@ $player-colors: (
 	'purple': '982fff'
 );
 
-$main-color: #965e17;
+$main-color: white;
 
 @import 'animations';
 @import 'playerboards';
@@ -36,14 +36,14 @@ $main-color: #965e17;
 @import '../node_modules/bga-help/bga-help';
 
 html {
-	/*background: rgb(21, 104, 134);
+	background: rgb(21, 104, 134);
     background-repeat: no-repeat;
-    background-size: 100%;*/
+    background-size: 100%;
 
-	background-image: url('img/background.jpg');
+	/*background-image: url('img/background.jpg');
 	background-attachment: fixed;
 	background-position: 50%;
-	background-size: cover;
+	background-size: cover;*/
 }
 
 .hidden {
@@ -95,10 +95,15 @@ html {
 .card-stock {
 	.slot {
 		@include card-border;
+		
 		aspect-ratio: $CARD_RATIO;
 		width: $CARD_WIDTH;
 		background: hsla(0, 0%, 100%, 0.4);
 		outline: 1px solid hsla(0, 0%, 100%, 0.6);
+
+		&:empty{
+			outline: 1px solid $main-color;
+		}
 	}
 
 	.board-card {
