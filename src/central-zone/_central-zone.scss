@@ -1,0 +1,13 @@
+.central-zone {
+    .card-stock{
+        --direction: column !important;
+    }
+}
+
+@media screen and (orientation: portrait) {
+    .central-zone {
+        .card-stock{
+            --direction: row !important;
+        }
+    }
+}

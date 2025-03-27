@@ -57,6 +57,7 @@ interface CardiaGamedatas {
 	winners: number[]
 	version: string
 	counters: Map<string, CounterValue>
+	duels: DuelsList
 	// Add here variables you set up in getAllDatas
 }
 
@@ -78,6 +79,11 @@ interface CardiaGame extends Game {
 	resetClientActionData(): void
 	slide(mobileElt, targetElt, options)
 	addTooltipOnClickHelpButton(idButton: string, tooltipContent: string, delay?: number): void
+}
+interface DuelsList {
+	[duelNumber: number]: {
+		[playerId: string]: CardiaCard
+	}
 }
 
 interface EnteringChooseActionArgs {

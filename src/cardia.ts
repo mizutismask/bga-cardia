@@ -60,6 +60,7 @@ class Cardia extends BaseGame implements CardiaGame {
 	private scoreBoard: ScoreBoard
 	private ticketsCounters: Counter[] = []
 	private handCardsCounters: Counter[] = []
+	private centralZone: CentralZone
 
 	protected settings = [new Setting('customSounds', 'pref', 1)]
 	private displayedTooltip
@@ -87,6 +88,8 @@ class Cardia extends BaseGame implements CardiaGame {
 
 		this.cardsManager = new CardsManager(this, this.gamedatas.expansion)
 		this.animationManager = new AnimationManager(this)
+
+		this.centralZone = new CentralZone(this, this.gamedatas.duels)
 
 		if (gamedatas.lastTurn) {
 			this.notif_lastTurn(false)
