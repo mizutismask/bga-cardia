@@ -64,6 +64,7 @@ trait StateTrait {
             ]);
 
             $this->tokenManager->addSigilOnCard($maxCard->id);
+            $this->globals->set(GLB_ABILITY_TO_RESOLVE, $minCard->id);
             $stateTransition = 'looserAbility';
         } else {
             $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
@@ -73,12 +74,20 @@ trait StateTrait {
         $this->gamestate->nextState($stateTransition);
     }
 
+    function stLooserAbility(){
+        $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        if($this->isAbilityNeedingInteraction($card)){
+            $this->gamestate->nextState('interactiveAbility');
+        } else {
+            $this->applyAbility($card, $this->cardManager->getDuelsList());
+            $this->gamestate->nextState('finishDuel');
+        }
+    }
+
     function isAbilityNeedingInteraction(CardiaCard $card): bool {
         $abilitiesNeedingInteraction = [VOID_MAGE, PALACE_GUARD, AMBUSHER, SWAMP_GUARDIAN, MAGISTRA, INVENTOR];
         return in_array($card->id, $abilitiesNeedingInteraction);
     }
-
-
 
     function applyAbility(CardiaCard $card, array $duels) {
         switch ($card->id) {

@@ -82,6 +82,16 @@ $basicGameStates = [
         ],
     ],
 
+    ST_LOOSER_ABILITY => [
+        "name" => "looserAbility",
+        "type" => "game",
+        "action" => "stLooserAbility",
+        "transitions" => [
+            "interactiveAbility" => ST_INTERACTIVE_ABILITY,
+            "finishDuel" => ST_FINISH_DUEL,
+        ]
+    ],
+
     ST_FINISH_DUEL => [
         "name" => "finishDuel",
         "description" => "",
@@ -123,8 +133,8 @@ $playerActionsGameStates = [
         ]
     ],
 
-    ST_LOOSER_ABILITY => [
-        "name" => "looserAbility",
+    ST_INTERACTIVE_ABILITY => [
+        "name" => "interactiveAbility",
         "description" => clienttranslate('${actplayer} must resolve his ability'),
         "descriptionmyturn" => clienttranslate('${you}  must resolve your ability'),
         "type" => "activeplayer",
