@@ -6,6 +6,7 @@
 const GLB_LAST_CHOSEN_CARD = 'lastChosenCard';
 const GLB_DUEL_COUNT = 'duelCount';
 const GLBL_ROUND = 'round';
+const GLB_ABILITY_TO_RESOLVE = 'abilityToResolve';
 define("GS_PLAYER_TURN_NUMBER", 'playerturn_nbr');
 
 /*
@@ -45,6 +46,7 @@ define('ST_DUEL_REVEAL', 31);
 define('ST_FINISH_DUEL', 32);
 define('ST_LOOSER_ABILITY', 33);
 define('ST_NEXT_ROUND', 34);
+define('ST_INTERACTIVE_ABILITY', 35);
 
 define('ST_NEXT_PLAYER', 80);
 define('ST_NEXT_REVEAL', 81);
