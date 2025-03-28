@@ -35,6 +35,7 @@ interface CardiaPlayer extends Player {
 	playerNo: number
 	cardsCount: number
 	hand: CardiaCard[]
+	discard: CardiaCard[]
 }
 
 interface CardiaGamedatas {
@@ -111,7 +112,7 @@ interface NotifCounter {
 }
 
 interface NotifUpdateCounters {
-	counters: []
+	counters: [{ [name: string]: CounterValue }]
 }
 
 interface NotifWinnerArgs {

@@ -38,25 +38,24 @@ trait ArgsTrait {
     }
 
     function argCounters() {
-        $players = $this->getObjectListFromDB("SELECT player_id id FROM player", true);
+        $players = $this->loadPlayersBasicInfos();
         $counters = array();
-        /*for ($i = 0; $i < count($players); $i++) {
-            $name = "hand-cards-counter-$players[$i]";
-            $counters[$name] = array('counter_name' => $name, 'counter_value' => $this->cardManager->getPlayerHandCount($players[$i]));
-        }*/
-        /* $cards_in_hand = $this->dessertcards->countCardsByLocationArgs(DECK_LOC_HAND);
-        foreach ($cards_in_hand as $player_id => $cards_nbr) {
-            $counters['cards_count_' . $player_id]['counter_value'] = $cards_nbr;
-        }
+        foreach ($players as $playerId => $player) {
 
-        $won_cards = $this->countWonCardsByPlayerAndColor();
-        foreach ($won_cards as $player_id => $cards_nbr_by_color) {
-            foreach ($cards_nbr_by_color as $color => $count) {
-                $counters['won_cards_count_' . $player_id . "_" . $color]['counter_value'] = $count;
-            }
-        }
+            $playerOrder = intval($player['player_no']);
+            $name = "hand-cards-counter-$playerId";
+            $counters[$name] = array('counter_name' => $name, 'counter_value' =>  $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $playerOrder, MATERIAL_LOCATION_HAND));
 
-        $counters['guest_draw_count'] = array('counter_name' => 'guest_draw_count', 'counter_value' => $this->guestcards->countCardInLocation(DECK_LOC_DECK));*/
+            $name = "discard-cards-counter-$playerId";
+            $counters[$name] = array('counter_name' => $name, 'counter_value' => $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $playerOrder, MATERIAL_LOCATION_DISCARD));
+
+            $name = "deck-cards-counter-$playerId";
+            $counters[$name] = array('counter_name' => $name, 'counter_value' => $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $playerOrder, MATERIAL_LOCATION_DECK));
+
+            $name = "signets-counter-$playerId";
+            $counters[$name] = array('counter_name' => $name, 'counter_value' => $this->tokenManager->getSigilCount($playerOrder));
+        }
+        $this->dump('*******************counters', $counters);
         return $counters;
     }
 }

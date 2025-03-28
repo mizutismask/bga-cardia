@@ -4,6 +4,8 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 		super(game, {
 			animationManager: game.animationManager,
 			getId: (card) => `cardia-card-${card.id}`,
+			cardWidth: CARD_WIDTH,
+			cardHeight: CARD_HEIGHT,
 			setupDiv: (card: CardiaCard, div: HTMLElement) => {
 				div.classList.add('cardia-card')
 				div.dataset.cardId = '' + card.id
@@ -48,7 +50,12 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 			},
 
 			setupBackDiv: (card: CardiaCard, div: HTMLElement) => {
-				div.style.backgroundImage = `url('${g_gamethemeurl}img/cardia-card-background.jpg')`
+				this.setBackBackground(
+					div as HTMLDivElement,
+					card.type_arg,
+					`${g_gamethemeurl}img/deckBacks.jpg`,
+					2
+				)
 			}
 		})
 	}
@@ -61,7 +68,7 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 		return [
 			{ title: '', contentProvider: (c: CardiaCard) => this.getCardName(c) },
 			{
-				title: "",
+				title: '',
 				contentProvider: (c: CardiaCard) =>
 					this.getPowerDesc(c) + '<br><br>' + this.getPowerTypeDesc(c.powerType) + '<br><br>'
 			}
@@ -71,7 +78,7 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 	private setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
 		const imageUrl = `${g_gamethemeurl}img/deck${this.deckNumber}.jpg`
 		cardDiv.style.backgroundImage = `url('${imageUrl}')`
-		const imagePosition = Number(cardType.toString().slice(1))-1;
+		const imagePosition = Number(cardType.toString().slice(1)) - 1
 		const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW)
 		const xBackgroundPercent = (imagePosition - row * IMAGE_ITEMS_PER_ROW) * 100
 		const yBackgroundPercent = row * 100
@@ -80,16 +87,23 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 		cardDiv.style.backgroundSize = `${IMAGE_ITEMS_PER_ROW * 100}%`
 	}
 
+	private setBackBackground(cardDiv: HTMLDivElement, cardTypeArg: number, cardsUrl: string, imagesPerRow: number) {
+		cardDiv.style.backgroundImage = `url('${cardsUrl}')`
+		const imagePosition = cardTypeArg - 1
+		const row = Math.floor(imagePosition / imagesPerRow)
+		const xBackgroundPercent = (imagePosition - row * imagesPerRow) * 100
+		const yBackgroundPercent = row * 100
+		cardDiv.style.backgroundPositionX = `-${xBackgroundPercent}%`
+		cardDiv.style.backgroundPositionY = `-${yBackgroundPercent}%`
+		cardDiv.style.backgroundSize = `${imagesPerRow * 100}%`
+	}
+
 	public getPowerTypeDesc(powerType: PowerType) {
 		switch (powerType) {
 			case 'I':
-				return _(
-					'<b>Instant ability</b>: When you activate an instant ability, resolve it immediately once.'
-				)
+				return _('<b>Instant ability</b>: When you activate an instant ability, resolve it immediately once.')
 			case 'O':
-				return _(
-					'<b>Ongoing ability</b>: The effect is enabled as long as there is an ongoing token on it.'
-				)
+				return _('<b>Ongoing ability</b>: The effect is enabled as long as there is an ongoing token on it.')
 			default:
 				return 'unexpected power type ' + powerType
 		}

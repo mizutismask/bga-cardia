@@ -1,5 +1,5 @@
-const CARD_WIDTH = 150 //also change in scss
-const CARD_HEIGHT = 209
+const CARD_WIDTH = 165 //also change in scss
+const CARD_HEIGHT = 256
 
 function getBackgroundInlineStyleForCardiaCard(destination: CardiaCard) {
 	let file

@@ -13,7 +13,7 @@ function queryFirst(query: string): Element {
 	return document.querySelector(query)
 }
 
-function queryFirstId(query: string, defaultValue: string=undefined): string {
+function queryFirstId(query: string, defaultValue: string = undefined): string {
 	var res = document.querySelector(query)
 	if (!res) return defaultValue
 	return res.id

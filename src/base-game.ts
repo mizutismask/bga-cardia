@@ -88,6 +88,12 @@ abstract class BaseGame {
 		return Object.values(this.gamedatas.players).length
 	}
 
+	public getOpponentId(playerId: string) {
+		const players = Object.keys(this.gamedatas.players)
+		if (players.length != 2) throw new Error('Impossible to know who is the opponent in a non 2 players game')
+		return players.filter((player) => player !== playerId)[0]
+	}
+
 	public isNotSpectator() {
 		//log('isSpectator', (this as any).isSpectator)
 		return (
@@ -254,7 +260,19 @@ abstract class BaseGame {
 	}
 
 	notif_updateCounters(notif: Notif<NotifUpdateCounters>) {
-		;(this as any).updateCounters(notif.args.counters)
+		this.safeUpdateCounters(notif.args.counters)
+	}
+
+	public safeUpdateCounters(counters) {
+		const existingCounters = Object.keys(counters).filter((c) => $(c) != undefined)
+		;(this as any).updateCounters(Object.fromEntries(existingCounters.map((key) => [key, counters[key]])))
+
+		const notExistingCounters = Object.keys(counters).filter((c) => $(c) == undefined)
+		this.updateCustomCounters(Object.fromEntries(notExistingCounters.map((key) => [key, counters[key]])))
+	}
+
+	public updateCustomCounters(counters) {
+		
 	}
 
 	/**

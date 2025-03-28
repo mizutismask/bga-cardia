@@ -62,11 +62,34 @@ html {
 	box-shadow: 0 0 5px 5px rgb(200, 255, 47);
 }
 
+svg {
+	height: 100%;
+	width: auto;
+}
+
+.deck-icon{
+    width: 40px;
+    aspect-ratio: 1;
+	background-size: contain;
+	background-repeat: no-repeat;
+	display: inline-block;
+	color: white;
+}
+
 .cstm-card-name{
 	font-style: oblique;
 	text-transform: uppercase;
 	font-weight: bold;
 	font-size: 1.5em;
+}
+
+.stock-counter {
+	border-radius: 50%;
+	font-weight: bold;
+	font-size: 11pt;
+	border: 1px solid;
+	box-sizing: border-box;
+	background-color: $main-color;
 }
 
 .bga-cards_selected-card {

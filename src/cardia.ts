@@ -102,7 +102,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		Object.values(this.gamedatas.playerOrderWorkingWithSpectators).forEach((p) => {
 			this.setupPlayer(this.gamedatas.players[p])
 		})
-		;(this as any).updateCounters(this.gamedatas.counters)
+		this.safeUpdateCounters(this.gamedatas.counters)
 
 		$('overall-content').classList.add(`player-count-${this.getPlayersCount()}`)
 
@@ -126,6 +126,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setTooltipToClass('revealed-tokens-back-counter', _('counter1 tooltip'))
 		this.setTooltipToClass('tickets-counter', _('counter2 tooltip'))
 		this.setTooltipToClass('hand-cards-counter', _('Cards in hand'))
+		this.setTooltipToClass('deck-cards-counter', _('Cards in deck'))
 
 		this.setTooltipToClass('cstm-help-icon', `<div class="help-card recto"></div>`)
 		this.setTooltipToClass('cstm-help-icon-mini', `<div class="help-card verso"></div>`)
@@ -150,6 +151,77 @@ class Cardia extends BaseGame implements CardiaGame {
 					<span id="tickets-counter-${player.id}"></span>
 				</div>
 			
+				<div id="deck-cards-counter-${player.id}-wrapper" class="counter deck-cards-counter counter-left-part">
+					<div class="deck-icon">
+						<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+						width="662.000000pt" height="782.000000pt" viewBox="0 0 662.000000 782.000000"
+						preserveAspectRatio="xMidYMid meet">
+
+						<g transform="translate(0.000000,782.000000) scale(0.100000,-0.100000)"
+						fill="currentColor" stroke="none">
+						<path d="M1815 7776 c-235 -54 -427 -216 -505 -423 -12 -32 -88 -326 -170
+						-653 -82 -327 -358 -1434 -615 -2460 -509 -2035 -493 -1960 -461 -2120 33
+						-160 149 -328 279 -404 38 -22 104 -98 324 -374 152 -190 295 -363 317 -384
+						57 -55 164 -125 237 -154 56 -23 162 -50 579 -149 80 -19 305 -73 500 -120
+						195 -46 411 -98 480 -115 178 -42 456 -109 740 -179 485 -119 746 -180 815
+						-192 81 -14 265 -6 340 14 191 53 352 168 459 331 103 157 68 36 426 1461 792
+						3152 1019 4066 1025 4121 15 130 -28 275 -114 385 -56 71 -142 140 -666 537
+						-126 96 -241 185 -255 198 -45 42 -184 119 -255 141 -40 13 -748 136 -1630
+						284 -1664 278 -1717 286 -1850 255z m367 -221 c79 -13 411 -69 738 -124 327
+						-55 728 -123 890 -150 162 -28 538 -91 835 -141 297 -50 558 -96 580 -101 111
+						-30 204 -111 257 -224 29 -63 32 -79 32 -160 -1 -81 -11 -132 -107 -505 -150
+						-588 -328 -1295 -787 -3125 -221 -880 -410 -1619 -420 -1643 -11 -23 -37 -69
+						-60 -100 -105 -151 -267 -208 -471 -168 -70 14 -552 125 -1054 241 -60 15
+						-337 78 -615 141 -565 129 -845 193 -1000 229 -58 14 -163 38 -235 55 -245 57
+						-339 103 -413 202 -70 92 -111 225 -97 313 10 64 797 3226 1072 4305 58 228
+						116 462 130 520 57 242 165 379 348 442 73 25 206 23 377 -7z m3588 -922 c25
+						-82 25 -155 1 -274 -11 -52 -135 -551 -275 -1109 -141 -558 -425 -1691 -631
+						-2517 -206 -826 -384 -1527 -395 -1557 -50 -133 -158 -254 -281 -315 -104 -53
+						-169 -65 -304 -58 -110 6 -138 11 -600 121 -104 24 -392 92 -640 151 -247 58
+						-495 117 -550 130 -55 13 -181 43 -280 65 -99 22 -254 58 -345 80 -91 22 -262
+						62 -381 89 -234 54 -265 64 -341 113 -75 49 -41 47 195 -7 111 -25 290 -66
+						397 -91 367 -84 783 -180 865 -199 33 -8 283 -67 555 -131 272 -63 576 -136
+						675 -161 154 -39 199 -46 310 -50 101 -4 144 -1 195 12 202 51 365 196 448
+						398 17 41 143 519 291 1107 143 569 393 1562 555 2205 162 644 336 1334 387
+						1535 85 336 92 373 93 468 1 99 2 102 18 81 10 -11 27 -50 38 -86z m205 -143
+						c42 -108 36 -182 -36 -448 -61 -221 -732 -2895 -1029 -4097 -206 -836 -237
+						-949 -281 -1041 -70 -148 -203 -262 -370 -319 -70 -23 -101 -28 -189 -28 -119
+						0 -200 14 -548 99 -487 118 -659 159 -1342 319 -58 14 -161 38 -230 54 -69 17
+						-224 53 -345 81 -368 85 -548 131 -585 150 -35 19 -108 70 -99 70 28 0 298
+						-60 984 -220 818 -191 1201 -282 1580 -375 449 -111 558 -112 768 -7 76 37
+						107 61 177 132 101 102 158 201 200 348 42 145 1255 5001 1279 5119 12 55 21
+						134 21 174 0 85 8 83 45 -11z m207 -174 c37 -121 42 -94 -228 -1151 -129 -505
+						-1011 -4033 -1047 -4190 -58 -249 -114 -361 -237 -479 -162 -155 -375 -221
+						-585 -181 -49 9 -220 48 -380 86 -159 38 -337 81 -395 95 -58 14 -148 36 -200
+						49 -52 13 -221 53 -375 89 -154 36 -381 90 -505 120 -124 30 -361 87 -528 126
+						-334 79 -427 107 -487 148 -34 23 -37 27 -19 30 23 3 264 -49 604 -131 209
+						-51 520 -125 955 -227 99 -23 385 -92 635 -152 582 -140 573 -138 694 -138
+						356 0 638 231 739 605 15 55 265 1054 556 2220 291 1166 580 2318 641 2560
+						100 392 112 450 114 532 1 108 12 106 48 -11z m195 -113 c43 -98 42 -153 -10
+						-348 -25 -93 -112 -433 -192 -755 -80 -322 -171 -682 -201 -800 -30 -118 -172
+						-681 -315 -1250 -485 -1930 -600 -2381 -620 -2435 -28 -76 -92 -170 -157 -232
+						-73 -71 -213 -141 -297 -149 l-60 -6 80 46 c102 60 199 138 248 201 21 28 60
+						95 87 150 48 96 63 151 406 1520 195 781 477 1904 626 2495 148 591 290 1156
+						315 1255 28 116 46 213 50 273 3 50 8 92 10 92 2 0 16 -26 30 -57z"/>
+						<path d="M1950 7266 c-30 -7 -70 -20 -88 -30 -46 -24 -107 -89 -131 -139 -23
+						-47 -23 -48 -425 -1647 -438 -1746 -631 -2511 -702 -2788 -38 -153 -64 -274
+						-64 -306 0 -72 24 -137 72 -191 72 -82 89 -88 524 -180 220 -46 597 -127 839
+						-180 242 -53 521 -113 620 -135 99 -21 374 -82 612 -134 499 -111 533 -114
+						631 -65 67 33 105 72 133 135 10 22 257 994 549 2160 291 1165 564 2252 606
+						2414 83 321 86 357 45 437 -29 58 -109 126 -173 147 -29 9 -330 64 -668 122
+						-338 57 -718 122 -845 144 -126 22 -322 55 -435 74 -113 19 -243 42 -290 50
+						-731 128 -736 129 -810 112z m465 -181 c176 -30 583 -100 905 -154 322 -55
+						745 -127 940 -161 195 -34 423 -73 505 -87 83 -14 171 -34 198 -45 86 -37 125
+						-111 108 -204 -11 -54 -1049 -4199 -1131 -4514 -58 -226 -86 -291 -139 -326
+						-78 -51 -84 -51 -846 121 -255 58 -1382 304 -1878 411 -164 35 -307 68 -316
+						74 -34 17 -80 80 -91 121 -6 23 -8 60 -5 83 6 41 413 1674 670 2691 74 292
+						197 780 274 1085 173 684 207 813 225 848 24 46 89 101 131 111 52 13 72 10
+						450 -54z"/>
+						</g>
+						</svg>
+					</div> 
+					<span id="deck-cards-counter-${player.id}"></span>
+				</div>
 				<div id="hand-cards-counter-${player.id}-wrapper" class="counter hand-cards-counter counter-left-part">
 					<div class="fa fa-hand-paper-o"></div> 
 					<span id="hand-cards-counter-${player.id}"></span>
@@ -229,6 +301,27 @@ class Cardia extends BaseGame implements CardiaGame {
         </div>
         `
 		return html
+	}
+
+	public updateCustomCounters(counters) {
+		Object.keys(counters).forEach((counterId) => {
+			const counterValue: CounterValue = counters[counterId]
+			log(counterValue)
+			if (counterValue.counter_name.includes('cards-counter')) {
+				const location = getPart(counterValue.counter_name, 0, true)
+				const player = getPart(counterValue.counter_name, -1, true)
+				console.log('player', player)
+
+				switch (location) {
+					case 'discard':
+						//this.playerTables[Number(player)]?.discard.setCardNumber(counterValue.counter_value)
+						break
+
+					default:
+						break
+				}
+			}
+		})
 	}
 
 	///////////////////////////////////////////////////
@@ -582,8 +675,8 @@ class Cardia extends BaseGame implements CardiaGame {
 			case 'ENCOUNTER':
 				let stock = this.centralZone.duelStocks[notif.args.toArg]
 				if (!stock) {
-					this.centralZone.createDuelStock(null, null)//one for the current duel
-					this.centralZone.createDuelStock(null, null)//one to prepare the next
+					this.centralZone.createDuelStock(null, null) //one for the current duel
+					this.centralZone.createDuelStock(null, null) //one to prepare the next
 					stock = this.centralZone.duelStocks[notif.args.toArg]
 				}
 				stock.addCard(card)

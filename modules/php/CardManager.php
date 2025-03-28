@@ -41,6 +41,7 @@ class CardManager extends DeckManager {
                 'material' => [$this->castSingle($this->deck->getCard($card->id))],
             ]);
         }
+        $this->game->notifyCounterChange();
     }
 
     public function pickAdditionalCard() {
@@ -61,6 +62,7 @@ class CardManager extends DeckManager {
                 ]);
             }
         }
+        $this->game->notifyCounterChange();
     }
 
     public function discardDuelCard(CardiaCard $card) {
@@ -79,6 +81,7 @@ class CardManager extends DeckManager {
             'cardName' => $card->name,
             'i18n' => ['cardName'],
         ]);
+        $this->game->notifyCounterChange();
     }
 
     public function updateCardModifier(CardiaCard $card, int $modifier) {
@@ -100,6 +103,7 @@ class CardManager extends DeckManager {
             'cardName' => $card->name,
             'i18n' => ['cardName'],
         ]);
+        $this->game->notifyCounterChange();
     }
 
     function getDuelsList() {
@@ -134,5 +138,6 @@ class CardManager extends DeckManager {
         $this->deck->moveAllCardsInLocation("hand", "deck");
         $this->deck->shuffle("deck");
         $this->dealHands(true);
+        $this->game->notifyCounterChange();
     }
 }
