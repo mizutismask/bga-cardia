@@ -24,6 +24,10 @@ class TokenManager extends DeckManager {
         return intval($this->deck->getUniqueValueFromDB($sql));
     }
 
+    public function getSignetsOnCards(){
+        return $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_CARD));
+    }
+
     public function addSignetOnCard(int $cardId) {
         $signets = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_DECK));
         if (!$signets) {

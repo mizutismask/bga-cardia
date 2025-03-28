@@ -109,6 +109,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setupPreferences()
 		this.setupTooltips()
 		this.setupHelpPopin()
+		this.setupData()
 
 		this.scoreBoard = new ScoreBoard(this, this.getPlayersInOrder())
 		this.gamedatas.scores?.forEach((s) => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score))
@@ -307,11 +308,9 @@ class Cardia extends BaseGame implements CardiaGame {
 	public updateCustomCounters(counters) {
 		Object.keys(counters).forEach((counterId) => {
 			const counterValue: CounterValue = counters[counterId]
-			log(counterValue)
 			if (counterValue.counter_name.includes('cards-counter')) {
 				const location = getPart(counterValue.counter_name, 0, true)
 				const player = getPart(counterValue.counter_name, -1, true)
-				console.log('player', player)
 
 				switch (location) {
 					case 'discard':
@@ -323,6 +322,19 @@ class Cardia extends BaseGame implements CardiaGame {
 				}
 			}
 		})
+	}
+
+	private setupData() {
+		this.gamedatas.signets.forEach((s) => this.createSignetOnCard(s))
+	}
+
+	private createSignetOnCard(signet: Token) {
+		const location = `cardia-card-${signet.location_arg}-signets`
+		if ($(location)) {
+			dojo.place(`<div id="signet-${signet.id}" class="signet-icon">S</div>`, location)
+		} else {
+			console.error('can’t put signet on ' + location)
+		}
 	}
 
 	///////////////////////////////////////////////////

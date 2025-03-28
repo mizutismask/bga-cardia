@@ -171,7 +171,7 @@ class Game extends \Bga\GameFramework\Table {
         $result['version'] = $this->getGameVersion();
         $result['counters'] = $this->argCounters();
         $result['duels'] = $this->cardManager->getDuelsList();
-        //$result['hand'] = $this->cardManager->getPlayerHand($currentPlayerId);
+        $result['signets'] = $this->tokenManager->getSignetsOnCards();
 
         foreach ($result['players'] as $playerId => &$player) {
             $currentPlayerOrder = intval($player['playerNo']);

@@ -23,6 +23,15 @@ interface Card {
 	type: number
 	type_arg: number
 }
+
+interface Token {
+	id: number
+	location: string
+	location_arg: number
+	type: string
+	type_arg: number
+}
+
 interface CardiaCard extends Card {
 	name: string //translated
 	faction: Faction
@@ -59,6 +68,7 @@ interface CardiaGamedatas {
 	version: string
 	counters: Map<string, CounterValue>
 	duels: DuelsList
+	signets: Token[]
 	// Add here variables you set up in getAllDatas
 }
 
