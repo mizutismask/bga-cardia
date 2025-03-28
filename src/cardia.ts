@@ -329,12 +329,26 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private createSignetOnCard(signet: Token) {
+		const signetDivId = `signet-${signet.id}`
 		const location = `cardia-card-${signet.location_arg}-signets`
-		if ($(location)) {
-			dojo.place(`<div id="signet-${signet.id}" class="signet-icon">S</div>`, location)
+		if ($(signetDivId) && $(location)) {
+			this.animationManager.attachWithAnimation(
+				new BgaSlideAnimation({
+					element: $(signetDivId),
+					zoom: 1
+				}),
+				$(location)
+			)
+		} else if ($(location)) {
+			dojo.place(`<div id="${signetDivId}" class="signet-icon">S</div>`, location)
 		} else {
 			console.error('can’t put signet on ' + location)
 		}
+	}
+
+	private removeSignetOnCard(signet: Token) {
+		const signetDivId = `signet-${signet.id}`
+		dojo.destroy(signetDivId)
 	}
 
 	///////////////////////////////////////////////////
@@ -666,8 +680,27 @@ class Cardia extends BaseGame implements CardiaGame {
 				const cards = notif.args.material as Array<CardiaCard>
 				this.notif_cardMove(cards, notif)
 				break
+			case 'TOKEN':
+				const tokens = notif.args.material as Array<Token>
+				this.notif_tokenMove(tokens, notif)
+				break
 			default:
 				console.error('Material type move not handled', notif)
+				break
+		}
+	}
+
+	private notif_tokenMove(tokens: Token[], notif: Notif<NotifMaterialMove>) {
+		const card = tokens.at(0)
+		switch (notif.args.to) {
+			case 'CARD':
+				this.createSignetOnCard(card)
+				break
+			case 'DECK':
+				this.removeSignetOnCard(card)
+				break
+			default:
+				console.error('Token move destination not handled', notif)
 				break
 		}
 	}
@@ -676,11 +709,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		const card = cards.at(0)
 		switch (notif.args.to) {
 			case 'DISCARD':
-				/*if (notif.args.fromArg == notif.args.toArg) {
-					this.playerTables[notif.args.toArg].handStock.flipCard(card)
-				} else {*/
-				this.playerTables[notif.args.toArg].handStock.addCard(card)
-				//}
+				this.playerTables[notif.args.toArg].discard.addCard(card)
 				break
 			case 'HAND':
 				this.playerTables[notif.args.toArg].handStock.addCard(card)

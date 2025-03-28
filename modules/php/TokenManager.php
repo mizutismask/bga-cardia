@@ -45,14 +45,14 @@ class TokenManager extends DeckManager {
     }
 
     public function discardTokenOfTypeOnCard(CardiaCard $card, TokenType $tokenType) {
-        $tokens = $this->deck->getCardsOfTypeInLocation($tokenType->value, $card->id, MATERIAL_LOCATION_CARD);
+        $tokens = $this->cast($this->deck->getCardsOfTypeInLocation($tokenType->value, null, MATERIAL_LOCATION_CARD,  $card->id));
         foreach($tokens as $token){
-            $this->deck->moveCard($token->id, MATERIAL_LOCATION_DISCARD);
+            $this->deck->moveCard($token->id, MATERIAL_LOCATION_DECK);
             $this->game->notifyWithName("materialMove", "", [
                 'type' => MATERIAL_TYPE_TOKEN,
                 'from' => MATERIAL_LOCATION_CARD,
                 'fromArg' => $card->id,
-                'to' => MATERIAL_LOCATION_DISCARD,
+                'to' => MATERIAL_LOCATION_DECK,
                 'material' => [$this->getCard($token->id)],
             ]);
         }
