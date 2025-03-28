@@ -90,7 +90,10 @@ trait StateTrait {
     }
 
     function applyAbility(CardiaCard $card, array $duels) {
-        switch ($card->id) {
+        $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
+            'cardName' => $card->name,
+        ]);
+        switch ($card->type) {
             case HIRED_BLADE:
                 $opposing = $this->cardManager->getOpposingCard($card, $duels);
                 $this->discardDuelCard($card);
@@ -121,7 +124,7 @@ trait StateTrait {
     }
 
     function discardDuelCard(CardiaCard $card) {
-        $this->tokensManager->discardTokensOnDuelCard($card);
+        $this->tokenManager->discardTokensOnDuelCard($card);
         $this->cardManager->discardDuelCard($card);
         $this->notifyWithName('msg', clienttranslate('${cardName} is discarded'), [
             'cardName' => $card->name,

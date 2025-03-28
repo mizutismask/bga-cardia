@@ -55,7 +55,7 @@ trait ArgsTrait {
             $name = "signets-counter-$playerId";
             $counters[$name] = array('counter_name' => $name, 'counter_value' => $this->tokenManager->getSignetCount($playerOrder));
         }
-        $this->dump('*******************counters', $counters);
+        //$this->dump('*******************counters', $counters);
         return $counters;
     }
 }

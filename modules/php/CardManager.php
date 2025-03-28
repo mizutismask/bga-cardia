@@ -87,8 +87,7 @@ class CardManager extends DeckManager {
     public function updateCardModifier(CardiaCard $card, int $modifier) {
         $query = new QueryBuilder(TABLE_CARD);
         return $query
-            ->update(["modifiers" => $modifier], $card->id)
-            ->execute();
+            ->update(["card_modifier" => $modifier], $card->id);
     }
 
     public function playCard(CardiaCard $card, int $playerId, int $duelCount) {
@@ -121,7 +120,8 @@ class CardManager extends DeckManager {
         foreach ($duels as $num => $duel) {
             foreach ($duel as $playerId => $duelCard) {
                 if ($duelCard->id == $card->id) {
-                    $opposingCard = $duel[array_diff(array_keys($duel), [$playerId])];
+                    $opponents = array_diff(array_keys($duel), [$playerId]);
+                    $opposingCard = $duel[reset($opponents)];
                     break;
                 }
             }
