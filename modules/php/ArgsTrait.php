@@ -53,7 +53,7 @@ trait ArgsTrait {
             $counters[$name] = array('counter_name' => $name, 'counter_value' => $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $playerOrder, MATERIAL_LOCATION_DECK));
 
             $name = "signets-counter-$playerId";
-            $counters[$name] = array('counter_name' => $name, 'counter_value' => $this->tokenManager->getSigilCount($playerOrder));
+            $counters[$name] = array('counter_name' => $name, 'counter_value' => $this->tokenManager->getSignetCount($playerOrder));
         }
         $this->dump('*******************counters', $counters);
         return $counters;

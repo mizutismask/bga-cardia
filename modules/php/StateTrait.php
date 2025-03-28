@@ -63,7 +63,7 @@ trait StateTrait {
                 'cardName2' => $minCard->name,
             ]);
 
-            $this->tokenManager->addSigilOnCard($maxCard->id);
+            $this->tokenManager->addSignetOnCard($maxCard->id);
             $this->globals->set(GLB_ABILITY_TO_RESOLVE, $minCard->id);
             $stateTransition = 'looserAbility';
         } else {
@@ -145,15 +145,15 @@ trait StateTrait {
     }
 
     /**
-     * If only player has 5 sigils or both have at least 5 sigils but one player has more than the other, end of round.
+     * If only player has 5 signets or both have at least 5 signets but one player has more than the other, end of round.
      * @return void 
      */
     function stFinishDuel() {
-        $winner = $this->getSigilCountWinner();
+        $winner = $this->getSignetCountWinner();
         if (!$winner) {
             $winner = $this->getNoPlayableCardWinner();
             if ($winner == -1) {
-                self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on sigils count, end of round'), []);
+                self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
             }
         }
 
@@ -167,26 +167,26 @@ trait StateTrait {
         $this->gamestate->nextState($nextState);
     }
 
-    function getSigilCountWinner(): ?int {
+    function getSignetCountWinner(): ?int {
         $playersIds = $this->getPlayersIds();
-        $sigilCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSigilCount($id), $playersIds));
+        $signetCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSignetCount($id), $playersIds));
         $winner = null;
 
-        //filter players with at least 5 sigils
-        $playersWith5Sigils = array_filter($sigilCounts, fn($count) => $count >= 5);
+        //filter players with at least 5 signets
+        $playersWith5Signets = array_filter($signetCounts, fn($count) => $count >= 5);
 
-        //check if every player from playersWith5Sigils has the same sigils count
-        $tieOn5SigilsOrMore = count(array_unique($playersWith5Sigils)) === 1;
-        if (!$playersWith5Sigils || $tieOn5SigilsOrMore) {
+        //check if every player from playersWith5Signets has the same signets count
+        $tieOn5SignetsOrMore = count(array_unique($playersWith5Signets)) === 1;
+        if (!$playersWith5Signets || $tieOn5SignetsOrMore) {
             //no winner yet
         } else {
-            if (count($playersWith5Sigils) == 1) {
-                //if only player has 5 sigils, he wins
-                $winner = array_key_first($playersWith5Sigils);
+            if (count($playersWith5Signets) == 1) {
+                //if only player has 5 signets, he wins
+                $winner = array_key_first($playersWith5Signets);
             } else {
-                //winner is the player with the most sigils
-                $maxSigils = max($playersWith5Sigils);
-                $winners = array_keys(array_filter($playersWith5Sigils, fn($count) => $count == $maxSigils));
+                //winner is the player with the most signets
+                $maxSignets = max($playersWith5Signets);
+                $winners = array_keys(array_filter($playersWith5Signets, fn($count) => $count == $maxSignets));
                 $winner = $winners[0];
             }
         }
@@ -209,11 +209,11 @@ trait StateTrait {
         if (count($playersWithCards) == 1) {
             $winner = array_key_first($playersWithCards);
         } else if (count($playersWithCards) == 0) {
-            //if no player has cards, the player with the most sigils wins
+            //if no player has cards, the player with the most signets wins
             $playersIds = $this->getPlayersIds();
-            $sigilCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSigilCount($id), $playersIds));
-            $maxSigils = max($sigilCounts);
-            $winners = array_keys(array_filter($sigilCounts, fn($count) => $count == $maxSigils));
+            $signetCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSignetCount($id), $playersIds));
+            $maxSignets = max($signetCounts);
+            $winners = array_keys(array_filter($signetCounts, fn($count) => $count == $maxSignets));
             if (count($winners) == 1) {
                 $winner = $winners[0];
             } else {

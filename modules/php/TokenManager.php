@@ -9,7 +9,7 @@ const TABLE_TOKEN = "token";
 
 class TokenManager extends DeckManager {
 
-    public function getSigilCount(int $playerOrder) {
+    public function getSignetCount(int $playerOrder) {
         $tokenType = TokenType::SIGIL->value;
         $tokenTable = TABLE_TOKEN;
         $cardTable = TABLE_CARD;
@@ -24,19 +24,19 @@ class TokenManager extends DeckManager {
         return intval($this->deck->getUniqueValueFromDB($sql));
     }
 
-    public function addSigilOnCard(int $cardId) {
-        $sigils = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_DECK));
-        if(!$sigils) {
-            throw new \BgaUserException(self::_("No more sigils"));
+    public function addSignetOnCard(int $cardId) {
+        $signets = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_DECK));
+        if (!$signets) {
+            throw new \BgaUserException(self::_("No more signets"));
         }
-        $sigil = reset($sigils);
-        $this->deck->moveCard($sigil->id, MATERIAL_LOCATION_CARD, $cardId);
+        $signet = reset($signets);
+        $this->deck->moveCard($signet->id, MATERIAL_LOCATION_CARD, $cardId);
         $this->game->notifyWithName("materialMove",  "", [
             'type' => MATERIAL_TYPE_TOKEN,
             'from' => MATERIAL_LOCATION_DECK,
             'to' => MATERIAL_LOCATION_CARD,
             'toArg' => $cardId,
-            'material' => [$this->getCard($sigil->id)],
+            'material' => [$this->getCard($signet->id)],
         ]);
     }
 

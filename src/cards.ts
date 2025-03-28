@@ -42,10 +42,10 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 					modifiers.classList.add('card-modifiers')
 					container.appendChild(modifiers)
 
-					const sigils: HTMLDivElement = document.createElement('div')
-					sigils.id = `${super.getId(card)}-sigils`
-					sigils.classList.add('card-sigils')
-					container.appendChild(sigils)
+					const signets: HTMLDivElement = document.createElement('div')
+					signets.id = `${super.getId(card)}-signets`
+					signets.classList.add('card-signets')
+					container.appendChild(signets)
 				}
 			},
 

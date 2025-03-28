@@ -178,7 +178,7 @@ class Game extends \Bga\GameFramework\Table {
             $player['playerNo'] = $currentPlayerOrder;
             $player['discard'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_DISCARD);
             $player['hand'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_HAND);
-            $player['sigilCount'] = $this->tokenManager->getSigilCount($currentPlayerOrder);
+            $player['signetCount'] = $this->tokenManager->getSignetCount($currentPlayerOrder);
         }
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
