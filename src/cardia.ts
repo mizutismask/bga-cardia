@@ -127,6 +127,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setTooltipToClass('tickets-counter', _('counter2 tooltip'))
 		this.setTooltipToClass('hand-cards-counter', _('Cards in hand'))
 		this.setTooltipToClass('deck-cards-counter', _('Cards in deck'))
+		this.setTooltipToClass('signets-counter', _('Won signets'))
 
 		this.setTooltipToClass('cstm-help-icon', `<div class="help-card recto"></div>`)
 		this.setTooltipToClass('cstm-help-icon-mini', `<div class="help-card verso"></div>`)
@@ -146,9 +147,9 @@ class Cardia extends BaseGame implements CardiaGame {
 		const playerId = Number(player.id)
 		dojo.place(
 			`<div id="counters-${player.id}" class="counters">
-				<div id="tickets-counter-${player.id}-wrapper" class="counter tickets-counter">
-					<div class="icon expTicket"></div> 
-					<span id="tickets-counter-${player.id}"></span>
+				<div id="signets-counter-${player.id}-wrapper" class="counter signets-counter">
+					<div class="icon signet-icon"></div> 
+					<span id="signets-counter-${player.id}"></span>
 				</div>
 			
 				<div id="deck-cards-counter-${player.id}-wrapper" class="counter deck-cards-counter counter-left-part">
