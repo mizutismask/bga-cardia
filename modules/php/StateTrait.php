@@ -34,13 +34,28 @@ trait StateTrait {
     function stDuelReveal() {
         $playersIds = $this->getPlayersIds();
         $duelCount = $this->globals->inc(GLB_DUEL_COUNT, 1);
-        $maxCard = null;
-        $minCard = null;
         $stateTransition = 'finishDuel';
-
+        $cards = [];
         foreach ($playersIds as $playerId) {
             $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
+            $cards[] = $card;
             $this->cardManager->playCard($card, $playerId, $duelCount);
+        }
+
+        $eval = $this->evaluateDuelValues($cards);
+
+        if ($eval["hasWinner"]) {
+            $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
+            $stateTransition = 'looserAbility';
+        }
+        $this->gamestate->nextState($stateTransition);
+    }
+
+    function evaluateDuelValues(array $cards) {
+        $hasWinner = false;
+        $maxCard = null;
+        $minCard = null;
+        foreach ($cards as $card) {
             if ($minCard === null) {
                 $minCard = $card;
                 $maxCard = $card;
@@ -55,6 +70,7 @@ trait StateTrait {
         }
 
         if ($minCard->id != $maxCard->id) {
+            $hasWinner = true;
             $operator = ">";
             $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}: ${winnerValue} ${operator} ${looserValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
@@ -65,14 +81,12 @@ trait StateTrait {
             ]);
 
             $this->tokenManager->addSignetOnCard($maxCard->id);
-            $this->globals->set(GLB_ABILITY_TO_RESOLVE, $minCard->id);
-            $stateTransition = 'looserAbility';
         } else {
             $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
             ]);
         }
-        $this->gamestate->nextState($stateTransition);
+        return ["hasWinner"=>$hasWinner, "winner"=>$maxCard, "looser"=>$minCard];
     }
 
     function stLooserAbility() {
@@ -123,21 +137,22 @@ trait StateTrait {
                 break;
             case PUPPETEER:
                 $opposing = $this->cardManager->getOpposingCard($card, $duels);
-                $this->discardDuelCard($opposing);
                 $opponentHand = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $opposing->type_arg, MATERIAL_LOCATION_HAND);
                 $replacement = $this->getRandomValue($opponentHand);
-
-                $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opponentId, true, $opponentId);
-                //todo recalculate winner
+                $this->discardDuelCard($opposing,  clienttranslate('${cardName} is replaced by ${cardName2}'), ["cardName" => $opposing->name, "cardName2" => $replacement->name]);
+                $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opposing->location_arg, true, $opponentId);
+                $this->evaluateDuelValues([$card, $replacement]);
                 break;
         }
     }
 
-    function discardDuelCard(CardiaCard $card) {
+    function discardDuelCard(CardiaCard $card, $msg = "", $msgArgs = []) {
         $this->tokenManager->discardTokensOnDuelCard($card);
         $this->cardManager->discardDuelCard($card);
-        $this->notifyWithName('msg', clienttranslate('${cardName} is discarded'), [
+        $this->notifyWithName('msg', $msg ? $msg : clienttranslate('${cardName} is discarded'), [
             'cardName' => $card->name,
+            'i18n' => ['cardName', "cardName2"],
+            ...$msgArgs
         ]);
     }
 
