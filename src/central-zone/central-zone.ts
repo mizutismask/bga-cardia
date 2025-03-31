@@ -47,4 +47,14 @@ class CentralZone {
 			return [1, 2]
 		}
 	}
+
+	public resetDuelStocks() {
+		this.duelStocks.forEach((stock, i) => {
+			stock.removeAll()
+			this.game.cardsManager.removeStock(stock)
+			dojo.destroy('duel-' + i)
+		})
+		this.duelStocks = []
+		this.initDuelStocks([])
+	}
 }

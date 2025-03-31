@@ -649,7 +649,8 @@ class Cardia extends BaseGame implements CardiaGame {
 			['lastTurn', 1],
 			['importantMessage', 3000],
 			['counter', 1],
-			['updateCounters', 1]
+			['updateCounters', 1],
+			['newRound', 1]
 		]
 
 		notifs.forEach((notif) => {
@@ -665,6 +666,14 @@ class Cardia extends BaseGame implements CardiaGame {
 	notif_score(notif: Notif<NotifScoreArgs>) {
 		log('notif_score', notif)
 		this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.score)
+	}
+
+	notif_newRound(notif: Notif<NotifScoreArgs>) {
+		Object.keys(this.gamedatas.players).forEach((playerId) => {
+			this.playerTables[playerId].discard.removeAll()
+			this.playerTables[playerId].handStock?.removeAll()
+		})
+		this.centralZone.resetDuelStocks()
 	}
 
 	notif_counter(notif: Notif<NotifCounter>) {
@@ -693,10 +702,10 @@ class Cardia extends BaseGame implements CardiaGame {
 	private notif_tokenMove(tokens: Token[], notif: Notif<NotifMaterialMove>) {
 		const card = tokens.at(0)
 		switch (notif.args.to) {
-			case 'CARD':
+			case 'card':
 				this.createSignetOnCard(card)
 				break
-			case 'DECK':
+			case 'deck':
 				this.removeSignetOnCard(card)
 				break
 			default:
@@ -708,13 +717,13 @@ class Cardia extends BaseGame implements CardiaGame {
 	private notif_cardMove(cards: CardiaCard[], notif: Notif<NotifMaterialMove>) {
 		const card = cards.at(0)
 		switch (notif.args.to) {
-			case 'DISCARD':
+			case 'discard':
 				this.playerTables[notif.args.toArg].discard.addCard(card)
 				break
-			case 'HAND':
+			case 'hand':
 				this.playerTables[notif.args.toArg].handStock.addCard(card)
 				break
-			case 'ENCOUNTER':
+			case 'encounter':
 				let stock = this.centralZone.duelStocks[notif.args.toArg]
 				if (!stock) {
 					this.centralZone.createDuelStock(null, null) //one for the current duel

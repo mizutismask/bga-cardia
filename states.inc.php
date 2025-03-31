@@ -88,7 +88,8 @@ $basicGameStates = [
         "action" => "stLooserAbility",
         "transitions" => [
             "interactiveAbility" => ST_INTERACTIVE_ABILITY,
-            "finishDuel" => ST_FINISH_DUEL,
+            "finishDuel" => ST_FINISH_DUEL,//not sure
+            "nextRound" => ST_NEXT_ROUND,//djinn power
         ]
     ],
 

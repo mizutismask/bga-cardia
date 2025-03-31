@@ -134,8 +134,10 @@ class CardManager extends DeckManager {
     }
 
     public function resetDecks() {
-        $this->deck->moveAllCardsInLocation("discard", "deck");
-        $this->deck->moveAllCardsInLocation("hand", "deck");
+        $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_DISCARD, MATERIAL_LOCATION_DECK);
+        $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_HAND, MATERIAL_LOCATION_DECK);
+        $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_CARD, MATERIAL_LOCATION_DECK);
+        $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_ENCOUNTER, MATERIAL_LOCATION_DECK);
         $this->deck->shuffle("deck");
         $this->dealHands(true);
         $this->game->notifyCounterChange();

@@ -5,6 +5,7 @@ namespace Bga\Games\Cardia;
 use Bga\Games\Cardia\objects\CardiaCard;
 use Bga\Games\Cardia\objects\PowerType;
 use Bga\Games\Cardia\objects\TokenType;
+use BgaUserException;
 
 /**
  * @property CardManager cardManager
@@ -48,6 +49,8 @@ trait StateTrait {
             $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
             $stateTransition = 'looserAbility';
         }
+
+        $this->dump('*******************stDuelReveal', $stateTransition);
         $this->gamestate->nextState($stateTransition);
     }
 
@@ -86,7 +89,7 @@ trait StateTrait {
                 'winnerValue' => $maxCard->modifiedValue,
             ]);
         }
-        return ["hasWinner"=>$hasWinner, "winner"=>$maxCard, "looser"=>$minCard];
+        return ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard];
     }
 
     function stLooserAbility() {
@@ -94,8 +97,10 @@ trait StateTrait {
         if ($this->isAbilityNeedingInteraction($card)) {
             $this->gamestate->nextState('interactiveAbility');
         } else {
-            $this->applyAbility($card, $this->cardManager->getDuelsList());
-            $this->gamestate->nextState('finishDuel');
+            $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
+            if ($card->type != DJINN) {
+                $this->gamestate->nextState('finishDuel');
+            }
         }
     }
 
@@ -104,7 +109,16 @@ trait StateTrait {
         return in_array($card->id, $abilitiesNeedingInteraction);
     }
 
-    function applyAbility(CardiaCard $card, array $duels) {
+    /**
+     * 
+     * @param CardiaCard $card 
+     * @param array $duels 
+     * @param CardiaToken[] $signets 
+     * @param int duelNumber
+     * @return void 
+     * @throws BgaUserException 
+     */
+    function applyAbility(CardiaCard $card, array $duels, array $signets, int $duelNumber) {
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
             'cardName' => $card->name,
         ]);
@@ -117,6 +131,7 @@ trait StateTrait {
 
         $opponentTypeArg = $card->type_arg == 1 ? 2 : 1;
         $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
+        $playerId = $this->getPlayerIdFromPosition($card->type_arg);
         switch ($card->type) {
             case HIRED_BLADE:
                 $opposing = $this->cardManager->getOpposingCard($card, $duels);
@@ -142,6 +157,22 @@ trait StateTrait {
                 $this->discardDuelCard($opposing,  clienttranslate('${cardName} is replaced by ${cardName2}'), ["cardName" => $opposing->name, "cardName2" => $replacement->name]);
                 $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opposing->location_arg, true, $opponentId);
                 $this->evaluateDuelValues([$card, $replacement]);
+                break;
+            case TREASURER:
+                if ($duelNumber > 0) {
+                    $previousDuelCards = $duels[$duelNumber - 1];
+                    $cardsWithSignet = array_filter($previousDuelCards, function ($c) use ($signets) {
+                        return !empty(array_filter($signets, fn($s) => $s->location == MATERIAL_LOCATION_CARD && $s->location_arg == $c->id));
+                    });
+
+                    $winningCard = reset($cardsWithSignet);
+                    if ($winningCard) {
+                        $this->tokenManager->addSignetOnCard($winningCard->id);
+                    }
+                }
+                break;
+            case DJINN:
+                $this->stFinishDuel($playerId);
                 break;
         }
     }
@@ -176,8 +207,8 @@ trait StateTrait {
      * If only player has 5 signets or both have at least 5 signets but one player has more than the other, end of round.
      * @return void 
      */
-    function stFinishDuel() {
-        $winner = $this->getSignetCountWinner();
+    function stFinishDuel($djinnWinner = null) {
+        $winner = $djinnWinner ?? $this->getSignetCountWinner();
         if (!$winner) {
             $winner = $this->getNoPlayableCardWinner();
             if ($winner == -1) {
@@ -188,7 +219,10 @@ trait StateTrait {
         $nextState = $winner ? 'nextRound' : 'chooseDuelCard';
 
         if ($winner) {
-            $this->incPlayerScore($winner, 1, clienttranslate('${player_name} wins the round !'), ["player_name" => $this->getPlayerName($winner)]);
+            $playerName = $this->getPlayerName($winner);
+            $this->incPlayerScore($winner, 1, clienttranslate('${player_name} wins the round !'), ["player_name" => $playerName]);
+            $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('${player_name} wins the round'), "type" => "POSITIVE", "temporary" => true, "player_name" => $playerName]);
+               
         } else {
             $this->cardManager->pickAdditionalCard();
         }
@@ -266,8 +300,9 @@ trait StateTrait {
             $this->globals->inc(GLBL_ROUND, 1);
             $currentRound++;
 
-            self::notifyAllPlayers('msg', clienttranslate('&#10148; Round ${round}'), ["round" => $currentRound]);
+            self::notifyAllPlayers('newRound', clienttranslate('&#10148; Round ${round}'), ["round" => $currentRound]);
             $this->cardManager->resetDecks();
+            $this->tokenManager->resetTokens();
             $this->gamestate->nextState('chooseDuelCard');
         }
     }
