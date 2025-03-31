@@ -14,13 +14,13 @@ class TokenManager extends DeckManager {
         $tokenTable = TABLE_TOKEN;
         $cardTable = TABLE_CARD;
 
-        $sql = "SELECT count(token.card_id) 
-            FROM $tokenTable as token 
-            JOIN $cardTable as card ON card.card_id = token.card_location_arg
-            WHERE token.card_type = '$tokenType' 
-            AND token.card_location = 'card' 
-            AND card.card_type_arg = '$playerOrder'
-        ";
+        $sql = str_replace(array("\r", "\n"), ' ', "SELECT count(token.card_id) 
+                    FROM $tokenTable as token 
+                    JOIN $cardTable as card ON card.card_id = token.card_location_arg
+                    WHERE token.card_type = '$tokenType' 
+                    AND token.card_location = 'card' 
+                    AND card.card_type_arg = '$playerOrder'
+                ");
         return intval($this->deck->getUniqueValueFromDB($sql));
     }
 
