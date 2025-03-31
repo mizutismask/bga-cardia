@@ -24,7 +24,7 @@ class TokenManager extends DeckManager {
         return intval($this->deck->getUniqueValueFromDB($sql));
     }
 
-    public function getSignetsOnCards(){
+    public function getSignetsOnCards() {
         return $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_CARD));
     }
 
@@ -44,9 +44,25 @@ class TokenManager extends DeckManager {
         ]);
     }
 
+    public function addOngoingTokenOnCard(int $cardId) {
+        $tokens = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::ONGOING->value, null, MATERIAL_LOCATION_DECK));
+        if (!$tokens) {
+            throw new \BgaUserException(self::_("No more ongoing tokens"));
+        }
+        $token = reset($tokens);
+        $this->deck->moveCard($token->id, MATERIAL_LOCATION_CARD, $cardId);
+        $this->game->notifyWithName("materialMove",  "", [
+            'type' => MATERIAL_TYPE_ONGOING_TOKEN,
+            'from' => MATERIAL_LOCATION_DECK,
+            'to' => MATERIAL_LOCATION_CARD,
+            'toArg' => $cardId,
+            'material' => [$this->getCard($token->id)],
+        ]);
+    }
+
     public function discardTokenOfTypeOnCard(CardiaCard $card, TokenType $tokenType) {
         $tokens = $this->cast($this->deck->getCardsOfTypeInLocation($tokenType->value, null, MATERIAL_LOCATION_CARD,  $card->id));
-        foreach($tokens as $token){
+        foreach ($tokens as $token) {
             $this->deck->moveCard($token->id, MATERIAL_LOCATION_DECK);
             $this->game->notifyWithName("materialMove", "", [
                 'type' => MATERIAL_TYPE_TOKEN,
@@ -58,7 +74,7 @@ class TokenManager extends DeckManager {
         }
     }
 
-    public function discardTokensOnDuelCard(CardiaCard $card){
+    public function discardTokensOnDuelCard(CardiaCard $card) {
         $this->discardTokenOfTypeOnCard($card, TokenType::SIGIL);
         $this->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
     }

@@ -3,6 +3,7 @@
 namespace Bga\Games\Cardia;
 
 use Bga\Games\Cardia\objects\CardiaCard;
+use Bga\Games\Cardia\objects\PowerType;
 use Bga\Games\Cardia\objects\TokenType;
 
 /**
@@ -74,9 +75,9 @@ trait StateTrait {
         $this->gamestate->nextState($stateTransition);
     }
 
-    function stLooserAbility(){
+    function stLooserAbility() {
         $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-        if($this->isAbilityNeedingInteraction($card)){
+        if ($this->isAbilityNeedingInteraction($card)) {
             $this->gamestate->nextState('interactiveAbility');
         } else {
             $this->applyAbility($card, $this->cardManager->getDuelsList());
@@ -93,6 +94,15 @@ trait StateTrait {
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
             'cardName' => $card->name,
         ]);
+        $this->dump('*******************applyAbility', $card->name);
+
+
+        if ($card->powerType == PowerType::ONGOING) {
+            $this->tokenManager->addOngoingTokenOnCard($card->id);
+        }
+
+        $opponentTypeArg = $card->type_arg == 1 ? 2 : 1;
+        $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
         switch ($card->type) {
             case HIRED_BLADE:
                 $opposing = $this->cardManager->getOpposingCard($card, $duels);
@@ -105,9 +115,9 @@ trait StateTrait {
                 break;
             case SABOTEUR:
                 for ($i = 0; $i < 2; $i++) {
-                    $top = $this->getTopOfLocationForTypeArg(TABLE_CARD, MATERIAL_LOCATION_DECK, $card->type_arg == 1 ? 2 : 1);
+                    $top = $this->cardManager->getCastedTopOfLocationForTypeArg(MATERIAL_LOCATION_DECK, $opponentTypeArg);
                     if ($top) {
-                        $this->tokenManager->discardCard(0, $top->id);
+                        $this->cardManager->discardCard($opponentId, $top->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $top->name]);
                     }
                 }
                 break;
@@ -116,7 +126,7 @@ trait StateTrait {
                 $this->discardDuelCard($opposing);
                 $opponentHand = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $opposing->type_arg, MATERIAL_LOCATION_HAND);
                 $replacement = $this->getRandomValue($opponentHand);
-                $opponentId = $this->getPlayerIdFromPosition($opposing->type_arg);
+
                 $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opponentId, true, $opponentId);
                 //todo recalculate winner
                 break;

@@ -15,7 +15,7 @@ class DeckManager {
     public function __construct(Game $game, string $tableName, Deck $deck, string $cast, string $materialType, array $castParameters = []) {
         $this->deck = $deck;
         $this->game = $game;
-        $this->cast = __NAMESPACE__ .'\\objects\\'. $cast; //fully qualified name because of namespaces
+        $this->cast = __NAMESPACE__ . '\\objects\\' . $cast; //fully qualified name because of namespaces
         $this->castParameters = $castParameters;
         $this->materialType = $materialType;
         $this->tableName = $tableName;
@@ -66,7 +66,7 @@ class DeckManager {
         return $this->castSingle($this->deck->getCardOnTop($location), true);
     }
 
-    public function getCardsOfType($type,?int $typeArg = null) {
+    public function getCardsOfType($type, ?int $typeArg = null) {
         return $this->cast($this->deck->getCardsOfType($type, $typeArg));
     }
 
@@ -87,17 +87,21 @@ class DeckManager {
         $sql = "SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg FROM $tableName where card_location = '$location' and card_type_arg = '$typeArg'";
         return $this->cast($this->game->getCollectionFromDb($sql));
     }
-    
+
     public function getCardsOfTypeArgFromLocationOrderBy(string $tableName, int $typeArg, string $location, string $orderBy, bool $desc = false) {
         $direction = $desc ? 'desc' : 'asc';
         $sql = "SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg FROM $tableName 
         where card_location = '$location' and card_type_arg = $typeArg order by $orderBy $direction";
         return $this->cast($this->game->getCollectionFromDb($sql));
     }
-    
+
     public function countCardsOfTypeArgFromLocation(string $tableName, int $typeArg, string $location) {
         $sql = "SELECT count(card_id) FROM $tableName where card_location = '$location' and card_type_arg = '$typeArg'";
         return $this->game->getUniqueIntValueFromDB($sql);
+    }
+
+    public function getCastedTopOfLocationForTypeArg(string $location, int $typeArg) {
+        return  $this->castSingle($this->game->getTopOfLocationForTypeArg(TABLE_CARD, $location, $typeArg), true);
     }
 
     public function swapHands(int $playerFrom, int $playerTo) {
@@ -191,13 +195,16 @@ class DeckManager {
         return $this->castParameters ? new $this->cast($c, $this->castParameters) : new $this->cast($c);
     }
 
-    public function discardCard(int $playerId, int $cardId) {
+    public function discardCard(int $playerId, int $cardId, $msg = "", $msgParameters) {
         $this->deck->playCard($cardId);
-        $this->game->notifyWithName("materialMove",  clienttranslate('${player_name} discards a card'), [
+        $this->game->notifyWithName("materialMove",  $msg ? $msg : clienttranslate('${player_name} discards a card'), [
             'type' => $this->materialType,
             'from' => MATERIAL_LOCATION_HAND,
             'to' => MATERIAL_LOCATION_DISCARD,
+            'toArg' => $playerId,
             'material' => $this->cast([($this->deck->getCard($cardId))]),
+            'i18n' => ['cardName'],
+            ...$msgParameters,
         ]);
         $this->game->notifyCounterChange();
     }
