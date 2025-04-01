@@ -139,9 +139,9 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must resolve his ability'),
         "descriptionmyturn" => clienttranslate('${you}  must resolve your ability'),
         "type" => "activeplayer",
-        //"args" => "argChooseDuelCard",
+        "args" => "argInteractiveAbility",
         "possibleactions" => [
-            //"actLooserAbility",
+            "actInteractiveAbility",
         ],
         "transitions" => [
             "finishDuel" => ST_FINISH_DUEL,

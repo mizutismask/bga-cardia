@@ -3,7 +3,10 @@
 namespace Bga\Games\Cardia;
 
 use \Bga\GameFramework\Actions\Types\IntArrayParam;
+use \Bga\GameFramework\Actions\Types\StringParam;
+
 use Bga\Games\Cardia\objects\CardiaCard;
+use Bga\Games\Cardia\objects\Faction;
 use GameState;
 use Globals;
 
@@ -28,8 +31,26 @@ trait ActionTrait {
     }
 
     function chooseDuelCard(int $playerId, CardiaCard $card) {
-        $this->globals->set(GLB_LAST_CHOSEN_CARD . "_".$playerId, json_encode($card));
+        $this->globals->set(GLB_LAST_CHOSEN_CARD . "_" . $playerId, json_encode($card));
         $this->gamestate->setPlayerNonMultiactive($playerId, '');
+    }
+
+    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, ?int $cardId) {
+        $this->checkVersion($version);
+        $this->checkAction('actInteractiveAbility');
+        $playerId = $this->getMostlyActivePlayerId();
+        $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $interactionType = $this->getInteractionType($interactiveAbility);
+        if ($interactionType == "selectFaction") {
+            $this->userAssertTrue($this->_("You have to select a faction"), $interactiveAbility &&  $faction);
+            $this->globals->set(GLB_SELECTED_FACTION, $faction);
+        } else if ($interactionType == "selectCard") {
+            $card = $this->cardManager->getCard($cardId);
+            $this->userAssertTrue($this->_("You have to select a card"), $cardId && $card);
+            $this->globals->set(GLB_SELECTED_CARD_ID, $cardId);
+        }
+
+        $this->applyInteractiveAbility($interactiveAbility, Faction::tryFrom($faction), $card);
     }
 
     /**

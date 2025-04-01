@@ -2,6 +2,8 @@
 
 namespace Bga\Games\Cardia;
 
+use Bga\Games\Cardia\objects\CardiaCard;
+
 /**
  * @property CardManager cardManager
  */
@@ -57,5 +59,23 @@ trait ArgsTrait {
         }
         //$this->dump('*******************counters', $counters);
         return $counters;
+    }
+
+    function argInteractiveAbility(){
+        $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        return [
+            'ability' => $ability,
+            'interactionType' => $this->getInteractionType($ability),
+        ];
+    }
+
+    function getInteractionType(CardiaCard $card){
+        if(in_array($card->type, [PALACE_GUARD, AMBUSHER])){
+            return 'selectFaction';
+        }
+        if(in_array($card->type, [VOID_MAGE, SWAMP_GUARDIAN, MAGISTRA, INVENTOR])){
+            return 'selectCard';
+        }
+        throw new \BgaVisibleSystemException("Unknown interaction type for card: " . $card->name);
     }
 }

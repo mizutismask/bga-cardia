@@ -3,6 +3,7 @@
 namespace Bga\Games\Cardia;
 
 use Bga\Games\Cardia\objects\CardiaCard;
+use Bga\Games\Cardia\objects\Faction;
 use Bga\Games\Cardia\objects\PowerType;
 use Bga\Games\Cardia\objects\TokenType;
 use BgaUserException;
@@ -95,7 +96,7 @@ trait StateTrait {
     function stLooserAbility() {
         $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         if ($this->isAbilityNeedingInteraction($card)) {
-            $this->gamestate->nextState('interactiveAbility');
+            //$this->gamestate->nextState('interactiveAbility');
         } else {
             $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
             if ($card->type != DJINN) {
@@ -106,7 +107,7 @@ trait StateTrait {
 
     function isAbilityNeedingInteraction(CardiaCard $card): bool {
         $abilitiesNeedingInteraction = [VOID_MAGE, PALACE_GUARD, AMBUSHER, SWAMP_GUARDIAN, MAGISTRA, INVENTOR];
-        return in_array($card->id, $abilitiesNeedingInteraction);
+        return in_array($card->type, $abilitiesNeedingInteraction);
     }
 
     /**
@@ -177,6 +178,36 @@ trait StateTrait {
         }
     }
 
+    function applyInteractiveAbility(CardiaCard $interactiveAbility, ?Faction $faction, ?CardiaCard $cardId) {
+
+        $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
+            'cardName' => $interactiveAbility->name,
+        ]);
+        $this->dump('*******************applyAbility', $interactiveAbility->name);
+
+        $opponentTypeArg = $interactiveAbility->type_arg == 1 ? 2 : 1;
+        $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
+        $playerId = $this->getPlayerIdFromPosition($interactiveAbility->type_arg);
+        switch ($interactiveAbility->type) {
+            case PALACE_GUARD:
+                if ($this->isAbilityPossible($interactiveAbility, $opponentId, $faction)) {
+                    //gamestate->nextState('applyAbility');todo
+                }
+                break;
+        }
+    }
+
+    function isAbilityPossible(CardiaCard $card, int $playerToApply, Faction $faction): bool {
+        switch ($card->type) {
+            case PALACE_GUARD:
+                $hand = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerToApply, MATERIAL_LOCATION_HAND);
+                return count(array_filter($hand, fn($c) => $c->faction == $faction)) > 0;
+
+            default:
+                return false;
+        }
+    }
+
     function discardDuelCard(CardiaCard $card, $msg = "", $msgArgs = []) {
         $this->tokenManager->discardTokensOnDuelCard($card);
         $this->cardManager->discardDuelCard($card);
@@ -222,7 +253,6 @@ trait StateTrait {
             $playerName = $this->getPlayerName($winner);
             $this->incPlayerScore($winner, 1, clienttranslate('${player_name} wins the round !'), ["player_name" => $playerName]);
             $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('${player_name} wins the round'), "type" => "POSITIVE", "temporary" => true, "player_name" => $playerName]);
-               
         } else {
             $this->cardManager->pickAdditionalCard();
         }

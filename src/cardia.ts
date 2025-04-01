@@ -439,7 +439,7 @@ class Cardia extends BaseGame implements CardiaGame {
 	//                        action status bar (ie: the HTML links in the status bar).
 	//
 	public onUpdateActionButtons(stateName: string, args: any) {
-		log('onUpdateActionButtons: ' + stateName)
+		log('onUpdateActionButtons: ' + stateName, args)
 
 		if ((this as any).isCurrentPlayerActive()) {
 			switch (stateName) {
@@ -447,10 +447,25 @@ class Cardia extends BaseGame implements CardiaGame {
 					this.statusBar.addActionButton(_('Validate'), () => this.chooseDuelCardAction(), {})
 					//this.setActionBarChooseAction(false)
 					break
+				case 'interactiveAbility':
+					if (args.interactionType === 'selectFaction') {
+						;['G', 'Y', 'R', 'B'].forEach((faction) => {
+							this.statusBar.addActionButton(faction, () => this.selectFaction(faction), {})
+							this.statusBar.setTitle(
+								dojo.string.substitute(_('${cardName} ability: Select a faction'), {
+									cardName: `${args.ability.name}`
+								}),
+								[]
+							)
+						})
+					} else {
+						this.statusBar.addActionButton(_('Validate'), () => this.chooseDuelCardAction(), {})
+						//this.setActionBarChooseAction(false)
+					}
+					break
 			}
 		}
 	}
-
 	private chooseDuelCardAction() {
 		this.ensureStockSelection(
 			[this.playerTables[this.getPlayerId()].handStock],
@@ -461,6 +476,12 @@ class Cardia extends BaseGame implements CardiaGame {
 				})
 			}
 		)
+	}
+
+	private selectFaction(faction: string) {
+		this.takeAction('actInteractiveAbility', {
+			faction: faction
+		})
 	}
 
 	///////////////////////////////////////////////////
