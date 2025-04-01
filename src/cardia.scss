@@ -62,6 +62,10 @@ html {
 	box-shadow: 0 0 5px 5px rgb(200, 255, 47);
 }
 
+@mixin empty-stock-border {
+	outline: 1px solid $main-color;
+}
+
 svg {
 	height: 100%;
 	width: auto;
@@ -125,7 +129,7 @@ svg {
 		outline: 1px solid hsla(0, 0%, 100%, 0.6);
 
 		&:empty{
-			outline: 1px solid $main-color;
+			@include empty-stock-border;
 		}
 	}
 
@@ -133,6 +137,10 @@ svg {
 		aspect-ratio: $CARD_RATIO;
 		//width: $CARD_WIDTH;
 	}
+}
+.all-visible-deck{
+	@include card-border;
+	@include empty-stock-border;
 }
 
 .touch-device .css-icon.card-info {

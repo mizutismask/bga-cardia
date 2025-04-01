@@ -28,7 +28,7 @@ class CentralZone {
 			this.duelCounter++
 			duelId = this.duelCounter
 		}
-		dojo.place(`<div id='duel-${duelId}'></div>`, 'central-zone')
+		dojo.place(`<div id='duel-${duelId}' class="duel-wrapper"></div>`, 'central-zone')
 		this.duelStocks[duelId] = new SlotStock<CardiaCard>(this.game.cardsManager, $('duel-' + duelId), {
 			slotsIds: this.getSlotsWithCurrentPlayerFirst(),
 			mapCardToSlot: (card) => `${card.type_arg}`
@@ -37,6 +37,9 @@ class CentralZone {
 		if (duel) {
 			this.duelStocks[duelId].addCards(Object.values(duel))
 		}
+
+		//add vs icon
+		dojo.place(`<div class="vs-icon">VS</div>`, 'duel-' + duelId)
 	}
 
 	private getSlotsWithCurrentPlayerFirst() {

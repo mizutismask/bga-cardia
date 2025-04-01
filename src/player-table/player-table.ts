@@ -41,9 +41,11 @@ class PlayerTable {
 				hideWhenEmpty: false,
 				position: 'bottom',
 				extraClasses: 'stock-counter',
+				counterId: 'discard-counter-' + player.id
 			}
 		})
 		this.discard.setSelectionMode('none')
 		this.discard.addCards(player.discard)
+		$('discard-counter-' + player.id).innerHTML = player.discard.length.toString()
 	}
 }

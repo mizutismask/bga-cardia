@@ -1,9 +1,27 @@
 .central-zone {
 	display: flex;
-	gap: 10px;
-    
+	gap: 20px;
+
 	.card-stock {
 		--direction: column !important;
+	}
+
+	.duel-wrapper {
+		position: relative;
+		.vs-icon {
+			font-style: oblique;
+			font-size: xx-large;
+			font-weight: bolder;
+			position: absolute;
+			z-index: 10;
+			//center horizontally and vertically taking its size into account
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			color: crimson;
+			background-color: $main-color;
+			border-radius: 45%;
+		}
 	}
 }
 

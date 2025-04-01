@@ -1,10 +1,12 @@
 .player-table {
     display: flex;
     z-index: 25; // so new animations are over the map
+    gap: 30px;
+    justify-content: space-between;
 
     .discard-wrapper{
         min-width: $CARD_WIDTH;
-        min-height: $CARD_HEIGHT
+        min-height: $CARD_HEIGHT;
     }
 }
 
