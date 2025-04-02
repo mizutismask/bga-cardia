@@ -446,7 +446,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			if (args.prompt) {
 				this.statusBar.setTitle(args.prompt, args)
 			}
-			if (args.abilityCard.type == INVENTOR) {
+			if ([INVENTOR, VOID_MAGE].includes(args.abilityCard.type)) {
 				this.centralZone.duelStocks.forEach((stock) => {
 					stock.setSelectionMode('single')
 				})
@@ -537,6 +537,29 @@ class Cardia extends BaseGame implements CardiaGame {
 									),
 								{}
 							)
+						} else if (typedArgs.abilityCard.type == VOID_MAGE) {
+							this.statusBar.addActionButton(
+								_('Remove modifiers'),
+								() =>
+									this.selectCardAction(
+										stateName,
+										typedArgs.optionalSelection,
+										this.getSelectedDuelStock(),
+										{ option: 'removeModifiers' }
+									),
+								{}
+							)
+							this.statusBar.addActionButton(
+								_('Remove ongoing token'),
+								() =>
+									this.selectCardAction(
+										stateName,
+										typedArgs.optionalSelection,
+										this.getSelectedDuelStock(),
+										{ option: 'removeOngoingToken' }
+									),
+								{}
+							)
 						} else {
 							this.statusBar.addActionButton(
 								_('Validate selection'),
@@ -591,7 +614,12 @@ class Cardia extends BaseGame implements CardiaGame {
 		})
 	}
 
-	private selectCardAction(stateName: string, optionalSelection: boolean, stock: CardStock<CardiaCard>) {
+	private selectCardAction(
+		stateName: string,
+		optionalSelection: boolean,
+		stock: CardStock<CardiaCard>,
+		additionalParameters?: any
+	) {
 		const actionName = stateName == 'interactiveAbility' ? 'actInteractiveAbility' : 'actInteractiveAbilityStep2'
 
 		if (!optionalSelection) {
@@ -601,12 +629,15 @@ class Cardia extends BaseGame implements CardiaGame {
 			}
 			this.ensureStockSelection([stock], _('You have to select a card'), () => {
 				this.takeAction(actionName, {
-					cardId: stock.getSelection()[0].id
+					cardId: stock.getSelection()[0].id,
+					...additionalParameters
 				})
 			})
 		} else {
+			log(...additionalParameters)
 			this.takeAction(actionName, {
-				cardId: stock.getSelection().length > 0 ? stock.getSelection()[0].id : -1
+				cardId: stock.getSelection().length > 0 ? stock.getSelection()[0].id : -1,
+				...additionalParameters
 			})
 		}
 	}

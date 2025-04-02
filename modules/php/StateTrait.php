@@ -217,7 +217,7 @@ trait StateTrait {
         }
     }
 
-    function applyInteractiveAbility(CardiaCard $interactiveAbility, ?Faction $faction, ?CardiaCard $card) {
+    function applyInteractiveAbility(CardiaCard $interactiveAbility, ?Faction $faction, ?CardiaCard $card, ?string $option) {
 
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
             'cardName' => $interactiveAbility->name,
@@ -240,8 +240,19 @@ trait StateTrait {
                 //first selected card gets a +3
                 $this->cardManager->incCardModifier($interactiveAbility, 3);
                 $this->globals->set(GLB_INVENTOR_PLUS_CARD, $card->id);
+                //still needs to select another card
                 $this->globals->set(GLB_STEP_2, true);
                 $this->gamestate->nextState('interactiveAbilityStep2');
+                break;
+            case VOID_MAGE:
+                if ($option == "removeModifiers") {
+                    $this->cardManager->updateCardModifier($card, 0);
+                    $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
+                } else {
+                    $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
+                    //todo reevaluate everything
+                }
+                $this->gamestate->nextState('finishDuel');
                 break;
         }
     }
@@ -254,6 +265,7 @@ trait StateTrait {
                 } else {
                     //add +7 influence
                     $this->cardManager->incCardModifier($interactiveAbility, 7);
+                    $this->evaluateDuelValues([$interactiveAbility, $this->cardManager->getOpposingCard($interactiveAbility, $this->cardManager->getDuelsList())]);
                 }
                 break;
             case INVENTOR:

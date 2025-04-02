@@ -35,7 +35,7 @@ trait ActionTrait {
         $this->gamestate->setPlayerNonMultiactive($playerId, '');
     }
 
-    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, ?int $cardId) {
+    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, ?int $cardId, ?string $option) {
         $this->checkVersion($version);
         $this->checkAction('actInteractiveAbility');
         $playerId = $this->getMostlyActivePlayerId();
@@ -59,7 +59,7 @@ trait ActionTrait {
             }
         }
 
-        $this->applyInteractiveAbility($interactiveAbility, Faction::tryFrom($faction), $card);
+        $this->applyInteractiveAbility($interactiveAbility, Faction::tryFrom($faction), $card, $option);
     }
 
     function actInteractiveAbilityStep2(int $version, ?int $cardId) {

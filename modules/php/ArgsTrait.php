@@ -113,6 +113,8 @@ trait ArgsTrait {
             case INVENTOR:
                 $influence =  $this->globals->get(GLB_INVENTOR_PLUS_CARD) ? -3 : 3;
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to set ${influence} influence on it'), "args" => ["ability" => $ability->name, "influence" => $influence, 'i18n' => ['ability']]];
+            case VOID_MAGE:
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to remove its modifiers or its ongoing tokens'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
         }
     }
 
