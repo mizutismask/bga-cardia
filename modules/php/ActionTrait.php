@@ -41,16 +41,43 @@ trait ActionTrait {
         $playerId = $this->getMostlyActivePlayerId();
         $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         $interactionType = $this->getInteractionType($interactiveAbility);
+        $card = null;
         if ($interactionType == "selectFaction") {
-            $this->userAssertTrue($this->_("You have to select a faction"), $interactiveAbility &&  $faction);
+            $this->userAssertTrue(_("You have to select a faction"), $interactiveAbility &&  $faction);
             $this->globals->set(GLB_SELECTED_FACTION, $faction);
         } else if ($interactionType == "selectCard") {
             $card = $this->cardManager->getCard($cardId);
-            $this->userAssertTrue($this->_("You have to select a card"), $cardId && $card);
+            $this->userAssertTrue(_("You have to select a card"), $cardId && $card);
             $this->globals->set(GLB_SELECTED_CARD_ID, $cardId);
         }
 
         $this->applyInteractiveAbility($interactiveAbility, Faction::tryFrom($faction), $card);
+    }
+
+    function actInteractiveAbilityStep2(int $version, ?int $cardId) {
+        $this->checkVersion($version);
+        $this->checkAction('actInteractiveAbilityStep2');
+        $playerId = $this->getMostlyActivePlayerId();
+        $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $interactionType = $this->getInteractionTypeStep2($interactiveAbility);
+        $card = null;
+        $optional = in_array($interactiveAbility->type, [PALACE_GUARD]);
+        if ($interactionType == "selectCard") {
+            $card = $this->cardManager->getCard($cardId, $optional);
+            if (!$optional) {
+                $this->userAssertTrue(_("You have to select a card"), $cardId && $card);
+            }
+            if ($card) {
+                switch ($interactiveAbility->type) {
+                    case PALACE_GUARD:
+                        $this->userAssertTrue(_("This card is not of the expected faction"), $this->array_contains_card($this->argInteractiveAbilityStep2()["selectableCards"], $cardId));
+                        break;
+                }
+            }
+            $this->globals->set(GLB_SELECTED_CARD_ID, $cardId);
+        }
+
+        $this->applyInteractiveAbilityStep2($interactiveAbility, $card);
     }
 
     /**

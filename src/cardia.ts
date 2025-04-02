@@ -324,8 +324,24 @@ class Cardia extends BaseGame implements CardiaGame {
 		})
 	}
 
+	private updateModifierOnCard(cardId: number, modifier: number) {
+		const div = $(`cardia-card-${cardId}-modifier-value`)
+		if (div) {
+			div.innerHTML = `${modifier}`
+			div.dataset.value = `${modifier}`
+			div.classList.remove('positive-modifier', 'negative-modifier')
+			div.classList.add('modifier')
+			div.classList.add(modifier > 0 ? 'positive-modifier' : 'negative-modifier')
+		} else {
+			console.error('Impossible to update modifier, no div for card', cardId)
+		}
+	}
+
 	private setupData() {
 		this.gamedatas.signets.forEach((s) => this.createSignetOnCard(s))
+		Object.entries(this.gamedatas.modifiers).forEach(([cardId, modifier]) => {
+			this.updateModifierOnCard(Number(cardId), modifier)
+		})
 	}
 
 	private createSignetOnCard(signet: Token) {
@@ -448,6 +464,7 @@ class Cardia extends BaseGame implements CardiaGame {
 					//this.setActionBarChooseAction(false)
 					break
 				case 'interactiveAbility':
+				case 'interactiveAbilityStep2':
 					if (args.interactionType === 'selectFaction') {
 						;['G', 'Y', 'R', 'B'].forEach((faction) => {
 							this.statusBar.addActionButton(faction, () => this.selectFaction(faction), {})
@@ -458,9 +475,19 @@ class Cardia extends BaseGame implements CardiaGame {
 								[]
 							)
 						})
+					} else if (args.interactionType === 'selectCard') {
+						if (args.prompt) {
+							this.statusBar.setTitle(args.prompt, args)
+						}
+						this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args['selectableCards'])
+						this.statusBar.addActionButton(
+							_('Validate selection'),
+							() => this.selectCardAction(stateName, args['optionalSelection']),
+							{}
+						)
 					} else {
-						this.statusBar.addActionButton(_('Validate'), () => this.chooseDuelCardAction(), {})
 						//this.setActionBarChooseAction(false)
+						this.statusBar.addActionButton(_('Validate'), () => this.chooseDuelCardAction(), {})
 					}
 					break
 			}
@@ -476,6 +503,29 @@ class Cardia extends BaseGame implements CardiaGame {
 				})
 			}
 		)
+	}
+
+	private selectCardAction(stateName: string, optionalSelection: boolean) {
+		const actionName = stateName == 'interactiveAbility' ? 'actInteractiveAbility' : 'actInteractiveAbilityStep2'
+
+		if (!optionalSelection) {
+			this.ensureStockSelection(
+				[this.playerTables[this.getPlayerId()].handStock],
+				_('You have to select a card'),
+				() => {
+					this.takeAction(actionName, {
+						cardId: this.playerTables[this.getPlayerId()].handStock.getSelection()[0].id
+					})
+				}
+			)
+		} else {
+			this.takeAction(actionName, {
+				cardId:
+					this.playerTables[this.getPlayerId()].handStock.getSelection().length > 0
+						? this.playerTables[this.getPlayerId()].handStock.getSelection()[0].id
+						: -1
+			})
+		}
 	}
 
 	private selectFaction(faction: string) {

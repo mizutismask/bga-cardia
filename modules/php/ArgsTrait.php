@@ -3,6 +3,7 @@
 namespace Bga\Games\Cardia;
 
 use Bga\Games\Cardia\objects\CardiaCard;
+use Bga\Games\Cardia\objects\Faction;
 
 /**
  * @property CardManager cardManager
@@ -61,7 +62,7 @@ trait ArgsTrait {
         return $counters;
     }
 
-    function argInteractiveAbility(){
+    function argInteractiveAbility() {
         $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         return [
             'ability' => $ability,
@@ -69,13 +70,57 @@ trait ArgsTrait {
         ];
     }
 
-    function getInteractionType(CardiaCard $card){
-        if(in_array($card->type, [PALACE_GUARD, AMBUSHER])){
+    function argInteractiveAbilityStep2() {
+        $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $prompt = $this->getPrompt($ability);
+        $args = [
+            'ability' => $ability,
+            'interactionType' => $this->getInteractionTypeStep2($ability),
+            "prompt" => $prompt["prompt"],
+            ...$prompt["args"],
+        ];
+        if ($args["interactionType"] == "selectCard") {
+            $args["selectableCards"] = $this->getSelectableCards($ability);
+            $args["optionalSelection"] = $this->isCardSelectionOptional($ability);
+        }
+        return $args;
+    }
+
+    function getSelectableCards(CardiaCard $ability) {
+        $selectableCards = [];
+        if ($ability->type == PALACE_GUARD) {
+            $faction = Faction::tryFrom($this->globals->get(GLB_SELECTED_FACTION));
+            $selectableCards = $this->cardManager->getFactionCardsInHand($this->getMostlyActivePlayerId(), $faction);
+        }
+        return $selectableCards;
+    }
+
+    function getPrompt(CardiaCard $ability) {
+        $prompt = "";
+        if ($ability->type == PALACE_GUARD) {
+            $faction = $this->globals->get(GLB_SELECTED_FACTION);
+            $prompt = clienttranslate('${ability} ability: you may discard a ${faction} card to prevent +7 influence on your opponent’s card');
+            return ["prompt" => $prompt, "args" => ["faction" => $faction, "ability" => $ability->name, 'i18n' => ['faction', 'ability']]];
+        }
+    }
+
+    function getInteractionType(CardiaCard $card) {
+        if (in_array($card->type, [PALACE_GUARD, AMBUSHER])) {
             return 'selectFaction';
         }
-        if(in_array($card->type, [VOID_MAGE, SWAMP_GUARDIAN, MAGISTRA, INVENTOR])){
+        if (in_array($card->type, [VOID_MAGE, SWAMP_GUARDIAN, MAGISTRA, INVENTOR])) {
             return 'selectCard';
         }
         throw new \BgaVisibleSystemException("Unknown interaction type for card: " . $card->name);
+    }
+    function isCardSelectionOptional(CardiaCard $card) {
+        return in_array($card->type, [PALACE_GUARD]);
+    }
+
+    function getInteractionTypeStep2(CardiaCard $card) {
+        if (in_array($card->type, [PALACE_GUARD])) {
+            return 'selectCard';
+        }
+        throw new \BgaVisibleSystemException("Unknown interaction type on step 2 for card: " . $card->name);
     }
 }

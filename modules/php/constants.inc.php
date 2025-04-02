@@ -9,6 +9,8 @@ const GLBL_ROUND = 'round';
 const GLB_SELECTED_FACTION = 'selectedFaction';
 const GLB_SELECTED_CARD_ID = 'selectedCardId';
 const GLB_ABILITY_TO_RESOLVE = 'abilityToResolve';
+const GLB_PLAYER_TO_ACTIVATE = 'playerToActivate';
+const GLB_STEP_2 = 'step2';
 define("GS_PLAYER_TURN_NUMBER", 'playerturn_nbr');
 
 /*
@@ -50,6 +52,8 @@ define('ST_FINISH_DUEL', 32);
 define('ST_LOOSER_ABILITY', 33);
 define('ST_NEXT_ROUND', 34);
 define('ST_INTERACTIVE_ABILITY', 35);
+define('ST_INTERACTIVE_ABILITY_STEP_2', 36);
+define('ST_ACTIVATE_PLAYER_FOR_ABILITY', 37);
 
 define('ST_NEXT_PLAYER', 80);
 define('ST_NEXT_REVEAL', 81);

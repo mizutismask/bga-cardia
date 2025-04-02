@@ -41,6 +41,7 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 					modifiers.id = `${super.getId(card)}-modifiers`
 					modifiers.classList.add('card-modifiers')
 					container.appendChild(modifiers)
+					modifiers.innerHTML = `<div id="${super.getId(card)}-modifier-value"></div>`
 
 					const signets: HTMLDivElement = document.createElement('div')
 					signets.id = `${super.getId(card)}-signets`

@@ -2,15 +2,19 @@
 
 namespace Bga\Games\Cardia;
 
+use Bga\GameFramework\Db\Globals;
 use Bga\Games\Cardia\objects\CardiaCard;
 use Bga\Games\Cardia\objects\Faction;
 use Bga\Games\Cardia\objects\PowerType;
 use Bga\Games\Cardia\objects\TokenType;
 use BgaUserException;
+use GameState;
 
 /**
  * @property CardManager cardManager
  * @property TokenManager $tokenManager
+ * @property GameState gamestate
+ * @property Globals globals
  */
 trait StateTrait {
 
@@ -96,13 +100,20 @@ trait StateTrait {
     function stLooserAbility() {
         $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         if ($this->isAbilityNeedingInteraction($card)) {
-            //$this->gamestate->nextState('interactiveAbility');
+            $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getPlayerIdFromPosition($card->type_arg));
+            $this->gamestate->nextState('interactiveAbility');
         } else {
             $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
             if ($card->type != DJINN) {
                 $this->gamestate->nextState('finishDuel');
             }
         }
+    }
+
+    function stActivatePlayerForAbility() {
+        $playerId = $this->globals->get(GLB_PLAYER_TO_ACTIVATE);
+        $this->gamestate->changeActivePlayer($playerId);
+        $this->gamestate->nextState($this->globals->get(GLB_STEP_2)?'interactiveAbilityStep2':'interactiveAbility');
     }
 
     function isAbilityNeedingInteraction(CardiaCard $card): bool {
@@ -160,7 +171,7 @@ trait StateTrait {
                 $this->evaluateDuelValues([$card, $replacement]);
                 break;
             case TREASURER:
-                if ($duelNumber > 0) {
+                if ($duelNumber > 1) {
                     $previousDuelCards = $duels[$duelNumber - 1];
                     $cardsWithSignet = array_filter($previousDuelCards, function ($c) use ($signets) {
                         return !empty(array_filter($signets, fn($s) => $s->location == MATERIAL_LOCATION_CARD && $s->location_arg == $c->id));
@@ -178,7 +189,7 @@ trait StateTrait {
         }
     }
 
-    function applyInteractiveAbility(CardiaCard $interactiveAbility, ?Faction $faction, ?CardiaCard $cardId) {
+    function applyInteractiveAbility(CardiaCard $interactiveAbility, ?Faction $faction, ?CardiaCard $card) {
 
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
             'cardName' => $interactiveAbility->name,
@@ -190,18 +201,33 @@ trait StateTrait {
         $playerId = $this->getPlayerIdFromPosition($interactiveAbility->type_arg);
         switch ($interactiveAbility->type) {
             case PALACE_GUARD:
+                //faction has been chosen but the opponent still needs to choose a card
                 if ($this->isAbilityPossible($interactiveAbility, $opponentId, $faction)) {
-                    //gamestate->nextState('applyAbility');todo
+                    $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $opponentId);
+                    $this->globals->set(GLB_STEP_2, true);
+                    $this->gamestate->nextState('interactiveAbilityStep2');
                 }
                 break;
         }
     }
 
+    function applyInteractiveAbilityStep2(CardiaCard $interactiveAbility,  ?CardiaCard $card) {
+        switch ($interactiveAbility->type) {
+            case PALACE_GUARD:
+                if ($card) {
+                    $this->cardManager->discardDuelCard($card);
+                } else {
+                    //add +7 influence
+                    $this->cardManager->updateCardModifier($interactiveAbility, 7);
+                }
+        }
+        $this->gamestate->nextState('finishDuel');
+    }
+
     function isAbilityPossible(CardiaCard $card, int $playerToApply, Faction $faction): bool {
         switch ($card->type) {
             case PALACE_GUARD:
-                $hand = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerToApply, MATERIAL_LOCATION_HAND);
-                return count(array_filter($hand, fn($c) => $c->faction == $faction)) > 0;
+                return count($this->cardManager->getFactionCardsInHand($playerToApply, $faction)) > 0;
 
             default:
                 return false;
@@ -239,6 +265,10 @@ trait StateTrait {
      * @return void 
      */
     function stFinishDuel($djinnWinner = null) {
+        $this->globals->delete(GLB_SELECTED_CARD_ID);
+        $this->globals->delete(GLB_SELECTED_FACTION);
+        $this->globals->delete(GLB_STEP_2);
+
         $winner = $djinnWinner ?? $this->getSignetCountWinner();
         if (!$winner) {
             $winner = $this->getNoPlayableCardWinner();

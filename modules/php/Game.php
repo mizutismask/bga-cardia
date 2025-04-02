@@ -172,6 +172,7 @@ class Game extends \Bga\GameFramework\Table {
         $result['counters'] = $this->argCounters();
         $result['duels'] = $this->cardManager->getDuelsList();
         $result['signets'] = $this->tokenManager->getSignetsOnCards();
+        $result['modifiers'] = $this->cardManager->getModifiers();
 
         foreach ($result['players'] as $playerId => &$player) {
             $currentPlayerOrder = intval($player['playerNo']);

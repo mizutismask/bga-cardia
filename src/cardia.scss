@@ -195,14 +195,35 @@ svg {
 	border-radius: 50%;
 }
 
+.modifier {
+	color: grey;
+	font-size: xx-large;
+	font-weight: 900;
+	background: blue;
+	border-radius: 50%;
+	margin: 17px;
+
+	&[data-value='0'] {
+		display: none;
+	}
+}
+
 .tokens-location-wrapper {
 	display: grid;
 	grid-template-rows: 1fr 1fr;
-	height: 100%;
+    grid-template-columns: 1fr;
+    height: 100%;
+    width: 100%;
 	justify-content: center;
 
 	.card-signets {
 		align-self: center;
+		justify-self: center;
+	}
+
+	.card-modifiers{
+		align-self: center;
+		justify-self: self-start;
 	}
 }
 

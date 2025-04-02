@@ -87,9 +87,19 @@ $basicGameStates = [
         "type" => "game",
         "action" => "stLooserAbility",
         "transitions" => [
-            "interactiveAbility" => ST_INTERACTIVE_ABILITY,
+            "interactiveAbility" => ST_ACTIVATE_PLAYER_FOR_ABILITY,
             "finishDuel" => ST_FINISH_DUEL,//not sure
             "nextRound" => ST_NEXT_ROUND,//djinn power
+        ]
+    ],
+
+    ST_ACTIVATE_PLAYER_FOR_ABILITY => [
+        "name" => "activatePlayerForAbility",
+        "type" => "game",
+        "action" => "stActivatePlayerForAbility",
+        "transitions" => [
+            "interactiveAbilityStep2" => ST_INTERACTIVE_ABILITY_STEP_2,
+            "interactiveAbility" => ST_INTERACTIVE_ABILITY,
         ]
     ],
 
@@ -142,6 +152,21 @@ $playerActionsGameStates = [
         "args" => "argInteractiveAbility",
         "possibleactions" => [
             "actInteractiveAbility",
+        ],
+        "transitions" => [
+            "interactiveAbilityStep2" => ST_ACTIVATE_PLAYER_FOR_ABILITY,
+            "finishDuel" => ST_FINISH_DUEL,
+        ]
+    ],
+
+    ST_INTERACTIVE_ABILITY_STEP_2 => [
+        "name" => "interactiveAbilityStep2",
+        "description" => clienttranslate('${actplayer} must resolve his ability'),
+        "descriptionmyturn" => clienttranslate('${you}  must resolve your ability'),
+        "type" => "activeplayer",
+        "args" => "argInteractiveAbilityStep2",
+        "possibleactions" => [
+            "actInteractiveAbilityStep2",
         ],
         "transitions" => [
             "finishDuel" => ST_FINISH_DUEL,

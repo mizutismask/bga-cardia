@@ -3,6 +3,7 @@
 namespace Bga\Games\Cardia;
 
 use Bga\Games\Cardia\objects\CardiaCard;
+use Bga\Games\Cardia\objects\Faction;
 
 const TABLE_CARD = "card";
 
@@ -27,7 +28,7 @@ class CardManager extends DeckManager {
         }
     }
 
-    public function moveCardToLocation(CardiaCard $card, string $location, int $locationArg, $notify=true, $playerId=null) {
+    public function moveCardToLocation(CardiaCard $card, string $location, int $locationArg, $notify = true, $playerId = null) {
         $this->deck->moveCard($card->id, $location, $locationArg);
 
         if ($notify && $playerId) {
@@ -114,6 +115,19 @@ class CardManager extends DeckManager {
         return $duels;
     }
 
+    function getModifiers() {
+        $modifiers = [];
+        $query = new QueryBuilder(TABLE_CARD);
+        $cards = $query
+            ->select(["card_id", "card_modifier"])
+            ->where('card_modifier', '!=', 0)
+            ->get();
+        foreach ($cards as $card) {
+            $modifiers[$card["card_id"]] = intval($card["card_modifier"]);
+        }
+        return $modifiers;
+    }
+
     function getOpposingCard(CardiaCard $card, array $duels) {
         $opposingCard = null;
         //look for the duel containing the card
@@ -131,6 +145,12 @@ class CardManager extends DeckManager {
 
     public function getModifierValueOnCard(int $cardId): int {
         return $this->game->getUniqueIntValueFromDB("SELECT card_modifier FROM card WHERE card_id = $cardId");
+    }
+
+    public function getFactionCardsInHand(int $playerId, Faction $faction) {
+        $cards = $this->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->game->getPlayerPosition($playerId), MATERIAL_LOCATION_HAND);
+        $factionCards = array_values(array_filter($cards, fn($card) => $card->faction == $faction));
+        return $factionCards;
     }
 
     public function resetDecks() {

@@ -69,6 +69,7 @@ interface CardiaGamedatas {
 	counters: Map<string, CounterValue>
 	duels: DuelsList
 	signets: Token[]
+	modifiers: { [cardId: number]: number }
 	// Add here variables you set up in getAllDatas
 }
 
