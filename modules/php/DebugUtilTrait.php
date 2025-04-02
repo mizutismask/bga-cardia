@@ -34,10 +34,9 @@ trait DebugUtilTrait {
         $this->destinations->moveAllCardsInLocation('deck', 'void');
     }*/
 
-    /*function debug_AlmostEmptyDestinationDeck() {
-        $moveNumber = $this->getRemainingDestinationCardsInDeck() - 1;
-        $this->destinations->pickCardsForLocation($moveNumber, 'deck', 'discard');
-    }*/
+    function debug_reset() {
+        $this->cardManager->resetDecks();
+    }
 
 
     /*function debug_clear() {
