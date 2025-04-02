@@ -453,7 +453,8 @@ class Cardia extends BaseGame implements CardiaGame {
 			if (args.prompt) {
 				this.statusBar.setTitle(args.prompt, args)
 			}
-			if ([INVENTOR, VOID_MAGE].includes(args.abilityCard.type)) {
+			if ([INVENTOR, VOID_MAGE, SWAMP_GUARDIAN].includes(args.abilityCard.type)) {
+				//selection on central zone instead of hand
 				this.centralZone.duelStocks.forEach((stock) => {
 					stock.setSelectionMode('single')
 				})
@@ -533,7 +534,7 @@ class Cardia extends BaseGame implements CardiaGame {
 							this.statusBar.addActionButton(faction, () => this.selectFaction(faction), {})
 						})
 					} else if (typedArgs.interactionType === 'selectCard') {
-						if (typedArgs.abilityCard.type == INVENTOR) {
+						if (typedArgs.abilityCard.type == INVENTOR || typedArgs.abilityCard.type == SWAMP_GUARDIAN) {
 							this.statusBar.addActionButton(
 								_('Validate'),
 								() =>

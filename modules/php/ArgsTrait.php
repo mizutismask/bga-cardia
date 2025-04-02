@@ -94,11 +94,14 @@ trait ArgsTrait {
     function getSelectableCards(CardiaCard $ability) {
         $selectableCards = [];
         $playerId = $this->getMostlyActivePlayerId();
+        $playerPosition = $this->getPlayerPosition($playerId);
         if ($ability->type == PALACE_GUARD) {
             $faction = Faction::tryFrom($this->globals->get(GLB_SELECTED_FACTION));
             $selectableCards = $this->cardManager->getFactionCardsInHand($playerId, $faction);
         } else if ($ability->type == INVENTOR) {
             $selectableCards = $this->cardManager->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
+        } else if ($ability->type == SWAMP_GUARDIAN) {
+            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_HAND);
         }
         return $selectableCards;
     }
@@ -119,6 +122,8 @@ trait ArgsTrait {
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to set ${influence} influence on it'), "args" => ["ability" => $ability->name, "influence" => $influence, 'i18n' => ['ability']]];
             case VOID_MAGE:
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to remove its modifiers or its ongoing tokens'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+            case SWAMP_GUARDIAN:
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to take it back in hand'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
         }
     }
 

@@ -261,6 +261,13 @@ trait StateTrait {
                 }
                 $this->gamestate->nextState('finishDuel');
                 break;
+            case SWAMP_GUARDIAN:
+                $opposingCard = $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList());
+                $this->cardManager->discardDuelCard($opposingCard);
+                $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId);
+                //todo reorder duels
+                $this->gamestate->nextState('finishDuel');
+                break;
         }
     }
 
