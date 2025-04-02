@@ -412,8 +412,8 @@ class Cardia extends BaseGame implements CardiaGame {
 					this.onEnteringInteractiveAbility(dataArgs)
 				}
 				break
-			case 'endScore':
-				this.onEnteringEndScore()
+			case 'chooseDuelCard':
+				this.onEnteringChooseDuelCard ()
 				break
 			case 'stDuelReveal':
 				//this.centralZone.createDuelStock(null, null)
@@ -434,13 +434,20 @@ class Cardia extends BaseGame implements CardiaGame {
 		//this.missions.addCards(args._private.missions).then(()=>this.missions.setSelectableCards(args._private.choosableMissions))
 	}
 
+	private onEnteringChooseDuelCard() {
+		this.centralZone.duelStocks.forEach((stock) => {
+			stock.setSelectionMode('none')
+		})
+		this.playerTables[this.getPlayerId()].handStock.setSelectionMode('single')
+	}
+
 	private onEnteringInteractiveAbility(args: EnteringInteractiveAbilityArgs) {
 		if (args.interactionType === 'selectFaction') {
-			this.statusBar.setTitle(
+			this.statusBar.setTitle(args.prompt ??
 				dojo.string.substitute(_('${cardName} ability: Select a faction'), {
 					cardName: `${args.abilityCard.name}`
 				}),
-				[]
+				args??[]
 			)
 		} else if (args.interactionType === 'selectCard') {
 			if (args.prompt) {

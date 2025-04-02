@@ -110,6 +110,10 @@ trait ArgsTrait {
                 $faction = $this->globals->get(GLB_SELECTED_FACTION);
                 $prompt = clienttranslate('${ability} ability: you may discard a ${faction} card to prevent +7 influence on your opponent’s card');
                 return ["prompt" => $prompt, "args" => ["faction" => $faction, "ability" => $ability->name, 'i18n' => ['faction', 'ability']]];
+            case AMBUSHER:
+                $faction = $this->globals->get(GLB_SELECTED_FACTION);
+                $prompt = clienttranslate('${ability} ability: choose a faction your opponent will have to discard');
+                return ["prompt" => $prompt, "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
             case INVENTOR:
                 $influence =  $this->globals->get(GLB_INVENTOR_PLUS_CARD) ? -3 : 3;
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to set ${influence} influence on it'), "args" => ["ability" => $ability->name, "influence" => $influence, 'i18n' => ['ability']]];

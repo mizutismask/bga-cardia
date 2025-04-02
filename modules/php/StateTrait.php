@@ -254,6 +254,13 @@ trait StateTrait {
                 }
                 $this->gamestate->nextState('finishDuel');
                 break;
+            case AMBUSHER:
+                $cards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
+                foreach ($cards as $c) {
+                    $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                }
+                $this->gamestate->nextState('finishDuel');
+                break;
         }
     }
 
