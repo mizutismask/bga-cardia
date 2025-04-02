@@ -46,6 +46,12 @@ trait StateTrait {
             $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
             $cards[] = $card;
             $this->cardManager->playCard($card, $playerId, $duelCount);
+
+            $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId);
+            if ($modifierToAdd) {
+                $this->cardManager->incCardModifier($card, $modifierToAdd);
+                $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
+            }
         }
 
         $eval = $this->evaluateDuelValues($cards);
@@ -136,7 +142,6 @@ trait StateTrait {
         ]);
         $this->dump('*******************applyAbility', $card->name);
 
-
         if ($card->powerType == PowerType::ONGOING) {
             $this->tokenManager->addOngoingTokenOnCard($card->id);
         }
@@ -195,6 +200,20 @@ trait StateTrait {
                     'playerPosition' => $this->getPlayerPosition($playerId),
                 ]);
                 break;
+            case CLOCKMAKER:
+                $value = 3;
+                $this->globals->set(GLB_NEXT_CARD_MODIFIER . $playerId, $value);
+                $this->notifyWithName('nextCardModifier', "", [
+                    'value' => $value,
+                    'playerId' => $playerId,
+                    'playerPosition' => $this->getPlayerPosition($playerId),
+                ]);
+                if ($duelNumber > 1) {
+                    $previousCard = $duels[$duelNumber - 1][$playerId];
+                    $this->cardManager->incCardModifier($previousCard, $value);
+                    $this->evaluateDuelValues([$previousCard, $this->cardManager->getOpposingCard($previousCard, $this->cardManager->getDuelsList())]);
+                }
+                break;
         }
     }
 
@@ -219,7 +238,7 @@ trait StateTrait {
                 break;
             case INVENTOR:
                 //first selected card gets a +3
-                $this->cardManager->updateCardModifier($interactiveAbility, 3);
+                $this->cardManager->incCardModifier($interactiveAbility, 3);
                 $this->globals->set(GLB_INVENTOR_PLUS_CARD, $card->id);
                 $this->globals->set(GLB_STEP_2, true);
                 $this->gamestate->nextState('interactiveAbilityStep2');
@@ -234,12 +253,12 @@ trait StateTrait {
                     $this->cardManager->discardDuelCard($card);
                 } else {
                     //add +7 influence
-                    $this->cardManager->updateCardModifier($interactiveAbility, 7);
+                    $this->cardManager->incCardModifier($interactiveAbility, 7);
                 }
                 break;
             case INVENTOR:
                 //second selected card gets a -3
-                $this->cardManager->updateCardModifier($card, -3);
+                $this->cardManager->incCardModifier($card, -3);
                 $firstModif = $this->cardManager->getCard($this->globals->get(GLB_INVENTOR_PLUS_CARD));
                 $this->globals->delete(GLB_INVENTOR_PLUS_CARD);
                 $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);

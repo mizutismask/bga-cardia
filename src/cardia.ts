@@ -347,7 +347,17 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private setupData() {
 		this.gamedatas.signets.forEach((s) => this.createSignetOnCard(s))
-		Object.entries(this.gamedatas.modifiers).forEach(([cardId, modifier]) => {
+		this.updateModifiers(this.gamedatas.modifiers)
+
+		Object.values(this.gamedatas.players).forEach((p) => {
+			if (p.nextCardModifier) {
+				this.updateNextCardModifier(Number(p.id), p.playerNo, p.nextCardModifier)
+			}
+		})
+	}
+
+	private updateModifiers(modifiers: { [cardId: number]: number }) {
+		Object.entries(modifiers).forEach(([cardId, modifier]) => {
 			this.updateModifierOnCard(Number(cardId), modifier)
 		})
 	}
@@ -795,7 +805,8 @@ class Cardia extends BaseGame implements CardiaGame {
 			['counter', 1],
 			['updateCounters', 1],
 			['newRound', 1],
-			['nextCardModifier', 1]
+			['nextCardModifier', 1],
+			['updateModifiers', 1]
 		]
 
 		notifs.forEach((notif) => {
@@ -827,11 +838,19 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 	}
 
+	notif_updateModifiers(notif: Notif<NotifUpdateModifiers>) {
+		this.updateModifiers(notif.args.modifiers)
+	}
+
 	notif_nextCardModifier(notif: Notif<NotifNextCardModifier>) {
+		this.updateNextCardModifier(notif.args.playerId, notif.args.playerPosition, notif.args.value)
+	}
+
+	updateNextCardModifier(playerId: number, playerPosition: number, value: number) {
 		const duelId = this.centralZone.createDuelStock(null, null)
-		const slotQuery = `#${duelId} .slot[data-slot-id="${notif.args.playerPosition}"]`
+		const slotQuery = `#${duelId} .slot[data-slot-id="${playerPosition}"]`
 		const slot = document.querySelector(slotQuery) as HTMLElement
-		this.updateModifierOnLastSlot(slot, notif.args.value, notif.args.playerId)
+		this.updateModifierOnLastSlot(slot, value, playerId)
 	}
 
 	notif_materialMove(notif: Notif<NotifMaterialMove>) {
@@ -871,13 +890,14 @@ class Cardia extends BaseGame implements CardiaGame {
 		switch (notif.args.to) {
 			case 'discard':
 				this.playerTables[notif.args.toArg].discard.addCard(card)
+				this.updateModifierOnElement($(`cardia-card-${card.id}-modifier-value`), 0)
 				break
 			case 'hand':
 				this.playerTables[notif.args.toArg].handStock.addCard(card)
 				break
 			case 'encounter':
 				let stock = this.centralZone.duelStocks[notif.args.toArg]
-				dojo.query(".temp-modifier").forEach((el) => dojo.destroy(el))
+				dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
 				if (!stock) {
 					this.centralZone.createDuelStock(null, null) //one for the current duel
 					//this.centralZone.createDuelStock(null, null) //one to prepare the next

@@ -85,10 +85,20 @@ class CardManager extends DeckManager {
         $this->game->notifyCounterChange();
     }
 
-    public function updateCardModifier(CardiaCard $card, int $modifier) {
+    public function incCardModifier(CardiaCard $card, int $modifier): void {
         $query = new QueryBuilder(TABLE_CARD);
-        return $query
-            ->update(["card_modifier" => $modifier], $card->id);
+        $query->inc(["card_modifier" => $modifier], $card->id);
+        $this->game->notifyAllPlayers("updateModifiers", "", array(
+            'modifiers' => $this->getModifiers(),
+        ));
+    }
+
+    public function updateCardModifier(CardiaCard $card, int $modifier): void {
+        $query = new QueryBuilder(TABLE_CARD);
+        $query->update(["card_modifier" => $modifier], $card->id);
+        $this->game->notifyAllPlayers("updateModifiers", "", array(
+            'modifiers' => $this->getModifiers(),
+        ));
     }
 
     public function playCard(CardiaCard $card, int $playerId, int $duelCount) {
