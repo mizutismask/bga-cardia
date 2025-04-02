@@ -103,6 +103,14 @@ interface EnteringChooseActionArgs {
 	canResetTurn: boolean
 }
 
+interface EnteringInteractiveAbilityArgs {
+	abilityCard: CardiaCard
+	interactionType: 'selectFaction' | 'selectCard'
+	prompt?: string
+	optionalSelection?: boolean //cards only
+	selectableCards?: CardiaCard[]
+}
+
 interface NotifPointsArgs {
 	playerId: number
 	points: number

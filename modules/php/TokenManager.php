@@ -28,20 +28,37 @@ class TokenManager extends DeckManager {
         return $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_CARD));
     }
 
-    public function addSignetOnCard(int $cardId) {
-        $signets = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_DECK));
-        if (!$signets) {
-            throw new \BgaUserException(self::_("No more signets"));
-        }
-        $signet = reset($signets);
+    public function addSignetOnCard(int $cardId, ?int $opposingCardId) {
+        $signet = $this->getSignetToUse($opposingCardId);
         $this->deck->moveCard($signet->id, MATERIAL_LOCATION_CARD, $cardId);
         $this->game->notifyWithName("materialMove",  "", [
             'type' => MATERIAL_TYPE_TOKEN,
-            'from' => MATERIAL_LOCATION_DECK,
+            'from' => $signet->location,
+            'fromArg' => $signet->location_arg,
             'to' => MATERIAL_LOCATION_CARD,
             'toArg' => $cardId,
             'material' => [$this->getCard($signet->id)],
         ]);
+    }
+
+    private function getSignetToUse(?int $opposingCardId){
+        $signet=null;
+        if($opposingCardId){
+            //look for a signet on the opposing card
+            $signets = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_CARD, $opposingCardId));
+            if($signets){
+                $signet = reset($signets);
+            }
+        }
+        //if no signet on opposing card, look for a signet on the deck
+        if(!$signet){
+            $signets = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_DECK));
+            if (!$signets) {
+                throw new \BgaUserException(self::_("No more signets"));
+            }
+            $signet = reset($signets);
+        }
+        return $signet;
     }
 
     public function addOngoingTokenOnCard(int $cardId) {

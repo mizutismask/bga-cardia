@@ -7,6 +7,8 @@ use Bga\Games\Cardia\objects\Faction;
 
 /**
  * @property CardManager cardManager
+ * @property GameState gamestate
+ * @property Globals globals
  */
 trait ArgsTrait {
 
@@ -64,9 +66,12 @@ trait ArgsTrait {
 
     function argInteractiveAbility() {
         $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $prompt = $this->getPrompt($ability);
         return [
-            'ability' => $ability,
+            'abilityCard' => $ability,
             'interactionType' => $this->getInteractionType($ability),
+            "prompt" => $prompt["prompt"],
+            ...$prompt["args"],
         ];
     }
 
@@ -74,7 +79,7 @@ trait ArgsTrait {
         $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         $prompt = $this->getPrompt($ability);
         $args = [
-            'ability' => $ability,
+            'abilityCard' => $ability,
             'interactionType' => $this->getInteractionTypeStep2($ability),
             "prompt" => $prompt["prompt"],
             ...$prompt["args"],
@@ -88,19 +93,26 @@ trait ArgsTrait {
 
     function getSelectableCards(CardiaCard $ability) {
         $selectableCards = [];
+        $playerId = $this->getMostlyActivePlayerId();
         if ($ability->type == PALACE_GUARD) {
             $faction = Faction::tryFrom($this->globals->get(GLB_SELECTED_FACTION));
-            $selectableCards = $this->cardManager->getFactionCardsInHand($this->getMostlyActivePlayerId(), $faction);
+            $selectableCards = $this->cardManager->getFactionCardsInHand($playerId, $faction);
+        } else if ($ability->type == INVENTOR) {
+            $selectableCards = $this->cardManager->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
         }
         return $selectableCards;
     }
 
     function getPrompt(CardiaCard $ability) {
         $prompt = "";
-        if ($ability->type == PALACE_GUARD) {
-            $faction = $this->globals->get(GLB_SELECTED_FACTION);
-            $prompt = clienttranslate('${ability} ability: you may discard a ${faction} card to prevent +7 influence on your opponent’s card');
-            return ["prompt" => $prompt, "args" => ["faction" => $faction, "ability" => $ability->name, 'i18n' => ['faction', 'ability']]];
+        switch ($ability->type) {
+            case PALACE_GUARD:
+                $faction = $this->globals->get(GLB_SELECTED_FACTION);
+                $prompt = clienttranslate('${ability} ability: you may discard a ${faction} card to prevent +7 influence on your opponent’s card');
+                return ["prompt" => $prompt, "args" => ["faction" => $faction, "ability" => $ability->name, 'i18n' => ['faction', 'ability']]];
+            case INVENTOR:
+                $influence =  $this->globals->get(GLB_INVENTOR_PLUS_CARD) ? -3 : 3;
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to set ${influence} influence on it'), "args" => ["ability" => $ability->name, "influence" => $influence, 'i18n' => ['ability']]];
         }
     }
 
@@ -118,7 +130,7 @@ trait ArgsTrait {
     }
 
     function getInteractionTypeStep2(CardiaCard $card) {
-        if (in_array($card->type, [PALACE_GUARD])) {
+        if (in_array($card->type, [PALACE_GUARD, INVENTOR])) {
             return 'selectCard';
         }
         throw new \BgaVisibleSystemException("Unknown interaction type on step 2 for card: " . $card->name);

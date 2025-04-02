@@ -383,6 +383,13 @@ class Cardia extends BaseGame implements CardiaGame {
 					this.onEnteringChooseAction(dataArgs)
 				}
 				break
+			case 'interactiveAbility':
+			case 'interactiveAbilityStep2':
+				if (args?.args) {
+					const dataArgs = args.args as EnteringInteractiveAbilityArgs
+					this.onEnteringInteractiveAbility(dataArgs)
+				}
+				break
 			case 'endScore':
 				this.onEnteringEndScore()
 				break
@@ -403,6 +410,29 @@ class Cardia extends BaseGame implements CardiaGame {
 			this.setChooseActionGamestateDescription(actions.join(_(' or ')))
 		}
 		//this.missions.addCards(args._private.missions).then(()=>this.missions.setSelectableCards(args._private.choosableMissions))
+	}
+
+	private onEnteringInteractiveAbility(args: EnteringInteractiveAbilityArgs) {
+		if (args.interactionType === 'selectFaction') {
+			this.statusBar.setTitle(
+				dojo.string.substitute(_('${cardName} ability: Select a faction'), {
+					cardName: `${args.abilityCard.name}`
+				}),
+				[]
+			)
+		} else if (args.interactionType === 'selectCard') {
+			if (args.prompt) {
+				this.statusBar.setTitle(args.prompt, args)
+			}
+			if (args.abilityCard.type == INVENTOR) {
+				this.centralZone.duelStocks.forEach((stock) => {
+					stock.setSelectionMode('single')
+				})
+				this.playerTables[this.getPlayerId()].handStock.setSelectionMode('none')
+			} else {
+				this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args['selectableCards'])
+			}
+		}
 	}
 
 	private getPossibleActions(args: EnteringChooseActionArgs) {
@@ -456,74 +486,105 @@ class Cardia extends BaseGame implements CardiaGame {
 	//
 	public onUpdateActionButtons(stateName: string, args: any) {
 		log('onUpdateActionButtons: ' + stateName, args)
-
 		if ((this as any).isCurrentPlayerActive()) {
 			switch (stateName) {
 				case 'chooseDuelCard':
-					this.statusBar.addActionButton(_('Validate'), () => this.chooseDuelCardAction(), {})
+					this.statusBar.addActionButton(
+						_('Validate'),
+						() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),
+						{}
+					)
 					//this.setActionBarChooseAction(false)
 					break
 				case 'interactiveAbility':
 				case 'interactiveAbilityStep2':
-					if (args.interactionType === 'selectFaction') {
+					const typedArgs = args as EnteringInteractiveAbilityArgs
+					if (typedArgs.interactionType === 'selectFaction') {
 						;['G', 'Y', 'R', 'B'].forEach((faction) => {
 							this.statusBar.addActionButton(faction, () => this.selectFaction(faction), {})
-							this.statusBar.setTitle(
-								dojo.string.substitute(_('${cardName} ability: Select a faction'), {
-									cardName: `${args.ability.name}`
-								}),
-								[]
-							)
 						})
-					} else if (args.interactionType === 'selectCard') {
-						if (args.prompt) {
-							this.statusBar.setTitle(args.prompt, args)
+					} else if (typedArgs.interactionType === 'selectCard') {
+						if (typedArgs.abilityCard.type == INVENTOR) {
+							this.statusBar.addActionButton(
+								_('Validate'),
+								() =>
+									this.selectCardAction(
+										stateName,
+										typedArgs.optionalSelection,
+										this.getSelectedDuelStock()
+									),
+								{}
+							)
+						} else {
+							this.statusBar.addActionButton(
+								_('Validate selection'),
+								() =>
+									this.selectCardAction(
+										stateName,
+										typedArgs.optionalSelection,
+										this.playerTables[this.getPlayerId()].handStock
+									),
+								{}
+							)
 						}
-						this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args['selectableCards'])
-						this.statusBar.addActionButton(
-							_('Validate selection'),
-							() => this.selectCardAction(stateName, args['optionalSelection']),
-							{}
-						)
 					} else {
 						//this.setActionBarChooseAction(false)
-						this.statusBar.addActionButton(_('Validate'), () => this.chooseDuelCardAction(), {})
+						this.statusBar.addActionButton(
+							_('Validate'),
+							() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),
+							{}
+						)
 					}
 					break
 			}
 		}
 	}
-	private chooseDuelCardAction() {
-		this.ensureStockSelection(
-			[this.playerTables[this.getPlayerId()].handStock],
-			_('You have to select a card'),
-			() => {
-				this.takeAction('actChooseDuelCard', {
-					cardId: this.playerTables[this.getPlayerId()].handStock.getSelection()[0].id
-				})
-			}
-		)
+
+	private getSelectedDuelStock() {
+		let i = 0
+		let hasSelection = false
+		let stockWithSelection = null
+		const stocks = Object.values(this.centralZone.duelStocks)
+		while (i < stocks.length && !hasSelection) {
+			const selection = stocks[i].getSelection()
+			hasSelection = selection.length !== 0
+			if (hasSelection) stockWithSelection = stocks[i]
+			i++
+		}
+		return stockWithSelection
 	}
 
-	private selectCardAction(stateName: string, optionalSelection: boolean) {
+	private getSelectedDuelCard() {
+		const stock = this.getSelectedDuelStock()
+		const selection = stock.getSelection()
+		const hasSelection = selection.length !== 0
+		return hasSelection ? selection[0] : undefined
+	}
+
+	private chooseDuelCardAction(stock: CardStock<CardiaCard>) {
+		this.ensureStockSelection([stock], _('You have to select a card'), () => {
+			this.takeAction('actChooseDuelCard', {
+				cardId: stock.getSelection()[0].id
+			})
+		})
+	}
+
+	private selectCardAction(stateName: string, optionalSelection: boolean, stock: CardStock<CardiaCard>) {
 		const actionName = stateName == 'interactiveAbility' ? 'actInteractiveAbility' : 'actInteractiveAbilityStep2'
 
 		if (!optionalSelection) {
-			this.ensureStockSelection(
-				[this.playerTables[this.getPlayerId()].handStock],
-				_('You have to select a card'),
-				() => {
-					this.takeAction(actionName, {
-						cardId: this.playerTables[this.getPlayerId()].handStock.getSelection()[0].id
-					})
-				}
-			)
+			if (!stock) {
+				;(this as any).showMessage(_('You have to select a card'), 'error')
+				return
+			}
+			this.ensureStockSelection([stock], _('You have to select a card'), () => {
+				this.takeAction(actionName, {
+					cardId: stock.getSelection()[0].id
+				})
+			})
 		} else {
 			this.takeAction(actionName, {
-				cardId:
-					this.playerTables[this.getPlayerId()].handStock.getSelection().length > 0
-						? this.playerTables[this.getPlayerId()].handStock.getSelection()[0].id
-						: -1
+				cardId: stock.getSelection().length > 0 ? stock.getSelection()[0].id : -1
 			})
 		}
 	}
