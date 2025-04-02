@@ -19,10 +19,10 @@ class CentralZone {
 			this.duelCounter++
 		})
 		//creates additional stock in case there are tokens on future cards
-		this.createDuelStock(null, null)
+		//this.createDuelStock(null, null)
 	}
 
-	public createDuelStock(duelNumber: number, duel: { [playerId: string]: CardiaCard }): void {
+	public createDuelStock(duelNumber: number, duel: { [playerId: string]: CardiaCard }): string {
 		let duelId = duelNumber
 		if (!duelNumber) {
 			this.duelCounter++
@@ -40,6 +40,7 @@ class CentralZone {
 
 		//add vs icon
 		dojo.place(`<div class="vs-icon">VS</div>`, 'duel-' + duelId)
+		return 'duel-' + duelId
 	}
 
 	private getSlotsWithCurrentPlayerFirst() {

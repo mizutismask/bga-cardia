@@ -325,15 +325,23 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private updateModifierOnCard(cardId: number, modifier: number) {
-		const div = $(`cardia-card-${cardId}-modifier-value`)
-		if (div) {
-			div.innerHTML = `${modifier}`
-			div.dataset.value = `${modifier}`
-			div.classList.remove('positive-modifier', 'negative-modifier')
-			div.classList.add('modifier')
-			div.classList.add(modifier > 0 ? 'positive-modifier' : 'negative-modifier')
+		this.updateModifierOnElement($(`cardia-card-${cardId}-modifier-value`), modifier)
+	}
+	private updateModifierOnLastSlot(div: HTMLElement, modifier: number, playerId: number) {
+		const modifierId = `temp-${playerId}-modifier-value`
+		dojo.place(`<div id="${modifierId}" class="temp-modifier"></div>`, div)
+		this.updateModifierOnElement($(modifierId), modifier)
+	}
+
+	private updateModifierOnElement(element: HTMLElement, modifier: number) {
+		if (element) {
+			element.innerHTML = `${modifier}`
+			element.dataset.value = `${modifier}`
+			element.classList.remove('positive-modifier', 'negative-modifier')
+			element.classList.add('modifier')
+			element.classList.add(modifier > 0 ? 'positive-modifier' : 'negative-modifier')
 		} else {
-			console.error('Impossible to update modifier, no div for card', cardId)
+			console.error('Impossible to update modifier, no div ', element)
 		}
 	}
 
@@ -345,8 +353,12 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private createSignetOnCard(signet: Token) {
-		const signetDivId = `signet-${signet.id}`
-		const location = `cardia-card-${signet.location_arg}-signets`
+		this.createSignetOnElement(signet.id, signet.location_arg)
+	}
+
+	private createSignetOnElement(signetId: number, cardId: number) {
+		const signetDivId = `signet-${signetId}`
+		const location = `cardia-card-${cardId}-signets`
 		if ($(signetDivId) && $(location)) {
 			this.animationManager.attachWithAnimation(
 				new BgaSlideAnimation({
@@ -782,7 +794,8 @@ class Cardia extends BaseGame implements CardiaGame {
 			['importantMessage', 3000],
 			['counter', 1],
 			['updateCounters', 1],
-			['newRound', 1]
+			['newRound', 1],
+			['nextCardModifier', 1]
 		]
 
 		notifs.forEach((notif) => {
@@ -812,6 +825,13 @@ class Cardia extends BaseGame implements CardiaGame {
 		if (notif.args.counterName == 'empty-hexes') {
 			//this.emptyHexesCounters[notif.args.playerId].setValue(notif.args.counterValue)
 		}
+	}
+
+	notif_nextCardModifier(notif: Notif<NotifNextCardModifier>) {
+		const duelId = this.centralZone.createDuelStock(null, null)
+		const slotQuery = `#${duelId} .slot[data-slot-id="${notif.args.playerPosition}"]`
+		const slot = document.querySelector(slotQuery) as HTMLElement
+		this.updateModifierOnLastSlot(slot, notif.args.value, notif.args.playerId)
 	}
 
 	notif_materialMove(notif: Notif<NotifMaterialMove>) {
@@ -857,9 +877,10 @@ class Cardia extends BaseGame implements CardiaGame {
 				break
 			case 'encounter':
 				let stock = this.centralZone.duelStocks[notif.args.toArg]
+				dojo.query(".temp-modifier").forEach((el) => dojo.destroy(el))
 				if (!stock) {
 					this.centralZone.createDuelStock(null, null) //one for the current duel
-					this.centralZone.createDuelStock(null, null) //one to prepare the next
+					//this.centralZone.createDuelStock(null, null) //one to prepare the next
 					stock = this.centralZone.duelStocks[notif.args.toArg]
 				}
 				stock.addCard(card)

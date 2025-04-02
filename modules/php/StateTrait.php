@@ -186,6 +186,15 @@ trait StateTrait {
             case DJINN:
                 $this->stFinishDuel($playerId);
                 break;
+            case SURGEON:
+                $value = -5;
+                $this->globals->set(GLB_NEXT_CARD_MODIFIER . $playerId, $value);
+                $this->notifyWithName('nextCardModifier', "", [
+                    'value' => $value,
+                    'playerId' => $playerId,
+                    'playerPosition' => $this->getPlayerPosition($playerId),
+                ]);
+                break;
         }
     }
 

@@ -11,6 +11,7 @@ const GLB_SELECTED_CARD_ID = 'selectedCardId';
 const GLB_ABILITY_TO_RESOLVE = 'abilityToResolve';
 const GLB_PLAYER_TO_ACTIVATE = 'playerToActivate';
 const GLB_INVENTOR_PLUS_CARD = 'inventorPlusCard';
+const GLB_NEXT_CARD_MODIFIER = 'nextCardModifier';
 const GLB_STEP_2 = 'step2';
 define("GS_PLAYER_TURN_NUMBER", 'playerturn_nbr');
 

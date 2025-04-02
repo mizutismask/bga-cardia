@@ -208,12 +208,18 @@ svg {
 	}
 }
 
+/*.slot-stock {
+	> .modifier {
+		margin: unset;
+	}
+}*/
+
 .tokens-location-wrapper {
 	display: grid;
 	grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr;
-    height: 100%;
-    width: 100%;
+	grid-template-columns: 1fr;
+	height: 100%;
+	width: 100%;
 	justify-content: center;
 
 	.card-signets {
@@ -221,7 +227,7 @@ svg {
 		justify-self: center;
 	}
 
-	.card-modifiers{
+	.card-modifiers {
 		align-self: center;
 		justify-self: self-start;
 	}

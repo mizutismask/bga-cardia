@@ -129,6 +129,11 @@ interface NotifCounter {
 	counterValue: number
 	playerId: number
 }
+interface NotifNextCardModifier {
+	value: number
+	playerId: number
+	playerPosition: number
+}
 
 interface NotifUpdateCounters {
 	counters: [{ [name: string]: CounterValue }]
