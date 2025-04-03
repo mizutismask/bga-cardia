@@ -32,7 +32,7 @@ class CardManager extends DeckManager {
         $this->deck->moveCard($card->id, $location, $locationArg);
 
         if ($notify && $playerId) {
-            $this->game->notifyPlayer($playerId, "materialMove",  "", [
+            $this->game->notifyAllPlayers( "materialMove",  "", [
                 'playerId' => $playerId,
                 'type' => $this->materialType,
                 'from' => $card->location,
