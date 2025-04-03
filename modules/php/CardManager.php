@@ -45,6 +45,24 @@ class CardManager extends DeckManager {
         $this->game->notifyCounterChange();
     }
 
+    public function reorderDuels($encounter) {
+        $this->game->dump('*******************reorderDuels', $encounter);
+        $query = new QueryBuilder(TABLE_CARD);
+        $query->where("card_location", "=", MATERIAL_LOCATION_ENCOUNTER)
+            ->where("card_location_arg", ">", $encounter)
+            ->inc(["card_location_arg" => -1])->run();
+
+        $query = new QueryBuilder(TABLE_CARD);
+        $moved = $query->select($this->game->getTypicalTableFields())->where("card_location", "=", MATERIAL_LOCATION_ENCOUNTER)->where("card_location_arg", ">=", $encounter)->get();
+        $this->game->notifyAllPlayers("materialMove",  "", [
+            'type' => $this->materialType,
+            'from' => MATERIAL_LOCATION_ENCOUNTER,
+            'to' => MATERIAL_LOCATION_ENCOUNTER,
+            'material' => $this->cast($moved),
+        ]);
+        $this->game->globals->inc(GLB_DUEL_COUNT, -1);
+    }
+
     public function pickAdditionalCard() {
         $players = $this->game->loadPlayersBasicInfos();
         foreach ($players as $playerId => $player) {

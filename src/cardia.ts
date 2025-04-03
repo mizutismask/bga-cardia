@@ -413,7 +413,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				}
 				break
 			case 'chooseDuelCard':
-				this.onEnteringChooseDuelCard ()
+				this.onEnteringChooseDuelCard()
 				break
 			case 'stDuelReveal':
 				//this.centralZone.createDuelStock(null, null)
@@ -443,11 +443,12 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private onEnteringInteractiveAbility(args: EnteringInteractiveAbilityArgs) {
 		if (args.interactionType === 'selectFaction') {
-			this.statusBar.setTitle(args.prompt ??
-				dojo.string.substitute(_('${cardName} ability: Select a faction'), {
-					cardName: `${args.abilityCard.name}`
-				}),
-				args??[]
+			this.statusBar.setTitle(
+				args.prompt ??
+					dojo.string.substitute(_('${cardName} ability: Select a faction'), {
+						cardName: `${args.abilityCard.name}`
+					}),
+				args ?? []
 			)
 		} else if (args.interactionType === 'selectCard') {
 			if (args.prompt) {
@@ -935,14 +936,22 @@ class Cardia extends BaseGame implements CardiaGame {
 				this.playerTables[notif.args.toArg].handStock.addCard(card)
 				break
 			case 'encounter':
-				let stock = this.centralZone.duelStocks[notif.args.toArg]
-				dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
-				if (!stock) {
-					this.centralZone.createDuelStock(null, null) //one for the current duel
-					//this.centralZone.createDuelStock(null, null) //one to prepare the next
-					stock = this.centralZone.duelStocks[notif.args.toArg]
+				if (notif.args.toArg) {//only one encounter is considered
+					let stock = this.centralZone.duelStocks[notif.args.toArg]
+					dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
+					if (!stock) {
+						this.centralZone.createDuelStock(null, null) //one for the current duel
+						//this.centralZone.createDuelStock(null, null) //one to prepare the next
+						stock = this.centralZone.duelStocks[notif.args.toArg]
+					}
+					stock.addCard(card)
+				} else {
+					//it’s a reorganization of duels
+					cards.forEach((card) => {
+						const stock = this.centralZone.duelStocks[card.location_arg]
+						stock.addCard(card)
+					})
 				}
-				stock.addCard(card)
 				break
 			default:
 				console.error('Card move destination not handled', notif)
