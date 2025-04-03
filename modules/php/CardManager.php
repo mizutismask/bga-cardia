@@ -32,7 +32,7 @@ class CardManager extends DeckManager {
         $this->deck->moveCard($card->id, $location, $locationArg);
 
         if ($notify && $playerId) {
-            $this->game->notifyAllPlayers( "materialMove",  "", [
+            $this->game->notifyAllPlayers("materialMove",  "", [
                 'playerId' => $playerId,
                 'type' => $this->materialType,
                 'from' => $card->location,
@@ -142,6 +142,18 @@ class CardManager extends DeckManager {
         }
         return $duels;
     }
+
+    function getCardInPlay($cardType, $playerId) {
+        $query = new QueryBuilder(TABLE_CARD);
+        $cards = $query->select($this->game->getTypicalTableFields())
+            ->where("card_location", "=", MATERIAL_LOCATION_ENCOUNTER)
+            ->where("card_type", "=", $cardType)
+            ->where("card_type_arg", "=", $this->game->getPlayerPosition($playerId))
+            ->get();
+
+       return $this->castSingle(reset($cards), true);
+    }
+
 
     function getModifiers() {
         $modifiers = [];

@@ -27,9 +27,12 @@ class TokenManager extends DeckManager {
     public function getSignetsOnCards() {
         return $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_CARD));
     }
-    
+
     public function getOngoingTokensOnCards() {
         return $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::ONGOING->value, null, MATERIAL_LOCATION_CARD));
+    }
+    public function hasOngoingToken(int $cardId) {
+        return !empty($this->deck->getCardsOfTypeInLocation(TokenType::ONGOING->value, null, MATERIAL_LOCATION_CARD, $cardId));
     }
 
     public function addSignetOnCard(int $cardId, ?int $opposingCardId) {
@@ -43,6 +46,7 @@ class TokenManager extends DeckManager {
             'toArg' => $cardId,
             'material' => [$this->getCard($signet->id)],
         ]);
+        $this->game->notifyCounterChange();
     }
 
     private function getSignetToUse(?int $opposingCardId){

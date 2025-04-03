@@ -99,8 +99,28 @@ trait StateTrait {
             $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
             ]);
+
+            //check if any or both players have played judge
+            $players = $this->getPlayersIds();
+            foreach ($players as $playerId) {
+                $judge = $this->isActiveCardInPlay(JUDGE, $playerId);
+                if ($judge) {
+                    $myCard = $minCard->type_arg == $this->getPlayerPosition($playerId) ? $minCard : $maxCard;
+                    $this->tokenManager->addSignetOnCard($myCard->id, null);
+                }
+            }
         }
         return ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard];
+    }
+
+    function isActiveCardInPlay($cardType, $playerId) {
+        $card = $this->cardManager->getCardInPlay($cardType, $playerId);    
+        
+        if ($card && $card->powerType == PowerType::ONGOING) {
+            //check is ongoing card is still active
+            $this->tokenManager->hasOngoingToken($card->id);
+        }
+        return $card;
     }
 
     function stLooserAbility() {
@@ -214,7 +234,34 @@ trait StateTrait {
                     $this->evaluateDuelValues([$previousCard, $this->cardManager->getOpposingCard($previousCard, $this->cardManager->getDuelsList())]);
                 }
                 break;
+            case JUDGE:
+                $duels = $this->cardManager->getDuelsList();
+                $tied = $this->getTiedDuels($duels);
+                foreach ($tied as $duelNumber => $duel) {
+                    $this->tokenManager->addSignetOnCard($duel[$playerId]->id, null);
+                }
+                break;
         }
+    }
+
+    /**
+     * @param array<mixed, array<mixed, object|null>> $duels 
+     * @return void 
+     */
+    function getTiedDuels($duels) {
+        $tied = $duels;
+        $cardsWithSignet = array_map(fn($s) => $s->location_arg, $this->tokenManager->getSignetsOnCards());
+        foreach ($duels as $duelNumber => $duel) {
+            $duelCards = array_values($duel);
+            $tie = !$this->array_some($duelCards, function ($c) use ($cardsWithSignet) {
+                return in_array($c->id, $cardsWithSignet);
+            });
+            if (!$tie) {
+                unset($tied[$duelNumber]);
+            }
+        }
+        $this->dump('*******************getTiedDuels', $tied);
+        return $tied;
     }
 
     function applyInteractiveAbility(CardiaCard $interactiveAbility, ?Faction $faction, ?CardiaCard $card, ?string $option) {
