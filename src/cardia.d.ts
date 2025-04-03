@@ -70,6 +70,7 @@ interface CardiaGamedatas {
 	counters: Map<string, CounterValue>
 	duels: DuelsList
 	signets: Token[]
+	ongoingTokens: Token[]
 	modifiers: { [cardId: number]: number }
 	// Add here variables you set up in getAllDatas
 }
@@ -163,7 +164,7 @@ interface NotifImportantMessageArgs {
 type MoveLocation = 'hand' | 'deck' | 'stock' | 'table' | 'discard' | 'encounter' | 'card'
 
 interface NotifMaterialMove {
-	type: 'CARD' | 'TOKEN' | 'FIRST_PLAYER_TOKEN'
+	type: 'CARD' | 'TOKEN' | 'FIRST_PLAYER_TOKEN' | 'ONGOING_TOKEN'
 	from: MoveLocation
 	to: MoveLocation
 	fromArg: number

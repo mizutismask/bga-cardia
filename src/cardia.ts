@@ -347,6 +347,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private setupData() {
 		this.gamedatas.signets.forEach((s) => this.createSignetOnCard(s))
+		this.gamedatas.ongoingTokens.forEach((s) => this.createOnGoingTokenOnCard(s))
 		this.updateModifiers(this.gamedatas.modifiers)
 
 		Object.values(this.gamedatas.players).forEach((p) => {
@@ -384,9 +385,36 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 	}
 
+	private createOnGoingTokenOnCard(signet: Token) {
+		this.createOnGoingTokenOnElement(signet.id, signet.location_arg)
+	}
+
+	private createOnGoingTokenOnElement(signetId: number, cardId: number) {
+		const signetDivId = `ongoing-${signetId}`
+		const location = `cardia-card-${cardId}-signets`
+		if ($(signetDivId) && $(location)) {
+			this.animationManager.attachWithAnimation(
+				new BgaSlideAnimation({
+					element: $(signetDivId),
+					zoom: 1
+				}),
+				$(location)
+			)
+		} else if ($(location)) {
+			dojo.place(`<div id="${signetDivId}" class="ongoing-icon">O</div>`, location)
+		} else {
+			console.error('can’t put ongoing token on ' + location)
+		}
+	}
+
 	private removeSignetOnCard(signet: Token) {
-		const signetDivId = `signet-${signet.id}`
-		dojo.destroy(signetDivId)
+		const divId = `signet-${signet.id}`
+		dojo.destroy(divId)
+	}
+
+	private removeOnGoingTokenOnCard(signet: Token) {
+		const divId = `ongoing-${signet.id}`
+		dojo.destroy(divId)
 	}
 
 	///////////////////////////////////////////////////
@@ -904,6 +932,10 @@ class Cardia extends BaseGame implements CardiaGame {
 				const tokens = notif.args.material as Array<Token>
 				this.notif_tokenMove(tokens, notif)
 				break
+			case 'ONGOING_TOKEN':
+				const ongoingTokens = notif.args.material as Array<Token>
+				this.notif_onGoingTokenMove(ongoingTokens, notif)
+				break
 			default:
 				console.error('Material type move not handled', notif)
 				break
@@ -925,6 +957,21 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 	}
 
+	private notif_onGoingTokenMove(tokens: Token[], notif: Notif<NotifMaterialMove>) {
+		const card = tokens.at(0)
+		switch (notif.args.to) {
+			case 'card':
+				this.createOnGoingTokenOnCard(card)
+				break
+			case 'deck':
+				this.removeOnGoingTokenOnCard(card)
+				break
+			default:
+				console.error('Token move destination not handled', notif)
+				break
+		}
+	}
+
 	private notif_cardMove(cards: CardiaCard[], notif: Notif<NotifMaterialMove>) {
 		const card = cards.at(0)
 		switch (notif.args.to) {
@@ -933,12 +980,19 @@ class Cardia extends BaseGame implements CardiaGame {
 				this.updateModifierOnElement($(`cardia-card-${card.id}-modifier-value`), 0)
 				break
 			case 'hand':
-				this.playerTables[notif.args.toArg].handStock.addCard(card)
+				log("toArg", notif.args.toArg,  this.getPlayerId())
+				if (notif.args.toArg == this.getPlayerId()) {
+					this.playerTables[notif.args.toArg].handStock.addCard(card)
+				} else {
+					log("removeCard",card.name)
+					this.cardsManager.getCardStock(card).removeCard(card)
+				}
 				break
 			case 'encounter':
-				if (notif.args.toArg) {//only one encounter is considered
-					let stock = this.centralZone.duelStocks[notif.args.toArg]
+				if (notif.args.toArg) {
+					//only one encounter is considered
 					dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
+					let stock = this.centralZone.duelStocks[notif.args.toArg]
 					if (!stock) {
 						this.centralZone.createDuelStock(null, null) //one for the current duel
 						//this.centralZone.createDuelStock(null, null) //one to prepare the next

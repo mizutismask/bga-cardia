@@ -27,6 +27,10 @@ class TokenManager extends DeckManager {
     public function getSignetsOnCards() {
         return $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_CARD));
     }
+    
+    public function getOngoingTokensOnCards() {
+        return $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::ONGOING->value, null, MATERIAL_LOCATION_CARD));
+    }
 
     public function addSignetOnCard(int $cardId, ?int $opposingCardId) {
         $signet = $this->getSignetToUse($opposingCardId);
