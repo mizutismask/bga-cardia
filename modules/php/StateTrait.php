@@ -381,8 +381,9 @@ trait StateTrait {
     }
 
     function stActivatePlayersToChooseDuelCard() {
-        $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-        if ($ability->type == FORTUNE_TELLER) {
+        $abilityId = $this->globals->get(GLB_ABILITY_TO_RESOLVE);
+        $ability = $abilityId ? $this->cardManager->getCard($abilityId, true) : null;
+        if ($ability && $ability->type == FORTUNE_TELLER) {
             $this->gamestate->setPlayersMultiactive([$this->getPlayerIdFromPosition($ability->type_arg)], "duelReveal", true);
         } else {
             $this->gamestate->setAllPlayersMultiactive();
