@@ -186,6 +186,7 @@ class Game extends \Bga\GameFramework\Table {
 
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['expansion'] = $this->getDeck();
+        $result['location'] = $this->getScenery();
         if ($isEnd) {
             $maxScore = max(array_map(fn($player) => intval($player['score']), $result['players']));
             $result['winners'] = array_keys(array_filter($result['players'], fn($player) => intval($player['score'] == $maxScore)));

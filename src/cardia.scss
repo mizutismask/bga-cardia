@@ -95,6 +95,11 @@ svg {
 	background-color: $main-color;
 }
 
+.player_board_location {
+	aspect-ratio: 342/220;
+	@include card-border;
+}
+
 .bga-cards_selected-card {
 	@include selected-element;
 }

@@ -45,7 +45,7 @@ interface CardiaPlayer extends Player {
 	cardsCount: number
 	hand: CardiaCard[]
 	discard: CardiaCard[]
-	nextCardModifier:number
+	nextCardModifier: number
 }
 
 interface CardiaGamedatas {
@@ -62,7 +62,8 @@ interface CardiaGamedatas {
 	tablespeed: string
 	lastTurn: boolean
 	turnOrderClockwise: boolean
-	expansion: number
+	expansion: number //deck number
+	location: number
 	// counters
 	scores?: Array<NotifScoreArgs>
 	winners: number[]

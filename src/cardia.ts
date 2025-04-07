@@ -17,6 +17,7 @@
 declare const playSound
 
 const IMAGE_ITEMS_PER_ROW = 4
+const IMAGE_LOCATIONS_PER_ROW = 4
 const ACTION_TIMER_DURATION = 6
 
 const HIRED_BLADE = 101
@@ -109,6 +110,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setupPreferences()
 		this.setupTooltips()
 		this.setupHelpPopin()
+		this.setupLocation()
 		this.setupData()
 
 		this.scoreBoard = new ScoreBoard(this, this.getPlayersInOrder())
@@ -120,6 +122,24 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setupNotifications()
 
 		log('Ending game setup')
+	}
+
+	public setupLocation() {
+		if (this.gamedatas.location != 0) {
+			dojo.place(
+				`<div class='player_board_location location-${this.gamedatas.location}' id="player_board_location" style="${getBackgroundInlineStyleForLocation(
+					this.gamedatas.location
+				)}">`,
+				'player_boards',
+				'first'
+			)
+		}
+	}
+
+	/* @Override */
+	public updatePlayerOrdering() {
+		;(this as any).inherited(arguments)
+		dojo.place('player_board_location', 'player_boards', 'first')
 	}
 
 	private setupTooltips() {
@@ -564,7 +584,8 @@ class Cardia extends BaseGame implements CardiaGame {
 							this.statusBar.addActionButton(faction, () => this.selectFaction(faction), {})
 						})
 					} else if (typedArgs.interactionType === 'selectCard') {
-						if ([INVENTOR, SWAMP_GUARDIAN, MAGISTRA].includes(typedArgs.abilityCard.type)) {							this.statusBar.addActionButton(
+						if ([INVENTOR, SWAMP_GUARDIAN, MAGISTRA].includes(typedArgs.abilityCard.type)) {
+							this.statusBar.addActionButton(
 								_('Validate'),
 								() =>
 									this.selectCardAction(
@@ -980,11 +1001,11 @@ class Cardia extends BaseGame implements CardiaGame {
 				this.updateModifierOnElement($(`cardia-card-${card.id}-modifier-value`), 0)
 				break
 			case 'hand':
-				log("toArg", notif.args.toArg,  this.getPlayerId())
+				log('toArg', notif.args.toArg, this.getPlayerId())
 				if (notif.args.toArg == this.getPlayerId()) {
 					this.playerTables[notif.args.toArg].handStock.addCard(card)
 				} else {
-					log("removeCard",card.name)
+					log('removeCard', card.name)
 					this.cardsManager.getCardStock(card).removeCard(card)
 				}
 				break
