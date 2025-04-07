@@ -198,6 +198,7 @@ trait StateTrait {
                 $this->discardDuelCard($opposing,  clienttranslate('${cardName} is replaced by ${cardName2}'), ["cardName" => $opposing->name, "cardName2" => $replacement->name]);
                 $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opposing->location_arg, true, $opponentId);
                 $this->evaluateDuelValues([$card, $replacement]);
+                $this->cardManager->replenishHands();
                 break;
             case TREASURER:
                 if ($duelNumber > 1) {
@@ -309,6 +310,7 @@ trait StateTrait {
                 $cards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
                 foreach ($cards as $c) {
                     $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                    $this->cardManager->replenishHands();
                 }
                 $this->gamestate->nextState('finishDuel');
                 break;
@@ -333,6 +335,7 @@ trait StateTrait {
             case PALACE_GUARD:
                 if ($card) {
                     $this->cardManager->discardDuelCard($card);
+                    $this->cardManager->replenishHands();
                 } else {
                     //add +7 influence
                     $this->cardManager->incCardModifier($interactiveAbility, 7);
@@ -430,7 +433,12 @@ trait StateTrait {
                 $nextState = 'chooseFortuneTellerCard';
                 $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($ability->type)));
             }
-            $this->cardManager->pickAdditionalCard();
+
+            if ($this->getScenery() != BAZAAR) {
+                $this->cardManager->pickAdditionalCard();
+            } else {
+                $this->cardManager->replenishHands();
+            }
         }
         $this->gamestate->nextState($nextState);
     }

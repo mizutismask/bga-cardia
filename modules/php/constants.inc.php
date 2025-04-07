@@ -120,3 +120,12 @@ const WITCH_KING = 213;
 const ELEMENTAL = 214;
 const MECHANICAL_DJINN = 215;
 const SUCCESSOR = 216;
+
+const SERPENT_TEMPLE = 1;
+const BAZAAR = 2;
+const FOUNDERS_DAY = 3;
+const GRAND_LIBRARY = 4;
+const SCRAPYARD = 5;
+const AUCTION_HOUSE = 6;
+const HAUNTED_CATACOMBS = 7;
+const FOGGY_SWAMP = 8;

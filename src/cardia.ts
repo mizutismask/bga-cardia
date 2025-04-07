@@ -127,20 +127,25 @@ class Cardia extends BaseGame implements CardiaGame {
 	public setupLocation() {
 		if (this.gamedatas.location != 0) {
 			dojo.place(
-				`<div class='player_board_location location-${this.gamedatas.location}' id="player_board_location" style="${getBackgroundInlineStyleForLocation(
+				`<div class='player_board_location location-${
 					this.gamedatas.location
-				)}">`,
+				}' id="player_board_location" style="${getBackgroundInlineStyleForLocation(this.gamedatas.location)}">`,
 				'player_boards',
 				'first'
 			)
-			this.setTooltip('player_board_location', this.gamedatas.locationOptions[this.gamedatas.location].description)
+			this.setTooltip(
+				'player_board_location',
+				this.gamedatas.locationOptions[this.gamedatas.location].description
+			)
 		}
 	}
 
 	/* @Override */
 	public updatePlayerOrdering() {
 		;(this as any).inherited(arguments)
-		dojo.place('player_board_location', 'player_boards', 'first')
+		if (this.gamedatas.location != 0) {
+			dojo.place('player_board_location', 'player_boards', 'first')
+		}
 	}
 
 	private setupTooltips() {
@@ -1004,10 +1009,10 @@ class Cardia extends BaseGame implements CardiaGame {
 			case 'hand':
 				log('toArg', notif.args.toArg, this.getPlayerId())
 				if (notif.args.toArg == this.getPlayerId()) {
-					this.playerTables[notif.args.toArg].handStock.addCard(card)
+					this.playerTables[notif.args.toArg].handStock.addCards(cards)
 				} else {
 					log('removeCard', card.name)
-					this.cardsManager.getCardStock(card).removeCard(card)
+					this.cardsManager.getCardStock(card).removeCards(cards)
 				}
 				break
 			case 'encounter':

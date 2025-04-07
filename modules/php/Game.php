@@ -64,7 +64,11 @@ class Game extends \Bga\GameFramework\Table {
         ));
         $this->cards = $this->getNew("module.common.deck");
         $this->cards->init("card");
-        $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "CardiaCard", MATERIAL_TYPE_CARD, ["material" => $this->CARDIA_CARDS, "deck" => $this->refreshGlobalValue(101)]);//get deck from table options
+        $this->cardManager = new CardManager($this, TABLE_CARD, $this->cards, "CardiaCard", MATERIAL_TYPE_CARD, [
+            "material" => $this->CARDIA_CARDS,
+            "deck" => $this->refreshGlobalValue(101),
+            "location" => $this->refreshGlobalValue(102)
+        ]); //get deck from table options
 
         $this->tokens = $this->getNew("module.common.deck");
         $this->tokens->init("token");
@@ -174,16 +178,16 @@ class Game extends \Bga\GameFramework\Table {
         $result['signets'] = $this->tokenManager->getSignetsOnCards();
         $result['ongoingTokens'] = $this->tokenManager->getOngoingTokensOnCards();
         $result['modifiers'] = $this->cardManager->getModifiers();
-        
+
         foreach ($result['players'] as $playerId => &$player) {
             $currentPlayerOrder = intval($player['playerNo']);
             $player['playerNo'] = $currentPlayerOrder;
             $player['discard'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_DISCARD);
             $player['hand'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_HAND);
             $player['signetCount'] = $this->tokenManager->getSignetCount($currentPlayerOrder);
-            $player['nextCardModifier'] = $this->globals->get(GLB_NEXT_CARD_MODIFIER.$playerId);
+            $player['nextCardModifier'] = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId);
         }
-        
+
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['expansion'] = $this->getDeck();
         $result['location'] = $this->getScenery();

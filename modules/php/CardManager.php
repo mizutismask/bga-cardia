@@ -9,21 +9,37 @@ const TABLE_CARD = "card";
 
 class CardManager extends DeckManager {
 
-    public function dealHands($notify = false) {
+    public function dealHands($qty = 1, $notify = false) {
         $players = $this->game->loadPlayersBasicInfos();
         foreach ($players as $playerId => $player) {
-            $cards = array_slice($this->getCardsOfTypeArgFromLocationOrderBy(TABLE_CARD, $player['player_no'], 'deck', "card_location_arg", true), 0, 5);
-            $this->deck->moveCards(array_map(fn($c) => $c->id, $cards), "hand", $playerId);
+            $this->addCardsToHand($qty, $playerId, $player["player_no"], $notify);
+        }
+    }
 
-            if ($notify) {
-                $this->game->notifyPlayer($playerId, "materialMove",  "", [
-                    'playerId' => $playerId,
-                    'type' => $this->materialType,
-                    'from' => MATERIAL_LOCATION_DECK,
-                    'to' => MATERIAL_LOCATION_HAND,
-                    'toArg' => $playerId,
-                    'material' => $this->cast($this->deck->getCards(array_map(fn($c) => $c->id, $cards))),
-                ]);
+    public function addCardsToHand(int $qty, $playerId, int $playerPosition, $notify = false) {
+        $cards = array_slice($this->getCardsOfTypeArgFromLocationOrderBy(TABLE_CARD, $playerPosition, 'deck', "card_location_arg", true), 0, $qty);
+        $this->deck->moveCards(array_map(fn($c) => $c->id, $cards), "hand", $playerId);
+        if ($notify) {
+            $this->game->notifyPlayer($playerId, "materialMove",  "", [
+                'playerId' => $playerId,
+                'type' => $this->materialType,
+                'from' => MATERIAL_LOCATION_DECK,
+                'fromArg' =>  $playerId,
+                'to' => MATERIAL_LOCATION_HAND,
+                'toArg' => $playerId,
+                'material' => $this->cast($this->deck->getCards(array_map(fn($c) => $c->id, $cards))),
+            ]);
+        }
+    }
+
+    public function replenishHands() {
+        if (isset($this->castParameters["location"]) && $this->castParameters["location"] == BAZAAR) {
+            $players = $this->game->loadPlayersBasicInfos();
+            foreach ($players as $playerId => $player) {
+                $cardsCount = count($this->getCardsOfTypeArgFromLocation(TABLE_CARD, $player["player_no"], MATERIAL_LOCATION_HAND));
+                if ($cardsCount <= 1) {
+                    $this->addCardsToHand(4, $playerId, $player["player_no"], true);
+                }
             }
         }
     }
@@ -151,7 +167,7 @@ class CardManager extends DeckManager {
             ->where("card_type_arg", "=", $this->game->getPlayerPosition($playerId))
             ->get();
 
-       return $this->castSingle(reset($cards), true);
+        return $this->castSingle(reset($cards), true);
     }
 
 
