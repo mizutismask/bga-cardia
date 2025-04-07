@@ -133,6 +133,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				'player_boards',
 				'first'
 			)
+			this.setTooltip('player_board_location', this.gamedatas.locationOptions[this.gamedatas.location].description)
 		}
 	}
 

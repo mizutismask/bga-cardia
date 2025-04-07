@@ -174,7 +174,7 @@ class Game extends \Bga\GameFramework\Table {
         $result['signets'] = $this->tokenManager->getSignetsOnCards();
         $result['ongoingTokens'] = $this->tokenManager->getOngoingTokensOnCards();
         $result['modifiers'] = $this->cardManager->getModifiers();
-
+        
         foreach ($result['players'] as $playerId => &$player) {
             $currentPlayerOrder = intval($player['playerNo']);
             $player['playerNo'] = $currentPlayerOrder;
@@ -183,10 +183,11 @@ class Game extends \Bga\GameFramework\Table {
             $player['signetCount'] = $this->tokenManager->getSignetCount($currentPlayerOrder);
             $player['nextCardModifier'] = $this->globals->get(GLB_NEXT_CARD_MODIFIER.$playerId);
         }
-
+        
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
         $result['expansion'] = $this->getDeck();
         $result['location'] = $this->getScenery();
+        $result['locationOptions'] = $this->getTableOptions()[102]["values"];
         if ($isEnd) {
             $maxScore = max(array_map(fn($player) => intval($player['score']), $result['players']));
             $result['winners'] = array_keys(array_filter($result['players'], fn($player) => intval($player['score'] == $maxScore)));

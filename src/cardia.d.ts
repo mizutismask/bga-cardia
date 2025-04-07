@@ -64,6 +64,7 @@ interface CardiaGamedatas {
 	turnOrderClockwise: boolean
 	expansion: number //deck number
 	location: number
+	locationOptions: { [locationId: number]: CardiaGameOptions }
 	// counters
 	scores?: Array<NotifScoreArgs>
 	winners: number[]
@@ -74,6 +75,11 @@ interface CardiaGamedatas {
 	ongoingTokens: Token[]
 	modifiers: { [cardId: number]: number }
 	// Add here variables you set up in getAllDatas
+}
+
+interface CardiaGameOptions {
+	name: string
+	description: string
 }
 
 interface CounterValue {
