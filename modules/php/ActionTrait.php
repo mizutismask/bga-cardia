@@ -77,6 +77,10 @@ trait ActionTrait {
                 case INVENTOR:
                     $this->userAssertTrue(_("This card is not part of an encounter"), $card->location == MATERIAL_LOCATION_ENCOUNTER);
                     break;
+                case MAGISTRA:
+                    $selectableCards = $this->getSelectableCards($card);
+                    $this->userAssertTrue(_("The copied card must be a immediate power and have more or as much influence as your Magistra"),  $this->array_contains_card($selectableCards, $cardId));
+                    break;
             }
         }
 

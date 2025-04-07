@@ -4,6 +4,7 @@ namespace Bga\Games\Cardia;
 
 use Bga\Games\Cardia\objects\CardiaCard;
 use Bga\Games\Cardia\objects\Faction;
+use Bga\Games\Cardia\objects\PowerType;
 
 /**
  * @property CardManager cardManager
@@ -67,12 +68,17 @@ trait ArgsTrait {
     function argInteractiveAbility() {
         $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         $prompt = $this->getPrompt($ability);
-        return [
+        $args = [
             'abilityCard' => $ability,
             'interactionType' => $this->getInteractionType($ability),
             "prompt" => $prompt["prompt"],
             ...$prompt["args"],
         ];
+        if ($args["interactionType"] == "selectCard") {
+            $args["selectableCards"] = $this->getSelectableCards($ability);
+            $args["optionalSelection"] = $this->isCardSelectionOptional($ability);
+        }
+        return  $args;
     }
 
     function argInteractiveAbilityStep2() {
@@ -91,9 +97,9 @@ trait ArgsTrait {
         return $args;
     }
 
-    function getSelectableCards(CardiaCard $ability) {
+    function getSelectableCards(CardiaCard $ability, ?int $playerId = -1) {
         $selectableCards = [];
-        $playerId = $this->getMostlyActivePlayerId();
+        $playerId = $playerId ?? $this->getMostlyActivePlayerId();
         $playerPosition = $this->getPlayerPosition($playerId);
         if ($ability->type == PALACE_GUARD) {
             $faction = Faction::tryFrom($this->globals->get(GLB_SELECTED_FACTION));
@@ -102,7 +108,15 @@ trait ArgsTrait {
             $selectableCards = $this->cardManager->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
         } else if ($ability->type == SWAMP_GUARDIAN) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_HAND);
+        } else if ($ability->type == MAGISTRA) {
+            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
+            //filter to keep only instant power type and value >= this card’s value 
+            $abilityValue = $this->getCardValue($ability, true);
+            $selectableCards = array_filter($selectableCards, function ($card) use ($abilityValue, $ability) {
+                return $card->powerType == PowerType::IMMEDIATE && $card->id != $ability->id && $this->getCardValue($card, true) >= $abilityValue;
+            });
         }
+        //$this->dump('*******************argSelectableCards', $selectableCards);
         return $selectableCards;
     }
 
@@ -124,6 +138,8 @@ trait ArgsTrait {
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to remove its modifiers or its ongoing tokens'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
             case SWAMP_GUARDIAN:
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to take it back in hand'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+            case MAGISTRA:
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to activate its ability'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
         }
     }
 

@@ -96,6 +96,10 @@ trait StateTrait {
 
             $this->tokenManager->addSignetOnCard($maxCard->id, $minCard->id);
         } else {
+            //tie->remove signets if any
+            $this->tokenManager->discardTokenOfTypeOnCard($maxCard, TokenType::SIGIL);
+            $this->tokenManager->discardTokenOfTypeOnCard($minCard, TokenType::SIGIL);
+
             $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
             ]);
@@ -125,7 +129,7 @@ trait StateTrait {
 
     function stLooserAbility() {
         $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-        if ($this->isAbilityNeedingInteraction($card)) {
+        if ($this->isAbilityNeedingInteraction($card) && $this->isAbilityPossible($card, $this->getPlayerIdFromPosition($card->type_arg), null)) {
             $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getPlayerIdFromPosition($card->type_arg));
             $this->gamestate->nextState('interactiveAbility');
         } else {
@@ -204,7 +208,7 @@ trait StateTrait {
 
                     $winningCard = reset($cardsWithSignet);
                     if ($winningCard) {
-                        $this->tokenManager->addSignetOnCard($winningCard->id, null);
+                        $this->tokenManager->addSignetOnCard($winningCard->id, null, true);
                     }
                 }
                 break;
@@ -285,7 +289,7 @@ trait StateTrait {
                 break;
             case INVENTOR:
                 //first selected card gets a +3
-                $this->cardManager->incCardModifier($interactiveAbility, 3);
+                $this->cardManager->incCardModifier($card, 3);
                 $this->globals->set(GLB_INVENTOR_PLUS_CARD, $card->id);
                 //still needs to select another card
                 $this->globals->set(GLB_STEP_2, true);
@@ -316,6 +320,11 @@ trait StateTrait {
                 $this->cardManager->reorderDuels($encounter);
                 $this->gamestate->nextState('finishDuel');
                 break;
+            case MAGISTRA:
+                $encounter = $card->location_arg;
+                $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
+                $this->stLooserAbility();
+                break;
         }
     }
 
@@ -344,13 +353,14 @@ trait StateTrait {
         $this->gamestate->nextState('finishDuel');
     }
 
-    function isAbilityPossible(CardiaCard $card, int $playerToApply, Faction $faction): bool {
+    function isAbilityPossible(CardiaCard $card, int $playerToApply, ?Faction $faction): bool {
         switch ($card->type) {
             case PALACE_GUARD:
-                return count($this->cardManager->getFactionCardsInHand($playerToApply, $faction)) > 0;
-
+                return $faction && count($this->cardManager->getFactionCardsInHand($playerToApply, $faction)) > 0;
+            case MAGISTRA:
+                return !empty($this->getSelectableCards($card, $this->getPlayerIdFromPosition($card->type_arg)));
             default:
-                return false;
+                return true;
         }
     }
 
@@ -376,6 +386,7 @@ trait StateTrait {
             }
         }
 
+        $this->dump('*************card**', $card->name);
         $this->dump('*************final value**', $value);
         return $value;
     }
