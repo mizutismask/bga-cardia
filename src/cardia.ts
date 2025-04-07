@@ -548,6 +548,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		if ((this as any).isCurrentPlayerActive()) {
 			switch (stateName) {
 				case 'chooseDuelCard':
+				case 'chooseFortuneTellerCard':
 					this.statusBar.addActionButton(
 						_('Validate'),
 						() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),

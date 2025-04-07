@@ -32,7 +32,28 @@ trait ActionTrait {
 
     function chooseDuelCard(int $playerId, CardiaCard $card) {
         $this->globals->set(GLB_LAST_CHOSEN_CARD . "_" . $playerId, json_encode($card));
-        $this->gamestate->setPlayerNonMultiactive($playerId, '');
+
+        //notify the move to the player as if it was really done, so that he can see his card
+        $duelCount = $this->globals->get(GLB_DUEL_COUNT) + 1;
+        $notifArgs = [
+            'playerId' => $playerId,
+            'type' => MATERIAL_TYPE_CARD,
+            'from' => MATERIAL_LOCATION_HAND,
+            'to' => MATERIAL_LOCATION_ENCOUNTER,
+            'toArg' => $duelCount,
+            'material' => [$this->cardManager->getCard($card->id)],
+            'cardName' => $card->name,
+            'i18n' => ['cardName'],
+        ];
+        $this->notifyPlayer($playerId, "materialMove",  "", $notifArgs);
+        $this->notifyCounterChange();
+
+        if ($this->gamestate->state()["name"] == "chooseFortuneTellerCard") {
+            $this->notifyPlayer($this->getOpponentId($playerId), "materialMove",  "", $notifArgs);
+            $this->gamestate->nextState('opponentChooseCard');
+        } else {
+            $this->gamestate->setPlayerNonMultiactive($playerId, '');
+        }
     }
 
     function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, ?int $cardId, ?string $option) {

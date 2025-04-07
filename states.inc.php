@@ -112,6 +112,7 @@ $basicGameStates = [
         "transitions" => [
             "nextRound" => ST_NEXT_ROUND,
             "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
+            "chooseFortuneTellerCard" => ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD,
         ],
     ],
 
@@ -135,12 +136,25 @@ $playerActionsGameStates = [
         "descriptionmyturn" => clienttranslate('${you} must choose a card for the next encounter'),
         "type" => "multipleactiveplayer",
         //"args" => "argChooseDuelCard",
-        'action' => 'stMakeEveryoneActive',
+        'action' => 'stActivatePlayersToChooseDuelCard',
         "possibleactions" => [
             "actChooseDuelCard",
         ],
         "transitions" => [
             "duelReveal" => ST_DUEL_REVEAL,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD => [
+        "name" => "chooseFortuneTellerCard",
+        "description" => clienttranslate('Fortune teller: ${actplayer} must choose a card for the next encounter'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a card for the next encounter'),
+        "type" => "activeplayer",
+        "possibleactions" => [
+            "actChooseDuelCard",
+        ],
+        "transitions" => [
+            "opponentChooseCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
         ]
     ],
 

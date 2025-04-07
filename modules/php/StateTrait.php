@@ -114,8 +114,8 @@ trait StateTrait {
     }
 
     function isActiveCardInPlay($cardType, $playerId) {
-        $card = $this->cardManager->getCardInPlay($cardType, $playerId);    
-        
+        $card = $this->cardManager->getCardInPlay($cardType, $playerId);
+
         if ($card && $card->powerType == PowerType::ONGOING) {
             //check is ongoing card is still active
             $this->tokenManager->hasOngoingToken($card->id);
@@ -380,6 +380,15 @@ trait StateTrait {
         return $value;
     }
 
+    function stActivatePlayersToChooseDuelCard() {
+        $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        if ($ability->type == FORTUNE_TELLER) {
+            $this->gamestate->setPlayersMultiactive([$this->getPlayerIdFromPosition($ability->type_arg)], "duelReveal", true);
+        } else {
+            $this->gamestate->setAllPlayersMultiactive();
+        }
+    }
+
     /**
      * If only player has 5 signets or both have at least 5 signets but one player has more than the other, end of round.
      * @return void 
@@ -404,6 +413,11 @@ trait StateTrait {
             $this->incPlayerScore($winner, 1, clienttranslate('${player_name} wins the round !'), ["player_name" => $playerName]);
             $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('${player_name} wins the round'), "type" => "POSITIVE", "temporary" => true, "player_name" => $playerName]);
         } else {
+            $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+            if ($ability->type == FORTUNE_TELLER) {
+                $nextState = 'chooseFortuneTellerCard';
+                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($ability->type)));
+            }
             $this->cardManager->pickAdditionalCard();
         }
         $this->gamestate->nextState($nextState);
