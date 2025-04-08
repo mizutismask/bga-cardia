@@ -38,11 +38,11 @@ trait StateTrait {
     }
 
     function stDuelReveal() {
-        $playersIds = $this->getPlayersIds();
+        $players = $this->getPlayers();
         $duelCount = $this->globals->inc(GLB_DUEL_COUNT, 1);
         $stateTransition = 'finishDuel';
         $cards = [];
-        foreach ($playersIds as $playerId) {
+        foreach ($players as $playerId => $player) {
             $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
             $cards[] = $card;
             $this->cardManager->playCard($card, $playerId, $duelCount);
@@ -51,6 +51,17 @@ trait StateTrait {
             if ($modifierToAdd) {
                 $this->cardManager->incCardModifier($card, $modifierToAdd);
                 $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
+            }
+
+            if ($this->getScenery() == AUCTION_HOUSE) {
+                $revealedCardValue = $this->getCardValue($card, true);
+                $duels = $this->cardManager->getDuelsList();
+                if (isset($duels[$duelCount - 1])) {
+                    $previousCard =  $duels[$duelCount - 1][$playerId];
+                    if ($revealedCardValue < $this->getCardValue($previousCard, true)) {
+                        $this->cardManager->discardTopOfDeck($playerId, $player["player_no"]);
+                    }
+                }
             }
         }
 
@@ -231,10 +242,7 @@ trait StateTrait {
                 break;
             case SABOTEUR:
                 for ($i = 0; $i < 2; $i++) {
-                    $top = $this->cardManager->getCastedTopOfLocationForTypeArg(MATERIAL_LOCATION_DECK, $opponentTypeArg);
-                    if ($top) {
-                        $this->cardManager->discardCard($opponentId, $top->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $top->name]);
-                    }
+                    $this->cardManager->discardTopOfDeck($opponentId, $opponentTypeArg);
                 }
                 break;
             case PUPPETEER:

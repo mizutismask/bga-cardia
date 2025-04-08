@@ -174,6 +174,16 @@ class CardManager extends DeckManager {
         return $this->castSingle(reset($cards), true);
     }
 
+    function discardTopOfDeck(int $playerId, int $playerPosition) {
+        $top = $this->getCastedTopOfLocationForTypeArg(MATERIAL_LOCATION_DECK, $playerPosition);
+        if ($top) {
+            $this->discardCard($playerId, $top->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $top->name]);
+        } else {
+            $this->game->notifyWithName("msg",  clienttranslate('${player_name} has no card in deck to discard'), [
+                'playerId' => $playerId,
+            ]);
+        }
+    }
 
     function getModifiers() {
         $modifiers = [];
