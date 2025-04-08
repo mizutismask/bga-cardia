@@ -131,7 +131,7 @@ svg {
 	&#help-2 {
 		background-image: url('img/help2.png');
 	}
-	&:first-child{
+	&:first-child {
 		margin-top: 12px;
 	}
 }
@@ -211,33 +211,56 @@ svg {
 	}
 }
 
-.signet-icon {
-	font-size: xx-large;
-	font-weight: 900;
-	color: white;
-	background: blue;
-	border-radius: 50%;
-}
-
+.signet-icon,
+.modifier,
 .ongoing-icon {
-	font-size: xx-large;
-	font-weight: 900;
-	color: white;
-	background: blue;
-	border-radius: 50%;
+	max-width: 100%;
+	background-size: 100%;
+	background-image: url('img/tokens.png');
+	filter: drop-shadow(0px 0px 4px white);
 }
 
+.signet-icon {
+	background-position: 0 0%;
+	background-size: 100%;
+	width: 70px;
+	aspect-ratio: 102/82;
+}
 .modifier {
-	color: grey;
-	font-size: xx-large;
-	font-weight: 900;
-	background: blue;
-	border-radius: 50%;
+	background-position: 0 56.097561%;
+	background-size: 145.714286%;
+	width: 50px;
+	aspect-ratio: 1;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
 	margin: 17px;
+	font-size: 23pt;
+	font-weight: bolder;
 
 	&[data-value='0'] {
 		display: none;
 	}
+
+	/* Make font color white when data-value > 0 */
+	&[data-value]:not([data-value='0']):not([data-value^='-']) {
+		color: white;
+		text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+	}
+
+	/* Make font color black for data-value < 0 */
+	&[data-value^='-'] {
+		color: black;
+		text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+	}
+}
+.ongoing-icon {
+	background-position: 0 100%;
+	background-size: 145.714286%;
+	width: 65px;
+	aspect-ratio: 70/62;
 }
 
 /*.slot-stock {
