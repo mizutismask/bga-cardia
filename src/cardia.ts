@@ -310,7 +310,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		new HelpManager(this, {
 			buttons: [
 				new BgaHelpPopinButton({
-					title: _('Roles in play'),
+					title: "",
 					html: this.getHelpHtml(),
 					buttonBackground: 'white',
 					buttonColor: '#266059'
@@ -321,7 +321,10 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private getHelpHtml() {
 		let html = `
-        <div id="help-popin"> `
+        <div id="help-popin"> 
+			<div id="help-1" class="popin-help-card"></div>
+			<div id="help-2" class="popin-help-card"></div>
+		`
 		/*new Set(this.gamedatas.rolesInPlay).forEach((r) => {
 			html += this.getRoleHtml(r, this.gamedatas.rolesInPlay.filter((allR) => allR === r).length)
 		})*/

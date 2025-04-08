@@ -117,6 +117,25 @@ svg {
 	}
 }
 
+#help-dialog-content {
+	width: unset;
+}
+
+.popin-help-card {
+	width: 342px;
+	height: 206px;
+	@include card-border;
+	&#help-1 {
+		background-image: url('img/help1.png');
+	}
+	&#help-2 {
+		background-image: url('img/help2.png');
+	}
+	&:first-child{
+		margin-top: 12px;
+	}
+}
+
 .card {
 	position: relative;
 	width: $CARD_WIDTH;
