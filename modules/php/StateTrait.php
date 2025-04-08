@@ -42,6 +42,7 @@ trait StateTrait {
         $duelCount = $this->globals->inc(GLB_DUEL_COUNT, 1);
         $stateTransition = 'finishDuel';
         $cards = [];
+        $immediateLoosers = [];
         foreach ($players as $playerId => $player) {
             $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
             $cards[] = $card;
@@ -63,18 +64,37 @@ trait StateTrait {
                     }
                 }
             }
+            if ($this->getScenery() == HAUNTED_CATACOMBS) {
+                $revealedCardValue = $card->faction;
+                $duels = $this->cardManager->getDuelsList();
+                if (isset($duels[$duelCount - 1])) {
+                    $previousCard =  $duels[$duelCount - 1][$playerId];
+                    if ($card->faction == $previousCard->faction) {
+                        //immediatly loose the round
+                        $immediateLoosers[] = $playerId;
+                    }
+                }
+            }
         }
 
-        $eval = $this->evaluateDuelValues($cards);
+        if ($immediateLoosers) {
+            if (count($immediateLoosers) == 1) {
+                $this->stFinishDuel([$this->getOpponentId(reset($immediateLoosers))]);
+            } else {
+                $this->stFinishDuel([], true);
+            }
+        } else {
+            $eval = $this->evaluateDuelValues($cards);
 
-        if ($eval["hasWinner"]) {
-            $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
-            $stateTransition = 'looserAbility';
-        }
+            if ($eval["hasWinner"]) {
+                $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
+                $stateTransition = 'looserAbility';
+            }
 
-        if (!$eval["interrupt"]) {
-            $this->dump('*******************stDuelReveal', $stateTransition);
-            $this->gamestate->nextState($stateTransition);
+            if (!$eval["interrupt"]) {
+                $this->dump('*******************stDuelReveal', $stateTransition);
+                $this->gamestate->nextState($stateTransition);
+            }
         }
     }
 
@@ -462,13 +482,13 @@ trait StateTrait {
      * If only player has 5 signets or both have at least 5 signets but one player has more than the other, end of round.
      * @return void 
      */
-    function stFinishDuel(array $winners = null) { //todo can have several winners
+    function stFinishDuel(array $winners = null, bool $everyoneLooses = false) {
         $this->globals->delete(GLB_SELECTED_CARD_ID);
         $this->globals->delete(GLB_SELECTED_FACTION);
         $this->globals->delete(GLB_STEP_2);
 
         // $winner = $winners ?? $this->getSignetCountWinner();
-        if (!$winners) {
+        if (!$winners && !$everyoneLooses) {
             $winners = [];
             $withCard = $this->getNoPlayableCardWinner();
             if ($withCard) {
@@ -477,8 +497,14 @@ trait StateTrait {
                 self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
             }
         }
+
+        if ($everyoneLooses) {
+            $winners = [];
+            self::notifyAllPlayers('msg', clienttranslate('Everyone looses, end of round'), []);
+        }
+
         $this->dump('*******************winners', $winners);
-        $nextState = $winners ? 'nextRound' : 'chooseDuelCard';
+        $nextState = $winners || $everyoneLooses ? 'nextRound' : 'chooseDuelCard';
 
         if ($winners) {
             foreach ($winners as $winner) {
