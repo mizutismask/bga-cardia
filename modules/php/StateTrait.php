@@ -479,16 +479,23 @@ trait StateTrait {
                 }
             }
         } else {
-            $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-            if ($ability->type == FORTUNE_TELLER) {
-                $nextState = 'chooseFortuneTellerCard';
-                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($ability->type)));
+            $abilityId = $this->globals->get(GLB_ABILITY_TO_RESOLVE);
+            if ($abilityId) {
+                $ability = $this->cardManager->getCard($abilityId);
+                if ($ability->type == FORTUNE_TELLER) {
+                    $nextState = 'chooseFortuneTellerCard';
+                    $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($ability->type)));
+                }
             }
 
-            if ($this->getScenery() != BAZAAR) {
-                $this->cardManager->pickAdditionalCard();
-            } else {
+            if ($this->getScenery() == BAZAAR) {
                 $this->cardManager->replenishHands();
+            } else {
+                $this->cardManager->pickAdditionalCard();
+            }
+
+            if ($this->getScenery() == GRAND_LIBRARY) {
+                $this->cardManager->pickAdditionalCard(); //get one more card
             }
         }
         $this->gamestate->nextState($nextState);

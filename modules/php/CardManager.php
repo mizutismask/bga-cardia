@@ -9,7 +9,11 @@ const TABLE_CARD = "card";
 
 class CardManager extends DeckManager {
 
-    public function dealHands($qty = 5, $notify = false) {
+    public function dealHands($notify = false) {
+        $qty = 5;
+        if ($this->game->getScenery() == GRAND_LIBRARY) {
+            $qty = 2;
+        }
         $players = $this->game->loadPlayersBasicInfos();
         foreach ($players as $playerId => $player) {
             $this->addCardsToHand($qty, $playerId, $player["player_no"], $notify);
