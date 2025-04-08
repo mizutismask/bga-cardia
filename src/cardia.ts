@@ -251,7 +251,7 @@ class Cardia extends BaseGame implements CardiaGame {
 					<span id="deck-cards-counter-${player.id}"></span>
 				</div>
 				<div id="hand-cards-counter-${player.id}-wrapper" class="counter hand-cards-counter counter-left-part">
-					<div class="fa fa-hand-paper-o"></div> 
+					<div class="fa fa-2x fa-hand-paper-o"></div> 
 					<span id="hand-cards-counter-${player.id}"></span>
 				</div>
 			</div>

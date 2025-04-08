@@ -107,7 +107,7 @@
 .counters {
     display: flex;
     align-items: center;
-    margin: 5px 0;
+    margin: 12px 0px 0px 0;
 }
 
 .additional-info {
@@ -126,6 +126,13 @@
     height: 32px;
     background-size: auto 100%;
     background-repeat: no-repeat;
+}
+
+.player_board_content{
+    .signet-icon {
+        width: 50px;
+        height: unset;
+    }
 }
 
 .playerOrderHelp{
