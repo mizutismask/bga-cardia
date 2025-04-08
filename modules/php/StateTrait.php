@@ -61,8 +61,10 @@ trait StateTrait {
             $stateTransition = 'looserAbility';
         }
 
-        $this->dump('*******************stDuelReveal', $stateTransition);
-        $this->gamestate->nextState($stateTransition);
+        if (!$eval["interrupt"]) {
+            $this->dump('*******************stDuelReveal', $stateTransition);
+            $this->gamestate->nextState($stateTransition);
+        }
     }
 
     function evaluateDuelValues(array $cards) {
@@ -114,7 +116,51 @@ trait StateTrait {
                 }
             }
         }
-        return ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard];
+
+        $result = ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard, "interrupt" => false];
+
+        if ($this->getScenery() == FOUNDERS_DAY) {
+            $finalWinners = $this->getPlayersHavingSuccessiveWins(3);
+            if (count($finalWinners) > 0) {
+                $this->stFinishDuel($finalWinners);
+                $result["interrupt"] = true;
+            }
+        }
+
+        return $result;
+    }
+
+    function getPlayersHavingSuccessiveWins(int $minimumWins) {
+        $players = $this->loadPlayersBasicInfos();
+        $withEnoughSuccessiveWins = [];
+        foreach ($players as $playerId => $player) {
+            $this->dump('*******************$playerId', $playerId);
+            $cards = $this->cardManager->getCardsOfTypeArgFromLocationOrderBy(TABLE_CARD, $player["player_no"], MATERIAL_LOCATION_ENCOUNTER, "card_location_arg");
+            $this->dump('*******************$cards', $cards);
+            //check if player has 3 successive cards with signets looping through cards
+            if (count($cards) < $minimumWins) {
+                continue;
+            }
+
+            $successiveWins = 0;
+            //a win is a card with signets
+            for ($i = 0; $i < count($cards); $i++) {
+                $card = $cards[$i];
+                $signets = $this->tokenManager->getSignetsOnCard($card->id);
+                if (count($signets) > 0) {
+                    $successiveWins++;
+                } else {
+                    $successiveWins = 0;
+                }
+                if ($successiveWins == $minimumWins) {
+                    $withEnoughSuccessiveWins[] = $playerId;
+                    $this->dump('*******************adding', $playerId);
+                    break;  // Add this break to stop checking more cards once we've found enough successive wins
+                }
+            }
+        }
+        $this->dump('*******************$withEnoughSuccessiveWins', $withEnoughSuccessiveWins);
+        return $withEnoughSuccessiveWins;
     }
 
     function isActiveCardInPlay($cardType, $playerId) {
@@ -214,7 +260,7 @@ trait StateTrait {
                 }
                 break;
             case DJINN:
-                $this->stFinishDuel($playerId);
+                $this->stFinishDuel([$playerId]);
                 break;
             case SURGEON:
                 $value = -5;
@@ -408,25 +454,30 @@ trait StateTrait {
      * If only player has 5 signets or both have at least 5 signets but one player has more than the other, end of round.
      * @return void 
      */
-    function stFinishDuel($djinnWinner = null) {
+    function stFinishDuel(array $winners = null) { //todo can have several winners
         $this->globals->delete(GLB_SELECTED_CARD_ID);
         $this->globals->delete(GLB_SELECTED_FACTION);
         $this->globals->delete(GLB_STEP_2);
 
-        $winner = $djinnWinner ?? $this->getSignetCountWinner();
-        if (!$winner) {
-            $winner = $this->getNoPlayableCardWinner();
-            if ($winner == -1) {
+        // $winner = $winners ?? $this->getSignetCountWinner();
+        if (!$winners) {
+            $winners = [];
+            $withCard = $this->getNoPlayableCardWinner();
+            if ($withCard) {
+                $winners = [$withCard];
+            } else {
                 self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
             }
         }
+        $this->dump('*******************winners', $winners);
+        $nextState = $winners ? 'nextRound' : 'chooseDuelCard';
 
-        $nextState = $winner ? 'nextRound' : 'chooseDuelCard';
-
-        if ($winner) {
-            $playerName = $this->getPlayerName($winner);
-            $this->incPlayerScore($winner, 1, clienttranslate('${player_name} wins the round !'), ["player_name" => $playerName]);
-            $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('${player_name} wins the round'), "type" => "POSITIVE", "temporary" => true, "player_name" => $playerName]);
+        if ($winners) {
+            foreach ($winners as $winner) {
+                if ($winner) {
+                    $this->setRoundWinner($winner);
+                }
+            }
         } else {
             $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
             if ($ability->type == FORTUNE_TELLER) {
@@ -441,6 +492,12 @@ trait StateTrait {
             }
         }
         $this->gamestate->nextState($nextState);
+    }
+
+    function setRoundWinner(int $playerId) {
+        $playerName = $this->getPlayerName($playerId);
+        $this->incPlayerScore($playerId, 1, clienttranslate('${player_name} wins the round !'), ["player_name" => $playerName]);
+        $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('${player_name} wins the round'), "type" => "POSITIVE", "temporary" => true, "player_name" => $playerName]);
     }
 
     function getSignetCountWinner(): ?int {

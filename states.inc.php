@@ -79,6 +79,7 @@ $basicGameStates = [
         "transitions" => [
             "finishDuel" => ST_FINISH_DUEL,
             "looserAbility" => ST_LOOSER_ABILITY,
+            "nextRound" => ST_NEXT_ROUND,//founders day
         ],
     ],
 

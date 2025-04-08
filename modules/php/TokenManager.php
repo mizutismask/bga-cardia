@@ -24,6 +24,22 @@ class TokenManager extends DeckManager {
         return intval($this->deck->getUniqueValueFromDB($sql));
     }
 
+    public function getSignetsOnPlayerCards(int $playerOrder) {
+        $tokenType = TokenType::SIGIL->value;
+        $tokenTable = TABLE_TOKEN;
+        $cardTable = TABLE_CARD;
+        $fields = $this->game->getTypicalTableFields();
+
+        $sql = str_replace(array("\r", "\n"), ' ', "SELECT $fields 
+                    FROM $tokenTable as token 
+                    JOIN $cardTable as card ON card.card_id = token.card_location_arg
+                    WHERE token.card_type = '$tokenType' 
+                    AND token.card_location = 'card' 
+                    AND card.card_type_arg = '$playerOrder'
+                ");
+        return $this->deck->getObjectListFromDB($sql);
+    }
+
     public function getSignetsOnCards() {
         return $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_CARD));
     }
@@ -73,6 +89,11 @@ class TokenManager extends DeckManager {
             $signet = reset($signets);
         }
         return $signet;
+    }
+
+    public function getSignetsOnCard(int $cardId) {
+        $signets = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_CARD, $cardId));
+        return $signets;
     }
 
     public function addOngoingTokenOnCard(int $cardId) {

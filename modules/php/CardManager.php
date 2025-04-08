@@ -9,7 +9,7 @@ const TABLE_CARD = "card";
 
 class CardManager extends DeckManager {
 
-    public function dealHands($qty = 1, $notify = false) {
+    public function dealHands($qty = 5, $notify = false) {
         $players = $this->game->loadPlayersBasicInfos();
         foreach ($players as $playerId => $player) {
             $this->addCardsToHand($qty, $playerId, $player["player_no"], $notify);
@@ -215,7 +215,7 @@ class CardManager extends DeckManager {
         $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_CARD, MATERIAL_LOCATION_DECK);
         $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_ENCOUNTER, MATERIAL_LOCATION_DECK);
         $this->deck->shuffle("deck");
-        $this->dealHands(true);
+        $this->dealHands(notify: true);
         $this->game->notifyCounterChange();
     }
 }
