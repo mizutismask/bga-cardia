@@ -13,6 +13,7 @@ const GLB_PLAYER_TO_ACTIVATE = 'playerToActivate';
 const GLB_INVENTOR_PLUS_CARD = 'inventorPlusCard';
 const GLB_NEXT_CARD_MODIFIER = 'nextCardModifier';
 const GLB_STEP_2 = 'step2';
+const GLB_NEXT_STATE_AFTER_SCRAPYARD = 'nextStateAfterScrapyard';
 define("GS_PLAYER_TURN_NUMBER", 'playerturn_nbr');
 
 /*
@@ -57,6 +58,7 @@ define('ST_INTERACTIVE_ABILITY', 35);
 define('ST_INTERACTIVE_ABILITY_STEP_2', 36);
 define('ST_ACTIVATE_PLAYER_FOR_ABILITY', 37);
 define('ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD', 38);
+define('ST_PLAYER_SCRAPYARD_CHOOSE_CARD', 39);
 
 define('ST_NEXT_PLAYER', 80);
 define('ST_NEXT_REVEAL', 81);

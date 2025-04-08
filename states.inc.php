@@ -114,6 +114,7 @@ $basicGameStates = [
             "nextRound" => ST_NEXT_ROUND,
             "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
             "chooseFortuneTellerCard" => ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD,
+            "chooseScrapyardCard" => ST_PLAYER_SCRAPYARD_CHOOSE_CARD,
         ],
     ],
 
@@ -143,6 +144,22 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "duelReveal" => ST_DUEL_REVEAL,
+        ]
+    ],
+
+    ST_PLAYER_SCRAPYARD_CHOOSE_CARD => [
+        "name" => "scrapyardChooseCard",
+        "description" => clienttranslate('${actplayer} must choose a card to put under the deck'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a card to put under the deck'),
+        "type" => "multipleactiveplayer",
+        'action' => 'stMakeEveryoneActive',
+        "possibleactions" => [
+            "actScrapyardChooseCard",
+        ],
+        "transitions" => [
+            "nextRound" => ST_NEXT_ROUND,
+            "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
+            "chooseFortuneTellerCard" => ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD,
         ]
     ],
 

@@ -20,6 +20,21 @@ trait ActionTrait {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
+    function actScrapyardChooseCard(int $version, int $cardId) {
+        $this->checkVersion($version);
+        $this->checkAction('actScrapyardChooseCard');
+        $playerId = $this->getMostlyActivePlayerId();
+        $card = $this->cardManager->getCard($cardId);
+        $this->userAssertTrue($this->_("This card is not in your hand"), $card->location == "hand" && $card->location_arg == $playerId);
+
+        $this->chooseScrapyardCard($this->getMostlyActivePlayerId(), $card);
+        $this->gamestate->setPlayerNonMultiactive($playerId, $this->globals->get(GLB_NEXT_STATE_AFTER_SCRAPYARD));
+    }
+
+    function chooseScrapyardCard(int $playerId, CardiaCard $card) {
+        $this->cardManager->moveCardToBottomOfDeck($card, $playerId);
+    }
+
     function actChooseDuelCard(int $version, int $cardId) {
         $this->checkVersion($version);
         $this->checkAction('actChooseDuelCard');

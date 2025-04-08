@@ -522,14 +522,20 @@ trait StateTrait {
                 }
             }
 
-            if ($this->getScenery() == BAZAAR) {
+            $location = $this->getScenery();
+            if ($location == BAZAAR) {
                 $this->cardManager->replenishHands();
             } else {
                 $this->cardManager->pickAdditionalCard();
             }
 
-            if ($this->getScenery() == GRAND_LIBRARY) {
+            if ($location == GRAND_LIBRARY || $location == SCRAPYARD) {
                 $this->cardManager->pickAdditionalCard(); //get one more card
+            }
+
+            if ($location == SCRAPYARD) {
+                $this->globals->set(GLB_NEXT_STATE_AFTER_SCRAPYARD, $nextState);  
+                $nextState = 'chooseScrapyardCard';
             }
         }
         $this->gamestate->nextState($nextState);

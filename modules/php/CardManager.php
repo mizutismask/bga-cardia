@@ -185,6 +185,12 @@ class CardManager extends DeckManager {
         }
     }
 
+    function moveCardToBottomOfDeck(CardiaCard $card, $playerId) {
+        $index = $this->game->getBottomIndexOfLocationForTypeArg(TABLE_CARD, MATERIAL_LOCATION_DECK, $card->type_arg);
+        $index--;
+        $this->moveCardToLocation($card, MATERIAL_LOCATION_DECK, $index, true, $playerId);
+    }
+
     function getModifiers() {
         $modifiers = [];
         $query = new QueryBuilder(TABLE_CARD);

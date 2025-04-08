@@ -472,6 +472,9 @@ class Cardia extends BaseGame implements CardiaGame {
 			case 'stDuelReveal':
 				//this.centralZone.createDuelStock(null, null)
 				break
+			case 'scrapyardChooseCard':
+				this.onEnteringScrapyardChooseCard()
+				break
 		}
 		if (this.gameFeatures.spyOnActivePlayerInGeneralActions) {
 			this.addArrowsToActivePlayer(args)
@@ -489,6 +492,14 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private onEnteringChooseDuelCard() {
+		this.setHandAsSelectableArea()
+	}
+
+	private onEnteringScrapyardChooseCard() {
+		this.setHandAsSelectableArea()
+	}
+
+	private setHandAsSelectableArea() {
 		this.centralZone.duelStocks.forEach((stock) => {
 			stock.setSelectionMode('none')
 		})
@@ -578,6 +589,14 @@ class Cardia extends BaseGame implements CardiaGame {
 					this.statusBar.addActionButton(
 						_('Validate'),
 						() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),
+						{}
+					)
+					//this.setActionBarChooseAction(false)
+					break
+				case 'scrapyardChooseCard':
+					this.statusBar.addActionButton(
+						_('Validate'),
+						() => this.chooseScrapyardCardAction(this.playerTables[this.getPlayerId()].handStock),
 						{}
 					)
 					//this.setActionBarChooseAction(false)
@@ -673,6 +692,14 @@ class Cardia extends BaseGame implements CardiaGame {
 	private chooseDuelCardAction(stock: CardStock<CardiaCard>) {
 		this.ensureStockSelection([stock], _('You have to select a card'), () => {
 			this.takeAction('actChooseDuelCard', {
+				cardId: stock.getSelection()[0].id
+			})
+		})
+	}
+
+	private chooseScrapyardCardAction(stock: CardStock<CardiaCard>) {
+		this.ensureStockSelection([stock], _('You have to select a card'), () => {
+			this.takeAction('actScrapyardChooseCard', {
 				cardId: stock.getSelection()[0].id
 			})
 		})
@@ -1012,7 +1039,9 @@ class Cardia extends BaseGame implements CardiaGame {
 					this.playerTables[notif.args.toArg].handStock.addCards(cards)
 				} else {
 					log('removeCard', card.name)
-					this.cardsManager.getCardStock(card).removeCards(cards)
+					cards.forEach((c) => {
+						this.cardsManager.getCardStock(card).removeCard(c)
+					})
 				}
 				break
 			case 'encounter':
@@ -1033,6 +1062,11 @@ class Cardia extends BaseGame implements CardiaGame {
 						stock.addCard(card)
 					})
 				}
+				break
+			case 'deck':
+				cards.forEach((c) => {
+					this.cardsManager.getCardStock(card).removeCard(c)
+				})
 				break
 			default:
 				console.error('Card move destination not handled', notif)

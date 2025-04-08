@@ -72,6 +72,17 @@ trait DBUtilTrait {
         return $this->getObjectListFromDB($query)[0] ?? null;
     }
 
+    function getBottomIndexOfLocationForTypeArg(string $tableName, string $location, int $typeArg) {
+        $fields = [];
+        foreach (["card_location_arg"] as $alias => $col) {
+            $fields[] = is_numeric($alias) ? "`$col`" : "`$col` AS `$alias`";
+        }
+        $fields = implode(' , ', $fields);
+
+        $query = "SELECT $fields FROM $tableName WHERE `card_location` = '$location' AND `card_type_arg` = $typeArg AND `card_location_arg` = (SELECT MIN(card_location_arg) FROM $tableName WHERE card_location = '$location' AND card_type_arg = $typeArg)";
+        return $this->getUniqueIntValueFromDB($query) ?? 0;
+    }
+
     function getTypicalTableFields() {
         return [
             'id' => 'card_id',
