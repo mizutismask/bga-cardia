@@ -347,6 +347,11 @@ trait StateTrait {
                 $this->cardManager->updateCardModifier($opposing,  $newOpposingModifier * -1);
                 $this->evaluateDuelValues([$card, $opposing]);
                 break;
+            case TAX_COLLECTOR:
+                $this->cardManager->incCardModifier($card,  4);
+                $opposing = $this->cardManager->getOpposingCard($card, $duels);
+                $this->evaluateDuelValues([$card, $opposing]);
+                break;
         }
     }
 

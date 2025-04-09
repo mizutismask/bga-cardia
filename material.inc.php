@@ -47,7 +47,7 @@ $this->CARDIA_CARDS = [
   201 => new CardiaCardInfo(1, PowerType::IMMEDIATE, Faction::GREEN, self::_("Poisoner")),
   202 => new CardiaCardInfo(2, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Kinesis Mage")),
   203 => new CardiaCardInfo(3, PowerType::IMMEDIATE, Faction::RED, self::_("Envoy")),
-  204 => new CardiaCardInfo(4, PowerType::ONGOING, Faction::BLUE, self::_("Tax Collector")),
+  204 => new CardiaCardInfo(4, PowerType::IMMEDIATE, Faction::BLUE, self::_("Tax Collector")),
   205 => new CardiaCardInfo(5, PowerType::IMMEDIATE, Faction::GREEN, self::_("Revolutionary")),
   206 => new CardiaCardInfo(6, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Librarian")),
   207 => new CardiaCardInfo(7, PowerType::IMMEDIATE, Faction::RED, self::_("Prodigy")),
@@ -58,6 +58,6 @@ $this->CARDIA_CARDS = [
   212 => new CardiaCardInfo(12, PowerType::ONGOING, Faction::BLUE, self::_("Counselor")),
   213 => new CardiaCardInfo(13, PowerType::IMMEDIATE, Faction::GREEN, self::_("Witch King")),
   214 => new CardiaCardInfo(14, PowerType::IMMEDIATE, Faction::YELLOW, self::_("Elemental")),
-  215 => new CardiaCardInfo(15, PowerType::IMMEDIATE, Faction::RED, self::_("Mechanical Djinn")),
+  215 => new CardiaCardInfo(15, PowerType::ONGOING, Faction::RED, self::_("Mechanical Djinn")),
   216 => new CardiaCardInfo(16, PowerType::IMMEDIATE, Faction::BLUE, self::_("Successor")),
 ];
