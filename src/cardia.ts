@@ -310,7 +310,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		new HelpManager(this, {
 			buttons: [
 				new BgaHelpPopinButton({
-					title: "",
+					title: '',
 					html: this.getHelpHtml(),
 					buttonBackground: 'white',
 					buttonColor: '#266059'
@@ -518,18 +518,29 @@ class Cardia extends BaseGame implements CardiaGame {
 					}),
 				args ?? []
 			)
-		} else if (args.interactionType === 'selectCard') {
+		} else if (args.interactionType === 'selectCardFromDuels') {
 			if (args.prompt) {
 				this.statusBar.setTitle(args.prompt, args)
 			}
-			if ([INVENTOR, VOID_MAGE, SWAMP_GUARDIAN, MAGISTRA].includes(args.abilityCard.type)) {
-				//selection on central zone instead of hand
-				this.centralZone.duelStocks.forEach((stock) => {
-					stock.setSelectionMode('single')
-				})
-				this.playerTables[this.getPlayerId()].handStock.setSelectionMode('none')
-			} else {
+			//selection on central zone instead of hand
+			this.centralZone.duelStocks.forEach((stock) => {
+				stock.setSelectionMode('single')
+			})
+			this.playerTables[this.getPlayerId()].handStock.setSelectionMode('none')
+			if (args.selectableCards) {
 				this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args['selectableCards'])
+			}
+		
+		} else if (args.interactionType === 'selectCardFromHand') {
+			if (args.prompt) {
+				this.statusBar.setTitle(args.prompt, args)
+			}
+			this.centralZone.duelStocks.forEach((stock) => {
+				stock.setSelectionMode('none')
+			})
+			this.playerTables[this.getPlayerId()].handStock.setSelectionMode('single')
+			if (args.selectableCards) {
+				this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args.selectableCards)
 			}
 		}
 	}
@@ -611,19 +622,8 @@ class Cardia extends BaseGame implements CardiaGame {
 						;['G', 'Y', 'R', 'B'].forEach((faction) => {
 							this.statusBar.addActionButton(faction, () => this.selectFaction(faction), {})
 						})
-					} else if (typedArgs.interactionType === 'selectCard') {
-						if ([INVENTOR, SWAMP_GUARDIAN, MAGISTRA].includes(typedArgs.abilityCard.type)) {
-							this.statusBar.addActionButton(
-								_('Validate'),
-								() =>
-									this.selectCardAction(
-										stateName,
-										typedArgs.optionalSelection,
-										this.getSelectedDuelStock()
-									),
-								{}
-							)
-						} else if (typedArgs.abilityCard.type == VOID_MAGE) {
+					} else if (typedArgs.interactionType === 'selectCardFromDuels') {
+						if (typedArgs.abilityCard.type == VOID_MAGE) {
 							this.statusBar.addActionButton(
 								_('Remove modifiers'),
 								() =>
@@ -648,16 +648,27 @@ class Cardia extends BaseGame implements CardiaGame {
 							)
 						} else {
 							this.statusBar.addActionButton(
-								_('Validate selection'),
+								_('Validate'),
 								() =>
 									this.selectCardAction(
 										stateName,
 										typedArgs.optionalSelection,
-										this.playerTables[this.getPlayerId()].handStock
+										this.getSelectedDuelStock()
 									),
 								{}
 							)
 						}
+					} else if (typedArgs.interactionType === 'selectCardFromHand') {
+						this.statusBar.addActionButton(
+							_('Validate selection'),
+							() =>
+								this.selectCardAction(
+									stateName,
+									typedArgs.optionalSelection,
+									this.playerTables[this.getPlayerId()].handStock
+								),
+							{}
+						)
 					} else {
 						//this.setActionBarChooseAction(false)
 						this.statusBar.addActionButton(

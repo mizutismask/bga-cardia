@@ -15,6 +15,7 @@ const GLB_NEXT_CARD_MODIFIER = 'nextCardModifier';
 const GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED = 'nextCardModifierAfterAbility';
 const GLB_STEP_2 = 'step2';
 const GLB_NEXT_STATE_AFTER_SCRAPYARD = 'nextStateAfterScrapyard';
+const GLB_KINESIS_SOURCE_CARD = 'kinesisSourceCard';
 define("GS_PLAYER_TURN_NUMBER", 'playerturn_nbr');
 
 /*

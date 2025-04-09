@@ -232,16 +232,16 @@ trait StateTrait {
             SWAMP_GUARDIAN,
             MAGISTRA,
             INVENTOR,
-            KINESIS_MAGE,
+            /*KINESIS_MAGE,
             ENVOY,
             REVOLUTIONARY,
-            LIBRARIAN,
+            LIBRARIAN,*/
             PRODIGY,
-            BLACKMAILER,
+           /* BLACKMAILER,
             ILLUSIONIST,
             WITCH_KING,
             ELEMENTAL,
-            SUCCESSOR
+            SUCCESSOR*/
         ];
         return in_array($card->type, $abilitiesNeedingInteraction);
     }
@@ -390,7 +390,7 @@ trait StateTrait {
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
             'cardName' => $interactiveAbility->name,
         ]);
-        $this->dump('*******************applyAbility', $interactiveAbility->name);
+        $this->dump('*******************applyInteractiveAbility', $interactiveAbility->name);
 
         $opponentTypeArg = $interactiveAbility->type_arg == 1 ? 2 : 1;
         $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
@@ -442,6 +442,11 @@ trait StateTrait {
                 $encounter = $card->location_arg;
                 $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
                 $this->stLooserAbility();
+                break;
+            case PRODIGY:
+                $this->cardManager->incCardModifier($card, 3);
+                $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
+                $this->gamestate->nextState('finishDuel');
                 break;
         }
     }

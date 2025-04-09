@@ -74,7 +74,7 @@ trait ArgsTrait {
             "prompt" => $prompt["prompt"],
             ...$prompt["args"],
         ];
-        if ($args["interactionType"] == "selectCard") {
+        if (in_array($args["interactionType"], ["selectCardFromHand", "selectCardFromDuels"])) {
             $args["selectableCards"] = $this->getSelectableCards($ability);
             $args["optionalSelection"] = $this->isCardSelectionOptional($ability);
         }
@@ -90,14 +90,14 @@ trait ArgsTrait {
             "prompt" => $prompt["prompt"],
             ...$prompt["args"],
         ];
-        if ($args["interactionType"] == "selectCard") {
+        if (in_array($args["interactionType"], ["selectCardFromHand", "selectCardFromDuels"])) {
             $args["selectableCards"] = $this->getSelectableCards($ability);
             $args["optionalSelection"] = $this->isCardSelectionOptional($ability);
         }
         return $args;
     }
 
-    function getSelectableCards(CardiaCard $ability, ?int $playerId = -1) {
+    function getSelectableCards(CardiaCard $ability, ?int $playerId = null) {
         $selectableCards = [];
         $playerId = $playerId ?? $this->getMostlyActivePlayerId();
         $playerPosition = $this->getPlayerPosition($playerId);
@@ -114,6 +114,11 @@ trait ArgsTrait {
             $abilityValue = $this->getCardValue($ability, true);
             $selectableCards = array_filter($selectableCards, function ($card) use ($abilityValue, $ability) {
                 return $card->powerType == PowerType::IMMEDIATE && $card->id != $ability->id && $this->getCardValue($card, true) >= $abilityValue;
+            });
+        } else if ($ability->type == PRODIGY) {
+            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
+            $selectableCards = array_filter($selectableCards, function ($card) {
+                return $this->getCardValue($card, true) <= 8;
             });
         }
         //$this->dump('*******************argSelectableCards', $selectableCards);
@@ -140,15 +145,36 @@ trait ArgsTrait {
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to take it back in hand'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
             case MAGISTRA:
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to activate its ability'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+            case KINESIS_MAGE:
+                $msg =  $this->globals->get(GLB_KINESIS_SOURCE_CARD) ? clienttranslate('${ability} ability: choose the destination card to put all the moved tokens and modifiers on') : clienttranslate('${ability} ability: choose the source card to move all tokens and modifiers from');
+                return ["prompt" =>  $msg, "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+            case PRODIGY:
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card with 8 or less influence to add +3 influence to it'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+
+            default:
+                $this->error('*******************No prompt for ', $ability->name);
+                return ["prompt" =>  "Unknown ability", "args" => []];
         }
     }
 
     function getInteractionType(CardiaCard $card) {
-        if (in_array($card->type, [PALACE_GUARD, AMBUSHER])) {
+        if (in_array($card->type, [PALACE_GUARD, AMBUSHER, BLACKMAILER, WITCH_KING])) {
             return 'selectFaction';
         }
-        if (in_array($card->type, [VOID_MAGE, SWAMP_GUARDIAN, MAGISTRA, INVENTOR])) {
-            return 'selectCard';
+        if (in_array($card->type, [SWAMP_GUARDIAN, REVOLUTIONARY, ELEMENTAL, SUCCESSOR])) {
+            return 'selectCardFromHand';
+        }
+        if (in_array($card->type, [
+            VOID_MAGE,
+            MAGISTRA,
+            INVENTOR,
+            KINESIS_MAGE,
+            ENVOY,
+            PRODIGY,
+            ILLUSIONIST,
+            ELEMENTAL
+        ])) {
+            return 'selectCardFromDuels';
         }
         throw new \BgaVisibleSystemException("Unknown interaction type for card: " . $card->name);
     }

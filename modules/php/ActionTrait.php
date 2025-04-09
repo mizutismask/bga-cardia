@@ -81,13 +81,14 @@ trait ActionTrait {
         if ($interactionType == "selectFaction") {
             $this->userAssertTrue(_("You have to select a faction"), $interactiveAbility &&  $faction);
             $this->globals->set(GLB_SELECTED_FACTION, $faction);
-        } else if ($interactionType == "selectCard") {
+        } else if (in_array($interactionType, ["selectCardFromHand", "selectCardFromDuels"])) {
             $card = $this->cardManager->getCard($cardId);
             $this->userAssertTrue(_("You have to select a card"), $cardId && $card);
             $this->globals->set(GLB_SELECTED_CARD_ID, $cardId);
         }
-
+           
         if ($card) {
+            $this->dump('*******************actInteractiveAbility on ', $card->name);
             switch ($interactiveAbility->type) {
                 case INVENTOR:
                     $this->userAssertTrue(_("This card is not part of an encounter"), $card->location == MATERIAL_LOCATION_ENCOUNTER);
@@ -95,6 +96,10 @@ trait ActionTrait {
                 case MAGISTRA:
                     $selectableCards = $this->getSelectableCards($card);
                     $this->userAssertTrue(_("The copied card must be a immediate power and have more or as much influence as your Magistra"),  $this->array_contains_card($selectableCards, $cardId));
+                    break;
+                case PRODIGY:
+                    $selectableCards = $this->getSelectableCards($interactiveAbility);
+                    $this->userAssertTrue(_("You should select one of your cards with at most 8 influence"),  $this->array_contains_card($selectableCards, $cardId));
                     break;
             }
         }
