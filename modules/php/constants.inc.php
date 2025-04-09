@@ -12,6 +12,7 @@ const GLB_ABILITY_TO_RESOLVE = 'abilityToResolve';
 const GLB_PLAYER_TO_ACTIVATE = 'playerToActivate';
 const GLB_INVENTOR_PLUS_CARD = 'inventorPlusCard';
 const GLB_NEXT_CARD_MODIFIER = 'nextCardModifier';
+const GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED = 'nextCardModifierAfterAbility';
 const GLB_STEP_2 = 'step2';
 const GLB_NEXT_STATE_AFTER_SCRAPYARD = 'nextStateAfterScrapyard';
 define("GS_PLAYER_TURN_NUMBER", 'playerturn_nbr');

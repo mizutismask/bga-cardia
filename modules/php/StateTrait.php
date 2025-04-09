@@ -48,8 +48,8 @@ trait StateTrait {
             $cards[] = $card;
             $this->cardManager->playCard($card, $playerId, $duelCount);
 
-            $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId);
-            if ($modifierToAdd) {
+            $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId, 0);
+            if ($modifierToAdd != 0) {
                 $this->cardManager->incCardModifier($card, $modifierToAdd);
                 $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
             }
@@ -352,6 +352,16 @@ trait StateTrait {
                 $opposing = $this->cardManager->getOpposingCard($card, $duels);
                 $this->evaluateDuelValues([$card, $opposing]);
                 break;
+            case ENGINEER:
+                $value = 5;
+                $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId, $value);
+                $this->notifyWithName('nextCardModifier', "", [
+                    'value' => $value,
+                    'playerId' => $playerId,
+                    'playerPosition' => $this->getPlayerPosition($playerId),
+                    'disabled' => true,
+                ]);
+                break;
         }
     }
 
@@ -515,6 +525,23 @@ trait StateTrait {
      * @return void 
      */
     function stFinishDuel(array $winners = null, bool $everyoneLooses = false) {
+        //add engineer influence if any
+        $duels = $this->cardManager->getDuelsList();
+        $finishingDuel = array_pop($duels);
+        $anyModif = false;
+        foreach ($this->getPlayers() as $playerId => $players) {
+            $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId, 0);
+            if ($modifierToAdd != 0 && $finishingDuel[$playerId]->type != ENGINEER) {
+                $anyModif = true;
+                $this->cardManager->incCardModifier($finishingDuel[$playerId], $modifierToAdd);
+                $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
+            }
+        }
+        if ($anyModif) {
+            $this->evaluateDuelValues(array_values($finishingDuel));
+        }
+
+        //reset data
         $this->globals->delete(GLB_SELECTED_CARD_ID);
         $this->globals->delete(GLB_SELECTED_FACTION);
         $this->globals->delete(GLB_STEP_2);
