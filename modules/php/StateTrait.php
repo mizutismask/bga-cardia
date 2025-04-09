@@ -130,8 +130,9 @@ trait StateTrait {
             $this->tokenManager->addSignetOnCard($maxCard->id, $minCard->id);
         } else {
             //tie->remove signets if any
-            $this->tokenManager->discardTokenOfTypeOnCard($maxCard, TokenType::SIGIL);
-            $this->tokenManager->discardTokenOfTypeOnCard($minCard, TokenType::SIGIL);
+            foreach ($cards as $card) {
+                $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::SIGIL);
+            }
 
             $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
@@ -224,7 +225,24 @@ trait StateTrait {
     }
 
     function isAbilityNeedingInteraction(CardiaCard $card): bool {
-        $abilitiesNeedingInteraction = [VOID_MAGE, PALACE_GUARD, AMBUSHER, SWAMP_GUARDIAN, MAGISTRA, INVENTOR];
+        $abilitiesNeedingInteraction = [
+            VOID_MAGE,
+            PALACE_GUARD,
+            AMBUSHER,
+            SWAMP_GUARDIAN,
+            MAGISTRA,
+            INVENTOR,
+            KINESIS_MAGE,
+            ENVOY,
+            REVOLUTIONARY,
+            LIBRARIAN,
+            PRODIGY,
+            BLACKMAILER,
+            ILLUSIONIST,
+            WITCH_KING,
+            ELEMENTAL,
+            SUCCESSOR
+        ];
         return in_array($card->type, $abilitiesNeedingInteraction);
     }
 
@@ -319,6 +337,15 @@ trait StateTrait {
                 foreach ($tied as $duelNumber => $duel) {
                     $this->tokenManager->addSignetOnCard($duel[$playerId]->id, null);
                 }
+                break;
+            case POISONER:
+                $opposing = $this->cardManager->getOpposingCard($card, $duels);
+                $opposingValue = $this->getCardValue($opposing);
+                $cardValue = $this->getCardValue($card);
+                //opposingValue - newOpposingModifier = cardValue
+                $newOpposingModifier = $opposingValue - $cardValue;
+                $this->cardManager->updateCardModifier($opposing,  $newOpposingModifier * -1);
+                $this->evaluateDuelValues([$card, $opposing]);
                 break;
         }
     }
@@ -534,7 +561,7 @@ trait StateTrait {
             }
 
             if ($location == SCRAPYARD) {
-                $this->globals->set(GLB_NEXT_STATE_AFTER_SCRAPYARD, $nextState);  
+                $this->globals->set(GLB_NEXT_STATE_AFTER_SCRAPYARD, $nextState);
                 $nextState = 'chooseScrapyardCard';
             }
         }
