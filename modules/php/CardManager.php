@@ -196,7 +196,7 @@ class CardManager extends DeckManager {
         $query = new QueryBuilder(TABLE_CARD);
         $cards = $query
             ->select(["card_id", "card_modifier"])
-            ->where('card_modifier', '!=', 0)
+            //->where('card_modifier', '!=', 0)
             ->get();
         foreach ($cards as $card) {
             $modifiers[$card["card_id"]] = intval($card["card_modifier"]);

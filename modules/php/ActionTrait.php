@@ -7,6 +7,7 @@ use \Bga\GameFramework\Actions\Types\StringParam;
 
 use Bga\Games\Cardia\objects\CardiaCard;
 use Bga\Games\Cardia\objects\Faction;
+use Bga\Games\Cardia\objects\InteractionType;
 use GameState;
 use Globals;
 
@@ -78,15 +79,15 @@ trait ActionTrait {
         $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         $interactionType = $this->getInteractionType($interactiveAbility);
         $card = null;
-        if ($interactionType == "selectFaction") {
+        if ($interactionType == InteractionType::selectFaction) {
             $this->userAssertTrue(_("You have to select a faction"), $interactiveAbility &&  $faction);
             $this->globals->set(GLB_SELECTED_FACTION, $faction);
-        } else if (in_array($interactionType, ["selectCardFromHand", "selectCardFromDuels"])) {
+        } else if (in_array($interactionType, [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $card = $this->cardManager->getCard($cardId);
             $this->userAssertTrue(_("You have to select a card"), $cardId && $card);
             $this->globals->set(GLB_SELECTED_CARD_ID, $cardId);
         }
-           
+
         if ($card) {
             $this->dump('*******************actInteractiveAbility on ', $card->name);
             switch ($interactiveAbility->type) {
@@ -113,9 +114,10 @@ trait ActionTrait {
         $playerId = $this->getMostlyActivePlayerId();
         $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         $interactionType = $this->getInteractionTypeStep2($interactiveAbility);
+        
         $card = null;
         $optional = in_array($interactiveAbility->type, [PALACE_GUARD]);
-        if ($interactionType == "selectCard") {
+        if (in_array($interactionType, [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $card = $this->cardManager->getCard($cardId, $optional);
             if (!$optional) {
                 $this->userAssertTrue(_("You have to select a card"), $cardId && $card);

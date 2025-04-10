@@ -232,12 +232,12 @@ trait StateTrait {
             SWAMP_GUARDIAN,
             MAGISTRA,
             INVENTOR,
-            /*KINESIS_MAGE,
-            ENVOY,
+            KINESIS_MAGE,
+            /*ENVOY,
             REVOLUTIONARY,
             LIBRARIAN,*/
             PRODIGY,
-           /* BLACKMAILER,
+            /* BLACKMAILER,
             ILLUSIONIST,
             WITCH_KING,
             ELEMENTAL,
@@ -391,6 +391,7 @@ trait StateTrait {
             'cardName' => $interactiveAbility->name,
         ]);
         $this->dump('*******************applyInteractiveAbility', $interactiveAbility->name);
+        $this->dump('*******************on', $card?->name);
 
         $opponentTypeArg = $interactiveAbility->type_arg == 1 ? 2 : 1;
         $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
@@ -448,6 +449,12 @@ trait StateTrait {
                 $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
                 $this->gamestate->nextState('finishDuel');
                 break;
+            case KINESIS_MAGE:
+                $this->globals->set(GLB_KINESIS_SOURCE_CARD, $card->id);
+                //still needs to select destination
+                $this->globals->set(GLB_STEP_2, true);
+                $this->gamestate->nextState('interactiveAbilityStep2'); 
+                break;
         }
     }
 
@@ -471,6 +478,31 @@ trait StateTrait {
                 $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
                 if ($firstModif->location_arg != $card->location_arg) {
                     $this->evaluateDuelValues([$firstModif, $this->cardManager->getOpposingCard($firstModif, $this->cardManager->getDuelsList())]);
+                }
+                break;
+            case KINESIS_MAGE:
+                $source = $this->cardManager->getCard($this->globals->get(GLB_KINESIS_SOURCE_CARD));
+                $destination = $card;
+                $modifiers = $this->cardManager->getModifierValueOnCard($source->id);
+                $duels = $this->cardManager->getDuelsList();
+                $reevaluate = false;
+                if ($modifiers != 0) {
+                    $this->cardManager->updateCardModifier($source, 0);
+                    $this->cardManager->updateCardModifier($destination, $modifiers);
+                    $reevaluate = true;
+                }
+                $tokens = $this->tokenManager->getOngoingTokensOnCards($source->id);
+                if ($tokens) {
+                    $reevaluate = true;
+                    foreach ($tokens as $token) {
+                        $this->tokenManager->discardTokenOfTypeOnCard($source, TokenType::ONGOING);
+                        $this->tokenManager->addOngoingTokenOnCard($destination->id);
+                    }
+                }
+
+                if ($reevaluate) {
+                    $this->evaluateDuelValues([$destination, $this->cardManager->getOpposingCard($destination, $duels)]);
+                    $this->evaluateDuelValues([$source, $this->cardManager->getOpposingCard($source, $duels)]);
                 }
                 break;
         }

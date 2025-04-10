@@ -4,6 +4,7 @@ namespace Bga\Games\Cardia;
 
 use Bga\Games\Cardia\objects\CardiaCard;
 use Bga\Games\Cardia\objects\Faction;
+use Bga\Games\Cardia\objects\InteractionType;
 use Bga\Games\Cardia\objects\PowerType;
 
 /**
@@ -74,7 +75,7 @@ trait ArgsTrait {
             "prompt" => $prompt["prompt"],
             ...$prompt["args"],
         ];
-        if (in_array($args["interactionType"], ["selectCardFromHand", "selectCardFromDuels"])) {
+        if (in_array($args["interactionType"], [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $args["selectableCards"] = $this->getSelectableCards($ability);
             $args["optionalSelection"] = $this->isCardSelectionOptional($ability);
         }
@@ -90,7 +91,7 @@ trait ArgsTrait {
             "prompt" => $prompt["prompt"],
             ...$prompt["args"],
         ];
-        if (in_array($args["interactionType"], ["selectCardFromHand", "selectCardFromDuels"])) {
+        if (in_array($args["interactionType"], [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $args["selectableCards"] = $this->getSelectableCards($ability);
             $args["optionalSelection"] = $this->isCardSelectionOptional($ability);
         }
@@ -157,12 +158,12 @@ trait ArgsTrait {
         }
     }
 
-    function getInteractionType(CardiaCard $card) {
+    function getInteractionType(CardiaCard $card): InteractionType {
         if (in_array($card->type, [PALACE_GUARD, AMBUSHER, BLACKMAILER, WITCH_KING])) {
-            return 'selectFaction';
+            return InteractionType::selectFaction;
         }
         if (in_array($card->type, [SWAMP_GUARDIAN, REVOLUTIONARY, ELEMENTAL, SUCCESSOR])) {
-            return 'selectCardFromHand';
+            return InteractionType::selectCardFromHand;
         }
         if (in_array($card->type, [
             VOID_MAGE,
@@ -174,7 +175,7 @@ trait ArgsTrait {
             ILLUSIONIST,
             ELEMENTAL
         ])) {
-            return 'selectCardFromDuels';
+            return InteractionType::selectCardFromDuels;
         }
         throw new \BgaVisibleSystemException("Unknown interaction type for card: " . $card->name);
     }
@@ -182,9 +183,12 @@ trait ArgsTrait {
         return in_array($card->type, [PALACE_GUARD]);
     }
 
-    function getInteractionTypeStep2(CardiaCard $card) {
-        if (in_array($card->type, [PALACE_GUARD, INVENTOR])) {
-            return 'selectCard';
+    function getInteractionTypeStep2(CardiaCard $card): InteractionType {
+        if (in_array($card->type, [PALACE_GUARD])) {
+            return InteractionType::selectCardFromHand;
+        }
+        if (in_array($card->type, [INVENTOR, KINESIS_MAGE])) {
+            return InteractionType::selectCardFromDuels;
         }
         throw new \BgaVisibleSystemException("Unknown interaction type on step 2 for card: " . $card->name);
     }

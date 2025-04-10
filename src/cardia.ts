@@ -369,8 +369,6 @@ class Cardia extends BaseGame implements CardiaGame {
 			element.classList.remove('positive-modifier', 'negative-modifier')
 			element.classList.add('modifier')
 			element.classList.add(modifier > 0 ? 'positive-modifier' : 'negative-modifier')
-		} else {
-			console.error('Impossible to update modifier, no div ', element)
 		}
 	}
 
