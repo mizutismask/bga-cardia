@@ -720,7 +720,7 @@ class Cardia extends BaseGame implements CardiaGame {
 	private selectCardAction(
 		stateName: string,
 		optionalSelection: boolean,
-		stock: CardStock<CardiaCard>,
+		stock?: CardStock<CardiaCard>,
 		additionalParameters?: any
 	) {
 		const actionName = stateName == 'interactiveAbility' ? 'actInteractiveAbility' : 'actInteractiveAbilityStep2'
@@ -739,7 +739,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		} else {
 			log(...additionalParameters)
 			this.takeAction(actionName, {
-				cardId: stock.getSelection().length > 0 ? stock.getSelection()[0].id : -1,
+				cardId: stock && stock.getSelection().length > 0 ? stock.getSelection()[0].id : null,
 				...additionalParameters
 			})
 		}

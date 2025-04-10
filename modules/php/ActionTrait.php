@@ -83,8 +83,14 @@ trait ActionTrait {
             $this->userAssertTrue(_("You have to select a faction"), $interactiveAbility &&  $faction);
             $this->globals->set(GLB_SELECTED_FACTION, $faction);
         } else if (in_array($interactionType, [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
-            $card = $this->cardManager->getCard($cardId);
-            $this->userAssertTrue(_("You have to select a card"), $cardId && $card);
+            $optional = $this->isCardSelectionOptional($interactiveAbility);
+            if (!$optional) {
+                $this->userAssertTrue(_("You have to select a card"), $cardId);
+            }
+            if ($cardId) {
+                $card = $this->cardManager->getCard($cardId);
+                $this->userAssertTrue(_("this card does not exist"), $card);
+            }
             $this->globals->set(GLB_SELECTED_CARD_ID, $cardId);
         }
 
@@ -114,14 +120,20 @@ trait ActionTrait {
         $playerId = $this->getMostlyActivePlayerId();
         $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         $interactionType = $this->getInteractionTypeStep2($interactiveAbility);
-        
+
         $card = null;
-        $optional = in_array($interactiveAbility->type, [PALACE_GUARD]);
+        $optional = $this->isCardSelectionOptional($interactiveAbility);
         if (in_array($interactionType, [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $card = $this->cardManager->getCard($cardId, $optional);
+            $optional = $this->isCardSelectionOptional($interactiveAbility);
             if (!$optional) {
-                $this->userAssertTrue(_("You have to select a card"), $cardId && $card);
+                $this->userAssertTrue(_("You have to select a card"), $cardId);
             }
+            if ($cardId) {
+                $card = $this->cardManager->getCard($cardId);
+                $this->userAssertTrue(_("this card does not exist"), $card);
+            }
+            
             if ($card) {
                 $selectableCards = $this->argInteractiveAbilityStep2()["selectableCards"];
                 switch ($interactiveAbility->type) {

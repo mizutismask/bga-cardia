@@ -151,6 +151,8 @@ trait ArgsTrait {
                 return ["prompt" =>  $msg, "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
             case PRODIGY:
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card with 8 or less influence to add +3 influence to it'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+            case ENVOY:
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to add -3 influence to it, or none to add it to your next card'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
 
             default:
                 $this->error('*******************No prompt for ', $ability->name);
@@ -180,7 +182,7 @@ trait ArgsTrait {
         throw new \BgaVisibleSystemException("Unknown interaction type for card: " . $card->name);
     }
     function isCardSelectionOptional(CardiaCard $card) {
-        return in_array($card->type, [PALACE_GUARD]);
+        return in_array($card->type, [PALACE_GUARD, ENVOY]);
     }
 
     function getInteractionTypeStep2(CardiaCard $card): InteractionType {

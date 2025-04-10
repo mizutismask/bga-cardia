@@ -233,8 +233,8 @@ trait StateTrait {
             MAGISTRA,
             INVENTOR,
             KINESIS_MAGE,
-            /*ENVOY,
-            REVOLUTIONARY,
+            ENVOY,
+            /*REVOLUTIONARY,
             LIBRARIAN,*/
             PRODIGY,
             /* BLACKMAILER,
@@ -453,7 +453,22 @@ trait StateTrait {
                 $this->globals->set(GLB_KINESIS_SOURCE_CARD, $card->id);
                 //still needs to select destination
                 $this->globals->set(GLB_STEP_2, true);
-                $this->gamestate->nextState('interactiveAbilityStep2'); 
+                $this->gamestate->nextState('interactiveAbilityStep2');
+                break;
+            case ENVOY:
+                $value = -3;
+                if ($card) {
+                    $this->cardManager->incCardModifier($card, $value);
+                    $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
+                } else {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER . $playerId, $value);
+                    $this->notifyWithName('nextCardModifier', "", [
+                        'value' => $value,
+                        'playerId' => $playerId,
+                        'playerPosition' => $this->getPlayerPosition($playerId),
+                    ]);
+                }
+                $this->gamestate->nextState('finishDuel');
                 break;
         }
     }
