@@ -128,6 +128,10 @@ trait StateTrait {
             ]);
 
             $this->tokenManager->addSignetOnCard($maxCard->id, $minCard->id);
+
+            if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $this->getPlayerIdFromPosition($maxCard->type_arg))) {
+                $this->tokenManager->addSignetOnCard($maxCard->id, null, true); //todo reevaluate everything when ongoing removed
+            }
         } else {
             //tie->remove signets if any
             foreach ($cards as $card) {
@@ -248,34 +252,34 @@ trait StateTrait {
 
     /**
      * 
-     * @param CardiaCard $card 
+     * @param CardiaCard $ability 
      * @param array $duels 
      * @param CardiaToken[] $signets 
      * @param int duelNumber
      * @return void 
      * @throws BgaUserException 
      */
-    function applyAbility(CardiaCard $card, array $duels, array $signets, int $duelNumber) {
+    function applyAbility(CardiaCard $ability, array $duels, array $signets, int $duelNumber) {
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
-            'cardName' => $card->name,
+            'cardName' => $ability->name,
         ]);
-        $this->dump('*******************applyAbility', $card->name);
+        $this->dump('*******************applyAbility', $ability->name);
 
-        if ($card->powerType == PowerType::ONGOING) {
-            $this->tokenManager->addOngoingTokenOnCard($card->id);
+        if ($ability->powerType == PowerType::ONGOING) {
+            $this->tokenManager->addOngoingTokenOnCard($ability->id);
         }
 
-        $opponentTypeArg = $card->type_arg == 1 ? 2 : 1;
+        $opponentTypeArg = $ability->type_arg == 1 ? 2 : 1;
         $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
-        $playerId = $this->getPlayerIdFromPosition($card->type_arg);
-        switch ($card->type) {
+        $playerId = $this->getPlayerIdFromPosition($ability->type_arg);
+        switch ($ability->type) {
             case HIRED_BLADE:
-                $opposing = $this->cardManager->getOpposingCard($card, $duels);
-                $this->discardDuelCard($card);
+                $opposing = $this->cardManager->getOpposingCard($ability, $duels);
+                $this->discardDuelCard($ability);
                 $this->discardDuelCard($opposing);
                 break;
             case MEDIATOR:
-                $opposing = $this->cardManager->getOpposingCard($card, $duels);
+                $opposing = $this->cardManager->getOpposingCard($ability, $duels);
                 $this->tokenManager->discardTokenOfTypeOnCard($opposing, TokenType::SIGIL);
                 break;
             case SABOTEUR:
@@ -284,12 +288,12 @@ trait StateTrait {
                 }
                 break;
             case PUPPETEER:
-                $opposing = $this->cardManager->getOpposingCard($card, $duels);
+                $opposing = $this->cardManager->getOpposingCard($ability, $duels);
                 $opponentHand = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $opposing->type_arg, MATERIAL_LOCATION_HAND);
                 $replacement = $this->getRandomValue($opponentHand);
                 $this->discardDuelCard($opposing,  clienttranslate('${cardName} is replaced by ${cardName2}'), ["cardName" => $opposing->name, "cardName2" => $replacement->name]);
                 $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opposing->location_arg, true, $opponentId);
-                $this->evaluateDuelValues([$card, $replacement]);
+                $this->evaluateDuelValues([$ability, $replacement]);
                 $this->cardManager->replenishHands();
                 break;
             case TREASURER:
@@ -339,18 +343,18 @@ trait StateTrait {
                 }
                 break;
             case POISONER:
-                $opposing = $this->cardManager->getOpposingCard($card, $duels);
+                $opposing = $this->cardManager->getOpposingCard($ability, $duels);
                 $opposingValue = $this->getCardValue($opposing);
-                $cardValue = $this->getCardValue($card);
+                $cardValue = $this->getCardValue($ability);
                 //opposingValue - newOpposingModifier = cardValue
                 $newOpposingModifier = $opposingValue - $cardValue;
                 $this->cardManager->updateCardModifier($opposing,  $newOpposingModifier * -1);
-                $this->evaluateDuelValues([$card, $opposing]);
+                $this->evaluateDuelValues([$ability, $opposing]);
                 break;
             case TAX_COLLECTOR:
-                $this->cardManager->incCardModifier($card,  4);
-                $opposing = $this->cardManager->getOpposingCard($card, $duels);
-                $this->evaluateDuelValues([$card, $opposing]);
+                $this->cardManager->incCardModifier($ability,  4);
+                $opposing = $this->cardManager->getOpposingCard($ability, $duels);
+                $this->evaluateDuelValues([$ability, $opposing]);
                 break;
             case ENGINEER:
                 $value = 5;

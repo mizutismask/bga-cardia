@@ -280,6 +280,11 @@ svg {
 	.card-signets {
 		align-self: center;
 		justify-self: center;
+		
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
+		justify-content: center;
 	}
 
 	.card-modifiers {

@@ -406,7 +406,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				$(location)
 			)
 		} else if ($(location)) {
-			dojo.place(`<div id="${signetDivId}" class="signet-icon">S</div>`, location)
+			dojo.place(`<div id="${signetDivId}" class="signet-icon"></div>`, location)
 		} else {
 			console.error('can’t put signet on ' + location)
 		}
@@ -428,7 +428,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				$(location)
 			)
 		} else if ($(location)) {
-			dojo.place(`<div id="${signetDivId}" class="ongoing-icon">O</div>`, location)
+			dojo.place(`<div id="${signetDivId}" class="ongoing-icon"></div>`, location)
 		} else {
 			console.error('can’t put ongoing token on ' + location)
 		}
