@@ -27,6 +27,16 @@ class DeckManager {
             $this->deck->shuffle('deck');
     }
 
+    public function shuffleLocationByTypeArg(string $location, int $typeArg): void {
+        $cards = $this->getCardsOfTypeArgFromLocation(TABLE_CARD, $typeArg, $location);
+        
+        $shuffled = $this->game->getRandomSlice($cards, count($cards));
+        foreach ($shuffled as $i => $card) {
+            $this->deck->moveCard($card->id, $location, $i);
+        }
+        $cards = $this->getCardsOfTypeArgFromLocation(TABLE_CARD, $typeArg, $location);
+    }
+
     /**
      * Gets remaining cards count in deck (or in discard if 0 in deck)
      */

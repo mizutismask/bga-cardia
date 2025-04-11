@@ -510,10 +510,11 @@ class Cardia extends BaseGame implements CardiaGame {
 	private onEnteringInteractiveAbility(args: EnteringInteractiveAbilityArgs) {
 		if (args.interactionType === 'selectFaction') {
 			this.statusBar.setTitle(
-				args.prompt ??
-					dojo.string.substitute(_('${cardName} ability: Select a faction'), {
-						cardName: `${args.abilityCard.name}`
-					}),
+				args.prompt ?? args.prompt
+					? args.prompt
+					: dojo.string.substitute(_('${cardName} ability: Select a faction'), {
+							cardName: `${args.abilityCard.name}`
+					  }),
 				args ?? []
 			)
 		} else if (args.interactionType === 'selectCardFromDuels') {
@@ -528,7 +529,6 @@ class Cardia extends BaseGame implements CardiaGame {
 			if (args.selectableCards) {
 				this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args['selectableCards'])
 			}
-		
 		} else if (args.interactionType === 'selectCardFromHand') {
 			if (args.prompt) {
 				this.statusBar.setTitle(args.prompt, args)

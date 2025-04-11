@@ -229,6 +229,12 @@ class CardManager extends DeckManager {
         return $factionCards;
     }
 
+    public function getFactionCardsInDeck(int $playerId, Faction $faction) {
+        $cards = $this->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->game->getPlayerPosition($playerId), MATERIAL_LOCATION_DECK);
+        $factionCards = array_values(array_filter($cards, fn($card) => $card->faction == $faction));
+        return $factionCards;
+    }
+
     public function resetDecks() {
         $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_DISCARD, MATERIAL_LOCATION_DECK);
         $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_HAND, MATERIAL_LOCATION_DECK);

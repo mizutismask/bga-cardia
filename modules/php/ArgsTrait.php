@@ -156,7 +156,7 @@ trait ArgsTrait {
 
             default:
                 $this->error('*******************No prompt for ', $ability->name);
-                return ["prompt" =>  "Unknown ability", "args" => []];
+                return ["prompt" =>  "", "args" => []];
         }
     }
 

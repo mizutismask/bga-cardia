@@ -242,9 +242,9 @@ trait StateTrait {
             LIBRARIAN,*/
             PRODIGY,
             /* BLACKMAILER,
-            ILLUSIONIST,
+            ILLUSIONIST,*/
             WITCH_KING,
-            ELEMENTAL,
+           /* ELEMENTAL,
             SUCCESSOR*/
         ];
         return in_array($card->type, $abilitiesNeedingInteraction);
@@ -480,6 +480,19 @@ trait StateTrait {
                     ]);
                 }
                 $this->gamestate->nextState('finishDuel');
+                break;
+            case WITCH_KING:
+                $cards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
+                foreach ($cards as $c) {
+                    $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                }
+                $cards = $this->cardManager->getFactionCardsInDeck($opponentId, $faction);
+                foreach ($cards as $c) {
+                    $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                }
+                $this->cardManager->shuffleLocationByTypeArg(MATERIAL_LOCATION_DECK, $opponentTypeArg);
+                $this->gamestate->nextState('finishDuel');
+                break;
                 break;
         }
     }
