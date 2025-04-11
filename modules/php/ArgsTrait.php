@@ -159,6 +159,8 @@ trait ArgsTrait {
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to add -3 influence to it, or none to add it to your next card'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
             case REVOLUTIONARY:
                 return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards to discard from your hand'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+            case SUCCESSOR:
+                return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards from your hand to keep'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
 
             default:
                 $this->error('*******************No prompt for ', $ability->name);

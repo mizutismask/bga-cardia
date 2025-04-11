@@ -226,7 +226,7 @@ trait StateTrait {
     function stLooserAbility() {
         $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         if ($this->isAbilityNeedingInteraction($card) && $this->isAbilityPossible($card, $this->getPlayerIdFromPosition($card->type_arg), null)) {
-            if ($card->type == REVOLUTIONARY) {
+            if ($card->type == REVOLUTIONARY || $card->type == SUCCESSOR) {
                 //opponent is acting
                 $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($card->type_arg)));
             } else {
@@ -264,8 +264,8 @@ trait StateTrait {
             /* BLACKMAILER,
             ILLUSIONIST,*/
             WITCH_KING,
-            /* ELEMENTAL,
-            SUCCESSOR*/
+            /* ELEMENTAL,*/
+            SUCCESSOR
         ];
         return in_array($card->type, $abilitiesNeedingInteraction);
     }
@@ -533,6 +533,19 @@ trait StateTrait {
                     $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
                 }
                 $this->cardManager->addCardsToHand(2, $opponentId, $opponentTypeArg, true);
+                $this->gamestate->nextState('finishDuel');
+                break;
+            case SUCCESSOR:
+                $involvedCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $opponentTypeArg, MATERIAL_LOCATION_HAND);
+                foreach ($involvedCards as $c) {
+                    if (!in_array($c->id, array_map(fn($paramCard) => $paramCard->id, $cards))) {
+                        $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                    }
+                }
+                $involvedCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $opponentTypeArg, MATERIAL_LOCATION_DECK);
+                foreach ($involvedCards as $c) {
+                    $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                }
                 $this->gamestate->nextState('finishDuel');
                 break;
         }
