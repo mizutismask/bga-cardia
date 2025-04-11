@@ -139,19 +139,21 @@ class CardManager extends DeckManager {
         ));
     }
 
-    public function playCard(CardiaCard $card, int $playerId, int $duelCount) {
+    public function playCard(CardiaCard $card, int $playerId, int $duelCount): object|null {
         $this->deck->moveCard($card->id, MATERIAL_LOCATION_ENCOUNTER, $duelCount);
+        $refreshedCard = $this->castSingle($this->deck->getCard($card->id));
         $this->game->notifyWithName("materialMove",  clienttranslate('${player_name} plays ${cardName}'), [
             'playerId' => $playerId,
             'type' => $this->materialType,
             'from' => MATERIAL_LOCATION_HAND,
             'to' => MATERIAL_LOCATION_ENCOUNTER,
             'toArg' => $duelCount,
-            'material' => $this->cast([($this->deck->getCard($card->id))]),
+            'material' => $refreshedCard,
             'cardName' => $card->name,
             'i18n' => ['cardName'],
         ]);
         $this->game->notifyCounterChange();
+        return $refreshedCard;
     }
 
     function getDuelsList() {
@@ -163,7 +165,7 @@ class CardManager extends DeckManager {
         return $duels;
     }
 
-    function getCardInPlay($cardType, $playerId) {
+    function getCardInPlay($cardType, $playerId): CardiaCard|null {
         $query = new QueryBuilder(TABLE_CARD);
         $cards = $query->select($this->game->getTypicalTableFields())
             ->where("card_location", "=", MATERIAL_LOCATION_ENCOUNTER)

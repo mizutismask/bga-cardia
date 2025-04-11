@@ -45,8 +45,7 @@ trait StateTrait {
         $immediateLoosers = [];
         foreach ($players as $playerId => $player) {
             $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
-            $cards[] = $card;
-            $this->cardManager->playCard($card, $playerId, $duelCount);
+            $cards[] = $this->cardManager->playCard($card, $playerId, $duelCount);
 
             $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId, 0);
             if ($modifierToAdd != 0) {
@@ -102,6 +101,7 @@ trait StateTrait {
         $hasWinner = false;
         $maxCard = null;
         $minCard = null;
+        $interrupt = false;
         foreach ($cards as $card) {
             if ($minCard === null) {
                 $minCard = $card;
@@ -118,6 +118,8 @@ trait StateTrait {
 
         if ($minCard->id != $maxCard->id) {
             $hasWinner = true;
+            $winningPlayerId = $this->getPlayerIdFromPosition($maxCard->type_arg);
+
             $operator = ">";
             $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}: ${winnerValue} ${operator} ${looserValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
@@ -129,8 +131,17 @@ trait StateTrait {
 
             $this->tokenManager->addSignetOnCard($maxCard->id, $minCard->id);
 
-            if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $this->getPlayerIdFromPosition($maxCard->type_arg))) {
+            if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
                 $this->tokenManager->addSignetOnCard($maxCard->id, null, true); //todo reevaluate everything when ongoing removed
+            }
+            if ($this->isActiveCardInPlay(MECHANICAL_DJINN, $winningPlayerId)) {
+                $djinn = $this->cardManager->getCardInPlay(MECHANICAL_DJINN, $winningPlayerId);
+                //check if this card is immediately following the djinn
+                if ($djinn && $djinn->location_arg == $maxCard->location_arg - 1) {
+                    //win the game
+                    $interrupt = true;
+                    $this->stFinishDuel([$winningPlayerId]);
+                }
             }
         } else {
             //tie->remove signets if any
@@ -153,15 +164,15 @@ trait StateTrait {
             }
         }
 
-        $result = ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard, "interrupt" => false];
 
         if ($this->getScenery() == FOUNDERS_DAY) {
             $finalWinners = $this->getPlayersHavingSuccessiveWins(3);
             if (count($finalWinners) > 0) {
                 $this->stFinishDuel($finalWinners);
-                $result["interrupt"] = true;
+                $interrupt = true;
             }
         }
+        $result = ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard, "interrupt" => $interrupt];
 
         return $result;
     }
@@ -244,7 +255,7 @@ trait StateTrait {
             /* BLACKMAILER,
             ILLUSIONIST,*/
             WITCH_KING,
-           /* ELEMENTAL,
+            /* ELEMENTAL,
             SUCCESSOR*/
         ];
         return in_array($card->type, $abilitiesNeedingInteraction);
@@ -756,6 +767,7 @@ trait StateTrait {
             self::notifyAllPlayers('newRound', clienttranslate('&#10148; Round ${round}'), ["round" => $currentRound]);
             $this->cardManager->resetDecks();
             $this->tokenManager->resetTokens();
+            $this->notifyCounterChange();
             $this->gamestate->nextState('chooseDuelCard');
         }
     }
