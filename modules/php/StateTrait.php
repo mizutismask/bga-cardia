@@ -366,6 +366,13 @@ trait StateTrait {
                     'disabled' => true,
                 ]);
                 break;
+            case COUNSELOR:
+                if ($duelNumber > 1) {
+                    $previousDuelCards = $duels[$duelNumber - 1];
+                    $this->tokenManager->addSignetOnCard($previousDuelCards[$playerId]->id, $previousDuelCards[$opponentId]->id);
+                    //todo check if other ongoin power
+                }
+                break;
         }
     }
 
