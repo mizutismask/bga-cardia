@@ -7,8 +7,11 @@ use Bga\Games\Cardia\objects\CardiaCard;
 use Bga\Games\Cardia\objects\Faction;
 use Bga\Games\Cardia\objects\PowerType;
 use Bga\Games\Cardia\objects\TokenType;
+use BgaSystemException;
 use BgaUserException;
+use feException;
 use GameState;
+use Random\RandomException;
 
 /**
  * @property CardManager cardManager
@@ -223,7 +226,13 @@ trait StateTrait {
     function stLooserAbility() {
         $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         if ($this->isAbilityNeedingInteraction($card) && $this->isAbilityPossible($card, $this->getPlayerIdFromPosition($card->type_arg), null)) {
-            $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getPlayerIdFromPosition($card->type_arg));
+            if ($card->type == REVOLUTIONARY) {
+                //opponent is acting
+                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($card->type_arg)));
+            } else {
+                //card owner is acting
+                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getPlayerIdFromPosition($card->type_arg));
+            }
             $this->gamestate->nextState('interactiveAbility');
         } else {
             $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
@@ -249,8 +258,8 @@ trait StateTrait {
             INVENTOR,
             KINESIS_MAGE,
             ENVOY,
-            /*REVOLUTIONARY,
-            LIBRARIAN,*/
+            REVOLUTIONARY,
+            /*LIBRARIAN,*/
             PRODIGY,
             /* BLACKMAILER,
             ILLUSIONIST,*/
@@ -407,17 +416,32 @@ trait StateTrait {
         return $tied;
     }
 
-    function applyInteractiveAbility(CardiaCard $interactiveAbility, ?Faction $faction, ?CardiaCard $card, ?string $option) {
+    /**
+     * 
+     * @param CardiaCard $interactiveAbility 
+     * @param null|Faction $faction 
+     * @param CardiaCard[] $cards 
+     * @param null|string $option 
+     * @return void 
+     * @throws feException 
+     * @throws BgaUserException 
+     * @throws BgaSystemException 
+     * @throws RandomException 
+     */
+    function applyInteractiveAbility(CardiaCard $interactiveAbility, ?Faction $faction, array $cards, ?string $option) {
 
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
             'cardName' => $interactiveAbility->name,
         ]);
         $this->dump('*******************applyInteractiveAbility', $interactiveAbility->name);
-        $this->dump('*******************on', $card?->name);
+        foreach ($cards as $card) {
+            $this->dump('*******************on', $card?->name);
+        }
 
         $opponentTypeArg = $interactiveAbility->type_arg == 1 ? 2 : 1;
         $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
         $playerId = $this->getPlayerIdFromPosition($interactiveAbility->type_arg);
+        $card = $cards[0] ?? null;
         switch ($interactiveAbility->type) {
             case PALACE_GUARD:
                 //faction has been chosen but the opponent still needs to choose a card
@@ -446,8 +470,8 @@ trait StateTrait {
                 $this->gamestate->nextState('finishDuel');
                 break;
             case AMBUSHER:
-                $cards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
-                foreach ($cards as $c) {
+                $involvedCards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
+                foreach ($involvedCards as $c) {
                     $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
                     $this->cardManager->replenishHands();
                 }
@@ -493,17 +517,23 @@ trait StateTrait {
                 $this->gamestate->nextState('finishDuel');
                 break;
             case WITCH_KING:
-                $cards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
-                foreach ($cards as $c) {
+                $involvedCards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
+                foreach ($involvedCards as $c) {
                     $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
                 }
-                $cards = $this->cardManager->getFactionCardsInDeck($opponentId, $faction);
-                foreach ($cards as $c) {
+                $involvedCards = $this->cardManager->getFactionCardsInDeck($opponentId, $faction);
+                foreach ($involvedCards as $c) {
                     $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
                 }
                 $this->cardManager->shuffleLocationByTypeArg(MATERIAL_LOCATION_DECK, $opponentTypeArg);
                 $this->gamestate->nextState('finishDuel');
                 break;
+            case REVOLUTIONARY:
+                foreach ($cards as $c) {
+                    $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                }
+                $this->cardManager->addCardsToHand(2, $opponentId, $opponentTypeArg, true);
+                $this->gamestate->nextState('finishDuel');
                 break;
         }
     }

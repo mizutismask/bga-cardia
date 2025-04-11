@@ -77,7 +77,11 @@ trait ArgsTrait {
         ];
         if (in_array($args["interactionType"], [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $args["selectableCards"] = $this->getSelectableCards($ability);
-            $args["optionalSelection"] = $this->isCardSelectionOptional($ability);
+            $optional = $this->isCardSelectionOptional($ability);
+            $args["optionalSelection"] = $optional;
+            if (!$optional) {
+                $args["qty"] = $this->getCardSelectionQuantity($ability);
+            }
         }
         return  $args;
     }
@@ -153,6 +157,8 @@ trait ArgsTrait {
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card with 8 or less influence to add +3 influence to it'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
             case ENVOY:
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to add -3 influence to it, or none to add it to your next card'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+            case REVOLUTIONARY:
+                return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards to discard from your hand'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
 
             default:
                 $this->error('*******************No prompt for ', $ability->name);
@@ -181,8 +187,16 @@ trait ArgsTrait {
         }
         throw new \BgaVisibleSystemException("Unknown interaction type for card: " . $card->name);
     }
+
     function isCardSelectionOptional(CardiaCard $card) {
         return in_array($card->type, [PALACE_GUARD, ENVOY]);
+    }
+
+    function getCardSelectionQuantity(CardiaCard $card) {
+        if (in_array($card->type, [REVOLUTIONARY, SUCCESSOR])) {
+            return 2;
+        }
+        return 1;
     }
 
     function getInteractionTypeStep2(CardiaCard $card): InteractionType {

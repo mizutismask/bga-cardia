@@ -72,30 +72,38 @@ trait ActionTrait {
         }
     }
 
-    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, ?int $cardId, ?string $option) {
+    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, #[IntArrayParam()] array $cardIds, ?string $option) {
         $this->checkVersion($version);
         $this->checkAction('actInteractiveAbility');
         $playerId = $this->getMostlyActivePlayerId();
         $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         $interactionType = $this->getInteractionType($interactiveAbility);
-        $card = null;
+        $cards = [];
         if ($interactionType == InteractionType::selectFaction) {
             $this->userAssertTrue(_("You have to select a faction"), $interactiveAbility &&  $faction);
             $this->globals->set(GLB_SELECTED_FACTION, $faction);
         } else if (in_array($interactionType, [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $optional = $this->isCardSelectionOptional($interactiveAbility);
             if (!$optional) {
-                $this->userAssertTrue(_("You have to select a card"), $cardId);
+                $this->userAssertTrue(_("You have to select a card"), !empty($cardIds));
+                $qty = $this->getCardSelectionQuantity($interactiveAbility);
+                $this->userAssertTrue(_("You did not select the expected number of cards"), count($cardIds) == $qty);
             }
-            if ($cardId) {
-                $card = $this->cardManager->getCard($cardId);
-                $this->userAssertTrue(_("this card does not exist"), $card);
+            if ($cardIds) {
+                foreach ($cardIds as $cardId) {
+                    $card = $this->cardManager->getCard($cardId);
+                    $this->userAssertTrue(_("this card does not exist"), $card);
+                    $cards[] = $card;
+                }
             }
-            $this->globals->set(GLB_SELECTED_CARD_ID, $cardId);
+            $this->globals->set(GLB_SELECTED_CARD_ID, $cardIds);
         }
 
-        if ($card) {
-            $this->dump('*******************actInteractiveAbility on ', $card->name);
+        if ($cards) {
+            foreach ($cards as $card) {
+                $this->dump('*******************actInteractiveAbility on ', $card->name);
+            }
+            $card = reset($cards);
             switch ($interactiveAbility->type) {
                 case INVENTOR:
                     $this->userAssertTrue(_("This card is not part of an encounter"), $card->location == MATERIAL_LOCATION_ENCOUNTER);
@@ -111,7 +119,7 @@ trait ActionTrait {
             }
         }
 
-        $this->applyInteractiveAbility($interactiveAbility, Faction::tryFrom($faction), $card, $option);
+        $this->applyInteractiveAbility($interactiveAbility, Faction::tryFrom($faction), $cards, $option);
     }
 
     function actInteractiveAbilityStep2(int $version, ?int $cardId) {
@@ -133,7 +141,7 @@ trait ActionTrait {
                 $card = $this->cardManager->getCard($cardId);
                 $this->userAssertTrue(_("this card does not exist"), $card);
             }
-            
+
             if ($card) {
                 $selectableCards = $this->argInteractiveAbilityStep2()["selectableCards"];
                 switch ($interactiveAbility->type) {

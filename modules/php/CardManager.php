@@ -148,7 +148,7 @@ class CardManager extends DeckManager {
             'from' => MATERIAL_LOCATION_HAND,
             'to' => MATERIAL_LOCATION_ENCOUNTER,
             'toArg' => $duelCount,
-            'material' => $refreshedCard,
+            'material' => [$refreshedCard],
             'cardName' => $card->name,
             'i18n' => ['cardName'],
         ]);

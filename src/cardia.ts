@@ -536,7 +536,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			this.centralZone.duelStocks.forEach((stock) => {
 				stock.setSelectionMode('none')
 			})
-			this.playerTables[this.getPlayerId()].handStock.setSelectionMode('single')
+			this.playerTables[this.getPlayerId()].handStock.setSelectionMode(args.qty > 1 ? 'multiple' : 'single')
 			if (args.selectableCards) {
 				this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args.selectableCards)
 			}
@@ -629,7 +629,7 @@ class Cardia extends BaseGame implements CardiaGame {
 										stateName,
 										typedArgs.optionalSelection,
 										this.getSelectedDuelStock(),
-										{ option: 'removeModifiers' }
+										{ option: 'removeModifiers', qty: typedArgs.qty }
 									),
 								{}
 							)
@@ -651,7 +651,8 @@ class Cardia extends BaseGame implements CardiaGame {
 									this.selectCardAction(
 										stateName,
 										typedArgs.optionalSelection,
-										this.getSelectedDuelStock()
+										this.getSelectedDuelStock(),
+										{ qty: typedArgs.qty }
 									),
 								{}
 							)
@@ -663,7 +664,8 @@ class Cardia extends BaseGame implements CardiaGame {
 								this.selectCardAction(
 									stateName,
 									typedArgs.optionalSelection,
-									this.playerTables[this.getPlayerId()].handStock
+									this.playerTables[this.getPlayerId()].handStock,
+									{ qty: typedArgs.qty }
 								),
 							{}
 						)
@@ -724,22 +726,44 @@ class Cardia extends BaseGame implements CardiaGame {
 		additionalParameters?: any
 	) {
 		const actionName = stateName == 'interactiveAbility' ? 'actInteractiveAbility' : 'actInteractiveAbilityStep2'
-
+		const selectionSize = additionalParameters?.qty
+		log(additionalParameters)
+		log(selectionSize)
 		if (!optionalSelection) {
 			if (!stock) {
-				;(this as any).showMessage(_('You have to select a card'), 'error')
+				;(this as any).showMessage(
+					this.format_string_recursive(_('You have to select ${qty} card(s)'), {
+						'qty': selectionSize
+					}),
+					'error'
+				)
 				return
 			}
-			this.ensureStockSelection([stock], _('You have to select a card'), () => {
-				this.takeAction(actionName, {
-					cardId: stock.getSelection()[0].id,
-					...additionalParameters
-				})
-			})
+			this.ensureStockSelection(
+				[stock],
+				this.format_string_recursive(_('You have to select ${qty} card(s)'), {
+					'qty': selectionSize
+				}),
+				() => {
+					this.takeAction(actionName, {
+						cardIds: stock
+							.getSelection()
+							.map((elt) => elt.id)
+							.join(','),
+						...additionalParameters
+					})
+				},
+				selectionSize
+			)
 		} else {
-			log(...additionalParameters)
 			this.takeAction(actionName, {
-				cardId: stock && stock.getSelection().length > 0 ? stock.getSelection()[0].id : null,
+				cardIds:
+					stock && stock.getSelection().length > 0
+						? stock
+								.getSelection()
+								.map((elt) => elt.id)
+								.join(',')
+						: [],
 				...additionalParameters
 			})
 		}
@@ -893,8 +917,13 @@ class Cardia extends BaseGame implements CardiaGame {
         _ make a call to the game server
     
     */
-	private ensureStockSelection(stocks: CardStock<CardiaCard>[], errorMsg: string, callback: Function) {
-		if (stocks.every((s) => s.getSelection().length > 0)) {
+	private ensureStockSelection(
+		stocks: CardStock<CardiaCard>[],
+		errorMsg: string,
+		callback: Function,
+		selectionCount: number = 1
+	) {
+		if (stocks.every((s) => s.getSelection().length >= selectionCount)) {
 			callback()
 		} else {
 			;(this as any).showMessage(errorMsg, 'error')
