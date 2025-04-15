@@ -9,7 +9,7 @@ class CentralZone {
             <div id="central-zone" class="central-zone">
             </div>
         `
-		dojo.place(html, 'custom-game-area')
+		dojo.place(html, 'custom-game-area', 'first')
 		this.initDuelStocks(duels)
 	}
 
