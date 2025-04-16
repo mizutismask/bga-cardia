@@ -72,7 +72,7 @@ trait ActionTrait {
         }
     }
 
-    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, #[IntArrayParam()] array $cardIds, ?string $option) {
+    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, #[IntArrayParam()] ?array $cardIds, ?string $option) {
         $this->checkVersion($version);
         $this->checkAction('actInteractiveAbility');
         $playerId = $this->getMostlyActivePlayerId();
