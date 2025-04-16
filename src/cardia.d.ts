@@ -74,6 +74,7 @@ interface CardiaGamedatas {
 	signets: Token[]
 	ongoingTokens: Token[]
 	modifiers: { [cardId: number]: number }
+	lastChosenCard: CardiaCard
 	// Add here variables you set up in getAllDatas
 }
 

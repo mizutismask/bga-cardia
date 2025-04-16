@@ -406,6 +406,10 @@ class Cardia extends BaseGame implements CardiaGame {
 				this.updateNextCardModifier(Number(p.id), p.playerNo, p.nextCardModifier)
 			}
 		})
+
+		if (this.gamedatas.lastChosenCard) {
+			this.addCardToEncounter(this.gamedatas.lastChosenCard, Object.keys(this.gamedatas.duels).length + 1)
+		}
 	}
 
 	private updateModifiers(modifiers: { [cardId: number]: number }) {
@@ -1112,14 +1116,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			case 'encounter':
 				if (notif.args.toArg) {
 					//only one encounter is considered
-					dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
-					let stock = this.centralZone.duelStocks[notif.args.toArg]
-					if (!stock) {
-						this.centralZone.createDuelStock(null, null) //one for the current duel
-						//this.centralZone.createDuelStock(null, null) //one to prepare the next
-						stock = this.centralZone.duelStocks[notif.args.toArg]
-					}
-					stock.addCard(card)
+					this.addCardToEncounter(card, notif.args.toArg)
 				} else {
 					//it’s a reorganization of duels
 					cards.forEach((card) => {
@@ -1137,6 +1134,17 @@ class Cardia extends BaseGame implements CardiaGame {
 				console.error('Card move destination not handled', notif)
 				break
 		}
+	}
+
+	private addCardToEncounter(card: CardiaCard, encounterNumber: number) {
+		dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
+		let stock = this.centralZone.duelStocks[encounterNumber]
+		if (!stock) {
+			this.centralZone.createDuelStock(null, null) //one for the current duel
+			//this.centralZone.createDuelStock(null, null) //one to prepare the next
+			stock = this.centralZone.duelStocks[encounterNumber]
+		}
+		stock.addCard(card)
 	}
 
 	/**
