@@ -62,6 +62,7 @@ class Cardia extends BaseGame implements CardiaGame {
 	private ticketsCounters: Counter[] = []
 	private handCardsCounters: Counter[] = []
 	private centralZone: CentralZone
+	public discards: LineStock<CardiaCard>[] = []
 
 	protected settings = [new Setting('customSounds', 'pref', 1)]
 	private displayedTooltip
@@ -107,6 +108,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 		$('overall-content').classList.add(`player-count-${this.getPlayersCount()}`)
 
+		this.setupDiscards()
 		this.setupPreferences()
 		this.setupTooltips()
 		this.setupHelpPopin()
@@ -122,6 +124,28 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setupNotifications()
 
 		log('Ending game setup')
+	}
+
+	public setupDiscards() {
+		dojo.place(`<div id="discards-wrapper"></div>`, `custom-game-area`)
+
+		const players = this.getPlayersInOrder()
+		players.forEach((player) => {
+			const html = `
+			<div class="cst-block">
+				<div id="discard-${player.id}"></div>
+				<div class="zone-title"><span class="player-name" style="color:#${player.color}">${this.format_string_recursive(
+				_('${player_name}’s discard'),
+				{ player_name: player.name }
+			)}</span></div>
+			</div>
+        `
+			dojo.place(html, `discards-wrapper`)
+
+			this.discards[player.id] = new LineStock<CardiaCard>(this.cardsManager, $('discard-' + player.id))
+			this.discards[player.id].setSelectionMode('none')
+			this.discards[player.id].addCards(player.discard)
+		})
 	}
 
 	public setupLocation() {
@@ -1071,7 +1095,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		const card = cards.at(0)
 		switch (notif.args.to) {
 			case 'discard':
-				this.playerTables[notif.args.toArg].discard.addCard(card)
+				this.discards[notif.args.toArg].addCard(card)
 				this.updateModifierOnElement($(`cardia-card-${card.id}-modifier-value`), 0)
 				break
 			case 'hand':

@@ -1,6 +1,6 @@
 @use 'sass:list';
 
-$cardSizeModifier: 0.75;
+$cardSizeModifier: 0.65;
 $CARD_WIDTH: calc(220px * $cardSizeModifier); //also change in stock-utils.ts
 $CARD_HEIGHT: calc(342px * $cardSizeModifier);
 $CARD_RATIO: list.slash(220, 342);
@@ -75,6 +75,23 @@ html {
 svg {
 	height: 100%;
 	width: auto;
+}
+
+.zone-title {
+	color: #965e17;
+	font-size: large;
+	text-align: center;
+	padding-top: 10px;
+}
+
+.cst-block {
+	padding: 12px 20px;
+	border-radius: 5px;
+}
+
+//do not display title if the stock is empty
+.cst-block:has(> .card-stock:empty + .zone-title) .zone-title {
+	display: none;
 }
 
 .deck-icon {
@@ -168,6 +185,18 @@ svg {
 		//width: $CARD_WIDTH;
 	}
 }
+
+#discards-wrapper {
+	display: flex;
+	$shift: 105px;
+	.line-stock {
+		padding-left: $shift;
+	}
+	.card {
+		margin-left: calc($shift * -1);
+	}
+}
+
 .all-visible-deck {
 	@include card-border;
 	@include empty-stock-border;
