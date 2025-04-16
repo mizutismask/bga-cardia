@@ -11,6 +11,7 @@ class CentralZone {
         `
 		dojo.place(html, 'custom-game-area', 'first')
 		this.initDuelStocks(duels)
+		this.updateCssVariables()
 	}
 
 	private initDuelStocks(duels: DuelsList): void {
@@ -20,6 +21,10 @@ class CentralZone {
 		})
 		//creates additional stock in case there are tokens on future cards
 		//this.createDuelStock(null, null)
+	}
+
+	private updateCssVariables() {
+		document.documentElement.style.setProperty('--duels-count', Math.max(6,this.duelCounter).toString())// this.duelCounter.toString())
 	}
 
 	public createDuelStock(duelNumber: number, duel: { [playerId: string]: CardiaCard }): string {
@@ -34,6 +39,7 @@ class CentralZone {
 			mapCardToSlot: (card) => `${card.type_arg}`
 		})
 		this.duelStocks[duelId].setSelectionMode('none')
+		this.updateCssVariables()
 		if (duel) {
 			this.duelStocks[duelId].addCards(Object.values(duel))
 		}

@@ -1,12 +1,27 @@
 .central-zone {
-	display: flex;
-	gap: 20px;
+	gap: .6%;
+	width: 100%;
+	display: grid;
+
+	grid-template-columns:repeat(var(--duels-count), 1fr) auto;
 
 	.card-stock {
 		--direction: column !important;
+
+		.slot {
+			
+		}
+	}
+
+	.card {
+		@include card-size;
+		width: auto;
+		height: unset;
+		
 	}
 
 	.duel-wrapper {
+		max-width: $CARD_WIDTH;
 		position: relative;
 		.vs-icon {
 			font-style: oblique;
@@ -27,9 +42,15 @@
 
 @media screen and (orientation: portrait) {
 	.central-zone {
+		display: flex;
 		flex-direction: column;
 		.card-stock {
 			--direction: row !important;
+			--wrap: nowrap !important;
+			max-width: 50%;
+			.slot {
+				width: 50%;
+			}
 		}
 	}
 }

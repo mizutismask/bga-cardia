@@ -726,7 +726,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		additionalParameters?: any
 	) {
 		const actionName = stateName == 'interactiveAbility' ? 'actInteractiveAbility' : 'actInteractiveAbilityStep2'
-		const selectionSize = additionalParameters?.qty
+		const selectionSize = additionalParameters?.qty ?? 1
 		log(additionalParameters)
 		log(selectionSize)
 		if (!optionalSelection) {

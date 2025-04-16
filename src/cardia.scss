@@ -13,6 +13,10 @@ $CARD_RATIO: list.slash(220, 342);
 	border-radius: 3%;
 }
 
+@mixin card-size {
+	aspect-ratio: $CARD_RATIO;
+}
+
 //(classic BGA colors) :
 $player-colors: (
 	'red': 'ff0000',
@@ -38,6 +42,9 @@ html {
 	background: rgb(21, 104, 134);
 	background-repeat: no-repeat;
 	background-size: 100%;
+
+	//declare duels-count css var
+	--duels-count: 0;
 
 	/*background-image: url('img/background.jpg');
 	background-attachment: fixed;
@@ -145,9 +152,9 @@ svg {
 .card-stock {
 	.slot {
 		@include card-border;
+		@include card-size;
+		width: 100%;
 
-		aspect-ratio: $CARD_RATIO;
-		width: $CARD_WIDTH;
 		background: hsla(0, 0%, 100%, 0.4);
 		outline: 1px solid hsla(0, 0%, 100%, 0.6);
 
@@ -223,20 +230,20 @@ svg {
 .signet-icon {
 	background-position: 0 0%;
 	background-size: 100%;
-	width: 70px;
+	width: 50%;
 	aspect-ratio: 102/82;
 }
 .modifier {
 	background-position: 0 56.097561%;
 	background-size: 145.714286%;
-	width: 50px;
+	width: 25%;
 	aspect-ratio: 1;
 
 	display: flex;
 	justify-content: center;
 	align-items: center;
 
-	margin: 17px;
+	margin: 5%;
 	font-size: 23pt;
 	font-weight: bolder;
 
@@ -259,7 +266,7 @@ svg {
 .ongoing-icon {
 	background-position: 0 100%;
 	background-size: 145.714286%;
-	width: 65px;
+	width: 45%;
 	aspect-ratio: 70/62;
 }
 
@@ -280,7 +287,8 @@ svg {
 	.card-signets {
 		align-self: center;
 		justify-self: center;
-		
+		width: 100%;
+
 		display: flex;
 		flex-wrap: wrap;
 		gap: 5px;
@@ -290,6 +298,7 @@ svg {
 	.card-modifiers {
 		align-self: center;
 		justify-self: self-start;
+		width: 100%;
 	}
 }
 
