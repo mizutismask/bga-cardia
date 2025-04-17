@@ -408,7 +408,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		})
 
 		if (this.gamedatas.lastChosenCard) {
-			this.addCardToEncounter(this.gamedatas.lastChosenCard, Object.keys(this.gamedatas.duels).length + 1)
+			this.addCardToEncounter(this.gamedatas.lastChosenCard, Object.keys(this.gamedatas.duels).length + 1, false)
 		}
 	}
 
@@ -1136,8 +1136,10 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 	}
 
-	private addCardToEncounter(card: CardiaCard, encounterNumber: number) {
-		dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
+	private addCardToEncounter(card: CardiaCard, encounterNumber: number, removeTempModifiers: boolean = true) {
+		if (removeTempModifiers) {
+			dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
+		}
 		let stock = this.centralZone.duelStocks[encounterNumber]
 		if (!stock) {
 			this.centralZone.createDuelStock(null, null) //one for the current duel
@@ -1145,6 +1147,17 @@ class Cardia extends BaseGame implements CardiaGame {
 			stock = this.centralZone.duelStocks[encounterNumber]
 		}
 		stock.addCard(card)
+		
+		if (!removeTempModifiers) {
+			//convert to final modifier
+			const modifierQuery = `#duel-${encounterNumber} .slot[data-slot-id="${card.type_arg}"] .temp-modifier`
+			dojo.query(modifierQuery).forEach((el) => {
+				const modifier = el.dataset.value
+				log(el.dataset)
+				this.updateModifierOnCard(card.id, modifier)
+				dojo.destroy(el)
+			})
+		}
 	}
 
 	/**
