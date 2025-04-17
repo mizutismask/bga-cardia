@@ -79,7 +79,7 @@ $basicGameStates = [
         "transitions" => [
             "finishDuel" => ST_FINISH_DUEL,
             "looserAbility" => ST_LOOSER_ABILITY,
-            "nextRound" => ST_NEXT_ROUND,//founders day
+            "nextRound" => ST_NEXT_ROUND, //founders day
         ],
     ],
 
@@ -89,8 +89,8 @@ $basicGameStates = [
         "action" => "stLooserAbility",
         "transitions" => [
             "interactiveAbility" => ST_ACTIVATE_PLAYER_FOR_ABILITY,
-            "finishDuel" => ST_FINISH_DUEL,//not sure
-            "nextRound" => ST_NEXT_ROUND,//djinn power
+            "finishDuel" => ST_FINISH_DUEL, //not sure
+            "nextRound" => ST_NEXT_ROUND, //djinn power
         ]
     ],
 
@@ -178,24 +178,56 @@ $playerActionsGameStates = [
 
     ST_INTERACTIVE_ABILITY => [
         "name" => "interactiveAbility",
-        "description" => clienttranslate('${actplayer} must resolve his ability'),
-        "descriptionmyturn" => clienttranslate('${you}  must resolve your ability'),
         "type" => "activeplayer",
+        
+        "description" => clienttranslate('${actplayer} must resolve his ability'),
+        "descriptionmyturn" => clienttranslate('${you} must resolve your ability'),
+        "description" . PALACE_GUARD => clienttranslate('${ability} ability: ${actplayer} is choosing a faction'),
+        "descriptionmyturn" . PALACE_GUARD => clienttranslate('${ability} ability: Select a faction'),
+        "description" . AMBUSHER => clienttranslate('${ability} ability: ${actplayer} is choosing a faction'),
+        "descriptionmyturn" . AMBUSHER => clienttranslate('${ability} ability: choose a faction your opponent will have to discard'),
+        "description" . INVENTOR => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . INVENTOR => clienttranslate('${ability} ability: choose a card to set ${influence} influence on it'),
+        "description" . VOID_MAGE => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . VOID_MAGE => clienttranslate('${ability} ability: choose a card to remove its modifiers or its ongoing tokens'),
+        "description" . SWAMP_GUARDIAN => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . SWAMP_GUARDIAN => clienttranslate('${ability} ability: choose a card to take it back in hand'),
+        "description" . MAGISTRA => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . MAGISTRA =>clienttranslate('${ability} ability: choose a card to activate its ability'),
+        "description" . KINESIS_MAGE => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . KINESIS_MAGE =>clienttranslate('${ability} ability: choose the source card to move all tokens and modifiers from'),
+        "description" . PRODIGY => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . PRODIGY =>clienttranslate('${ability} ability: choose a card with 8 or less influence to add +3 influence to it'),
+        "description" . ENVOY => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . ENVOY =>clienttranslate('${ability} ability: choose a card to add -3 influence to it, or none to add it to your next card'),
+        "description" . REVOLUTIONARY => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . REVOLUTIONARY =>clienttranslate('${ability} ability: choose 2 cards to discard from your hand'),
+        "description" . SUCCESSOR => clienttranslate('${ability} ability: ${actplayer} is choosing cards'),
+        "descriptionmyturn" . SUCCESSOR =>clienttranslate('${ability} ability: choose 2 cards from your hand to keep'),
+        
         "args" => "argInteractiveAbility",
         "possibleactions" => [
             "actInteractiveAbility",
         ],
         "transitions" => [
             "interactiveAbilityStep2" => ST_ACTIVATE_PLAYER_FOR_ABILITY,
-            "interactiveAbility" => ST_ACTIVATE_PLAYER_FOR_ABILITY,//magistra
+            "interactiveAbility" => ST_ACTIVATE_PLAYER_FOR_ABILITY, //magistra
             "finishDuel" => ST_FINISH_DUEL,
         ]
     ],
 
     ST_INTERACTIVE_ABILITY_STEP_2 => [
         "name" => "interactiveAbilityStep2",
+
         "description" => clienttranslate('${actplayer} must resolve his ability'),
         "descriptionmyturn" => clienttranslate('${you}  must resolve your ability'),
+        "description" . PALACE_GUARD => clienttranslate('${ability} ability: ${actplayer} may discard a ${faction} card to prevent +7 influence on your card'),
+        "descriptionmyturn" . PALACE_GUARD => clienttranslate('${ability} ability: ${you} may discard a ${faction} card to prevent +7 influence on your opponent’s card'),
+        "description" . INVENTOR => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . INVENTOR => clienttranslate('${ability} ability: choose a card to set ${influence} influence on it'),
+        "description" . KINESIS_MAGE => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . KINESIS_MAGE =>clienttranslate('${ability} ability: choose the destination card to put all the moved tokens and modifiers on'),
+        
         "type" => "activeplayer",
         "args" => "argInteractiveAbilityStep2",
         "possibleactions" => [

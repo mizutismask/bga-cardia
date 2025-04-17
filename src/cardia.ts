@@ -536,19 +536,20 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private onEnteringInteractiveAbility(args: EnteringInteractiveAbilityArgs) {
+		this.setGamestateDescription(args.abilityCard.type.toString());
 		if (args.interactionType === 'selectFaction') {
-			this.statusBar.setTitle(
+			/*this.statusBar.setTitle(
 				args.prompt ?? args.prompt
 					? args.prompt
 					: dojo.string.substitute(_('${cardName} ability: Select a faction'), {
 							cardName: `${args.abilityCard.name}`
 					  }),
 				args ?? []
-			)
+			)*/
 		} else if (args.interactionType === 'selectCardFromDuels') {
-			if (args.prompt) {
+			/*if (args.prompt) {
 				this.statusBar.setTitle(args.prompt, args)
-			}
+			}*/
 			//selection on central zone instead of hand
 			this.centralZone.duelStocks.forEach((stock) => {
 				stock.setSelectionMode('single')

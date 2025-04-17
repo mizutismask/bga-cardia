@@ -72,16 +72,12 @@ trait ActionTrait {
         }
     }
 
-    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, #[IntArrayParam()] ?array $cardIds, ?string $option) {
-        $this->checkVersion($version);
-        $this->checkAction('actInteractiveAbility');
-        $playerId = $this->getMostlyActivePlayerId();
+    function checkSelectionIsCorrect(?Faction $faction, ?array $cardIds, bool $skipFactionCheck = false) {
         $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
         $interactionType = $this->getInteractionType($interactiveAbility);
-        $cards = [];
-        if ($interactionType == InteractionType::selectFaction) {
+        if ($interactionType == InteractionType::selectFaction && !$skipFactionCheck) {
             $this->userAssertTrue(_("You have to select a faction"), $interactiveAbility &&  $faction);
-            $this->globals->set(GLB_SELECTED_FACTION, $faction);
+            $this->globals->set(GLB_SELECTED_FACTION, $faction->value);
         } else if (in_array($interactionType, [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $optional = $this->isCardSelectionOptional($interactiveAbility);
             if (!$optional) {
@@ -89,20 +85,27 @@ trait ActionTrait {
                 $qty = $this->getCardSelectionQuantity($interactiveAbility);
                 $this->userAssertTrue(_("You did not select the expected number of cards"), count($cardIds) == $qty);
             }
-            if ($cardIds) {
-                foreach ($cardIds as $cardId) {
-                    $card = $this->cardManager->getCard($cardId);
-                    $this->userAssertTrue(_("this card does not exist"), $card);
-                    $cards[] = $card;
-                }
-            }
-            $this->globals->set(GLB_SELECTED_CARD_ID, $cardIds);
         }
+    }
 
-        if ($cards) {
-            foreach ($cards as $card) {
+    function actInteractiveAbility(int $version, #[StringParam(enum: ['G', 'R', 'Y', 'B'])] $faction, #[IntArrayParam()] ?array $cardIds, ?string $option) {
+        $this->checkVersion($version);
+        $this->checkAction('actInteractiveAbility');
+        $playerId = $this->getMostlyActivePlayerId();
+        $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $cards = [];
+        $this->checkSelectionIsCorrect(Faction::tryFrom($faction), $cardIds);
+        if ($cardIds) {
+            foreach ($cardIds as $cardId) {
+                $card = $this->cardManager->getCard($cardId);
+                $this->userAssertTrue(_("this card does not exist"), $card);
+                $cards[] = $card;
                 $this->dump('*******************actInteractiveAbility on ', $card->name);
             }
+        }
+        $this->globals->set(GLB_SELECTED_CARD_ID, $cardIds);
+
+        if ($cards) {
             $card = reset($cards);
             switch ($interactiveAbility->type) {
                 case INVENTOR:
@@ -122,26 +125,26 @@ trait ActionTrait {
         $this->applyInteractiveAbility($interactiveAbility, Faction::tryFrom($faction), $cards, $option);
     }
 
-    function actInteractiveAbilityStep2(int $version, ?int $cardId) {
+    function actInteractiveAbilityStep2(int $version, #[IntArrayParam()] ?array $cardIds) {
         $this->checkVersion($version);
         $this->checkAction('actInteractiveAbilityStep2');
-        $playerId = $this->getMostlyActivePlayerId();
         $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-        $interactionType = $this->getInteractionTypeStep2($interactiveAbility);
-
+        
+        $cards = [];
         $card = null;
-        $optional = $this->isCardSelectionOptional($interactiveAbility);
-        if (in_array($interactionType, [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
-            $card = $this->cardManager->getCard($cardId, $optional);
-            $optional = $this->isCardSelectionOptional($interactiveAbility);
-            if (!$optional) {
-                $this->userAssertTrue(_("You have to select a card"), $cardId);
-            }
-            if ($cardId) {
+        $this->checkSelectionIsCorrect(null, $cardIds, $interactiveAbility->type == PALACE_GUARD);
+        if ($cardIds) {
+            foreach ($cardIds as $cardId) {
                 $card = $this->cardManager->getCard($cardId);
                 $this->userAssertTrue(_("this card does not exist"), $card);
+                $cards[] = $card;
+                $this->dump('*******************actInteractiveAbilityStep2 on ', $card->name);
             }
+        }
+        $this->globals->set(GLB_SELECTED_CARD_ID, $cardIds);
 
+        if ($cards) {
+            $card = reset($cards);
             if ($card) {
                 $selectableCards = $this->argInteractiveAbilityStep2()["selectableCards"];
                 switch ($interactiveAbility->type) {
@@ -154,7 +157,6 @@ trait ActionTrait {
                         break;
                 }
             }
-            $this->globals->set(GLB_SELECTED_CARD_ID, $cardId);
         }
 
         $this->applyInteractiveAbilityStep2($interactiveAbility, $card);

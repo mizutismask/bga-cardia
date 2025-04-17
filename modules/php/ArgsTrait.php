@@ -132,13 +132,17 @@ trait ArgsTrait {
 
     function getPrompt(CardiaCard $ability) {
         $prompt = "";
-        $defaultArgs = ["ability" => $ability->name, 'i18n' => ['ability']];
+        $defaultArgs = ["ability" => $ability->name, "otherplayer" => $ability->name, "ability" => $ability->name, 'i18n' => ['ability']];
         switch ($ability->type) {
             case PALACE_GUARD:
                 $faction = $this->globals->get(GLB_SELECTED_FACTION);
-                if ($faction) {
-                    $prompt = clienttranslate('${ability} ability: ${you} may discard a ${faction} card to prevent +7 influence on your opponent’s card');
-                }
+                /*if ($faction) {
+                    if ($isPlayerActive) {
+                        $prompt = clienttranslate('${ability} ability: ${you} may discard a ${faction} card to prevent +7 influence on your opponent’s card');
+                    } else {
+                        $prompt = clienttranslate('${ability} ability: your opponent may discard a ${faction} card to prevent +7 influence on your card');
+                    }
+                }*/
                 return ["prompt" => $prompt, "args" => ["faction" => $faction, "ability" => $ability->name, 'i18n' => ['faction', 'ability']]];
             case AMBUSHER:
                 $prompt = clienttranslate('${ability} ability: choose a faction your opponent will have to discard');

@@ -565,7 +565,7 @@ trait StateTrait {
         }
     }
 
-    function applyInteractiveAbilityStep2(CardiaCard $interactiveAbility,  ?CardiaCard $card) {
+    function applyInteractiveAbilityStep2(CardiaCard $interactiveAbility, ?CardiaCard $card) {
         switch ($interactiveAbility->type) {
             case PALACE_GUARD:
                 if ($card) {
