@@ -259,9 +259,10 @@ svg {
 .signet-icon {
 	background-position: 0 0%;
 	background-size: 100%;
-	width: 50%;
+	width: 36%;
 	aspect-ratio: 102/82;
 }
+
 .modifier {
 	background-position: 0 56.097561%;
 	background-size: 145.714286%;
@@ -271,8 +272,9 @@ svg {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	justify-self: center;
 
-	margin: 5%;
+	margin-top: 16%;
 	font-size: 23pt;
 	font-weight: bolder;
 
@@ -295,7 +297,7 @@ svg {
 .ongoing-icon {
 	background-position: 0 100%;
 	background-size: 145.714286%;
-	width: 45%;
+	width: 40%;
 	aspect-ratio: 70/62;
 }
 
@@ -307,13 +309,14 @@ svg {
 
 .tokens-location-wrapper {
 	display: grid;
-	grid-template-rows: 1fr 1fr;
-	grid-template-columns: 1fr;
+	grid-template-rows: 20% 34% 40%;
+	gap: 3%;//total of 100%
+    grid-template-columns: 1fr;
 	height: 100%;
 	width: 100%;
 	justify-content: center;
 
-	.card-signets {
+	.card-signets, .card-ongoings {
 		align-self: center;
 		justify-self: center;
 		width: 100%;

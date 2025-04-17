@@ -444,19 +444,19 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.createOnGoingTokenOnElement(signet.id, signet.location_arg)
 	}
 
-	private createOnGoingTokenOnElement(signetId: number, cardId: number) {
-		const signetDivId = `ongoing-${signetId}`
-		const location = `cardia-card-${cardId}-signets`
-		if ($(signetDivId) && $(location)) {
+	private createOnGoingTokenOnElement(tokenId: number, cardId: number) {
+		const tokenDivId = `ongoing-${tokenId}`
+		const location = `cardia-card-${cardId}-ongoings`
+		if ($(tokenDivId) && $(location)) {
 			this.animationManager.attachWithAnimation(
 				new BgaSlideAnimation({
-					element: $(signetDivId),
+					element: $(tokenDivId),
 					zoom: 1
 				}),
 				$(location)
 			)
 		} else if ($(location)) {
-			dojo.place(`<div id="${signetDivId}" class="ongoing-icon"></div>`, location)
+			dojo.place(`<div id="${tokenDivId}" class="ongoing-icon"></div>`, location)
 		} else {
 			console.error('can’t put ongoing token on ' + location)
 		}
