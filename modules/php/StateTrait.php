@@ -225,15 +225,29 @@ trait StateTrait {
 
     function stLooserAbility() {
         $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-        if ($this->isAbilityNeedingInteraction($card) && $this->isAbilityPossible($card, $this->getPlayerIdFromPosition($card->type_arg), null)) {
-            if ($card->type == REVOLUTIONARY || $card->type == SUCCESSOR) {
-                //opponent is acting
-                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($card->type_arg)));
+        $possible = $this->isAbilityPossible($card, $this->getPlayerIdFromPosition($card->type_arg), null);
+        $this->dump('*******************isAbilityNeedingInteraction', $this->isAbilityNeedingInteraction($card));
+        $this->dump('*******************isAbilityPossible', $possible);
+        if ($this->isAbilityNeedingInteraction($card)) {
+
+            if ($possible) {
+                if ($card->type == REVOLUTIONARY || $card->type == SUCCESSOR) {
+                    //opponent is acting
+                    $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($card->type_arg)));
+                } else {
+                    //card owner is acting
+                    $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getPlayerIdFromPosition($card->type_arg));
+                }
+                $this->gamestate->nextState('interactiveAbility');
             } else {
-                //card owner is acting
-                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getPlayerIdFromPosition($card->type_arg));
+                $this->notifyWithName('', clienttranslate('${cardName} ability impossible to resolve'), [
+                    'cardName' => $card->name,
+                ]);
+
+                if ($card->type != DJINN) {
+                    $this->gamestate->nextState('finishDuel');
+                }
             }
-            $this->gamestate->nextState('interactiveAbility');
         } else {
             $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
             if ($card->type != DJINN) {
@@ -605,7 +619,7 @@ trait StateTrait {
     function isAbilityPossible(CardiaCard $card, int $playerToApply, ?Faction $faction): bool {
         switch ($card->type) {
             case PALACE_GUARD:
-                return $faction && count($this->cardManager->getFactionCardsInHand($playerToApply, $faction)) > 0;
+                return !$faction || count($this->cardManager->getFactionCardsInHand($playerToApply, $faction)) > 0;
             case MAGISTRA:
                 return !empty($this->getSelectableCards($card, $this->getPlayerIdFromPosition($card->type_arg)));
             default:
@@ -680,10 +694,12 @@ trait StateTrait {
         if (!$winners && !$everyoneLooses) {
             $winners = [];
             $withCard = $this->getNoPlayableCardWinner();
-            if ($withCard) {
+            if ($withCard && $withCard > -1) {
                 $winners = [$withCard];
             } else {
-                self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
+                if ($withCard && $withCard == -1) {
+                    self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
+                }
             }
         }
 
@@ -762,7 +778,13 @@ trait StateTrait {
         return $winner;
     }
 
-    function getNoPlayableCardWinner() {
+    /**
+     * Returns id of the only one player who has cards or who has most signets in case of tie
+     * return -1 if tie on no card and signets count
+     * return null if everyone has cards
+     * @return int|null 
+     */
+    function getNoPlayableCardWinner(): int|null {
         $winner = null;
         $playersIds = $this->getPlayersIds();
 

@@ -132,35 +132,37 @@ trait ArgsTrait {
 
     function getPrompt(CardiaCard $ability) {
         $prompt = "";
+        $defaultArgs = ["ability" => $ability->name, 'i18n' => ['ability']];
         switch ($ability->type) {
             case PALACE_GUARD:
                 $faction = $this->globals->get(GLB_SELECTED_FACTION);
-                $prompt = clienttranslate('${ability} ability: you may discard a ${faction} card to prevent +7 influence on your opponent’s card');
+                if ($faction) {
+                    $prompt = clienttranslate('${ability} ability: ${you} may discard a ${faction} card to prevent +7 influence on your opponent’s card');
+                }
                 return ["prompt" => $prompt, "args" => ["faction" => $faction, "ability" => $ability->name, 'i18n' => ['faction', 'ability']]];
             case AMBUSHER:
-                $faction = $this->globals->get(GLB_SELECTED_FACTION);
                 $prompt = clienttranslate('${ability} ability: choose a faction your opponent will have to discard');
-                return ["prompt" => $prompt, "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" => $prompt, "args" => $defaultArgs];
             case INVENTOR:
                 $influence =  $this->globals->get(GLB_INVENTOR_PLUS_CARD) ? -3 : 3;
                 return ["prompt" =>  clienttranslate('${ability} ability: choose a card to set ${influence} influence on it'), "args" => ["ability" => $ability->name, "influence" => $influence, 'i18n' => ['ability']]];
             case VOID_MAGE:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to remove its modifiers or its ongoing tokens'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to remove its modifiers or its ongoing tokens'), "args" => $defaultArgs];
             case SWAMP_GUARDIAN:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to take it back in hand'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to take it back in hand'), "args" => $defaultArgs];
             case MAGISTRA:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to activate its ability'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to activate its ability'), "args" => $defaultArgs];
             case KINESIS_MAGE:
                 $msg =  $this->globals->get(GLB_KINESIS_SOURCE_CARD) ? clienttranslate('${ability} ability: choose the destination card to put all the moved tokens and modifiers on') : clienttranslate('${ability} ability: choose the source card to move all tokens and modifiers from');
-                return ["prompt" =>  $msg, "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" =>  $msg, "args" => $defaultArgs];
             case PRODIGY:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card with 8 or less influence to add +3 influence to it'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card with 8 or less influence to add +3 influence to it'), "args" => $defaultArgs];
             case ENVOY:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to add -3 influence to it, or none to add it to your next card'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to add -3 influence to it, or none to add it to your next card'), "args" => $defaultArgs];
             case REVOLUTIONARY:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards to discard from your hand'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards to discard from your hand'), "args" => $defaultArgs];
             case SUCCESSOR:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards from your hand to keep'), "args" => ["ability" => $ability->name, 'i18n' => ['ability']]];
+                return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards from your hand to keep'), "args" => $defaultArgs];
 
             default:
                 $this->error('*******************No prompt for ', $ability->name);
