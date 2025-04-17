@@ -178,7 +178,9 @@ class Game extends \Bga\GameFramework\Table {
         $result['signets'] = $this->tokenManager->getSignetsOnCards();
         $result['ongoingTokens'] = $this->tokenManager->getOngoingTokensOnCards();
         $result['modifiers'] = $this->cardManager->getModifiers();
-        $result['lastChosenCard'] = json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $currentPlayerId, ""));
+        if ($this->getStateName() == "chooseDuelCard" && !$this->gamestate->isPlayerActive($currentPlayerId)) {
+            $result['lastChosenCard'] = json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $currentPlayerId, ""));
+        }
 
         foreach ($result['players'] as $playerId => &$player) {
             $currentPlayerOrder = intval($player['playerNo']);
