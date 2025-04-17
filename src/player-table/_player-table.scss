@@ -1,17 +1,21 @@
-.player-table {
+#player-tables {
     display: flex;
-    z-index: 25; // so new animations are over the map
-    gap: 30px;
-    justify-content: space-between;
-    align-self: center;
+    justify-content: center;
+    
+	.player-table {
+		display: flex;
+		z-index: 25; // so new animations are over the map
+		gap: 30px;
+		justify-content: space-between;
+		align-self: center;
 
-    .discard-wrapper{
-        min-width: $CARD_WIDTH;
-        min-height: $CARD_HEIGHT;
-    }
+		.discard-wrapper {
+			min-width: $CARD_WIDTH;
+			min-height: $CARD_HEIGHT;
+		}
+	}
 }
-
 .player-name {
-    color: #1f273b;
-    font-weight: bold; 
+	color: #1f273b;
+	font-weight: bold;
 }
