@@ -503,6 +503,7 @@ trait StateTrait {
                     $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
                     $this->cardManager->replenishHands();
                 }
+                $this->onCardInHandChange();
                 $this->gamestate->nextState('finishDuel');
                 break;
             case SWAMP_GUARDIAN:
@@ -553,6 +554,7 @@ trait StateTrait {
                     $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
                 }
                 $this->cardManager->shuffleLocationByTypeArg(MATERIAL_LOCATION_DECK, $opponentTypeArg);
+                $this->onCardInHandChange();
                 $this->gamestate->nextState('finishDuel');
                 break;
             case REVOLUTIONARY:
@@ -768,6 +770,10 @@ trait StateTrait {
             }
         }
         $this->gamestate->nextState($nextState);
+    }
+
+    function onCardInHandChange(){
+        $this->cardManager->replenishHands();//if bazaar
     }
 
     function setRoundWinner(int $playerId) {
