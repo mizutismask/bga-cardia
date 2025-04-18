@@ -65,6 +65,7 @@ class CentralZone {
 			dojo.destroy('duel-' + i)
 		})
 		this.duelStocks = []
+		this.duelCounter = 0
 		this.initDuelStocks([])
 	}
 }
