@@ -494,6 +494,7 @@ trait StateTrait {
                 } else {
                     $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
                     //todo reevaluate everything
+                    $this->onRemovingOngoingTokenOnCard($card);
                 }
                 $this->gamestate->nextState('finishDuel');
                 break;
@@ -645,6 +646,35 @@ trait StateTrait {
         }
     }
 
+    function onRemovingOngoingTokenOnCard(CardiaCard $card) {
+        $duels = $this->cardManager->getDuelsList();
+        $opposingCard = $this->cardManager->getOpposingCard($card, $duels);
+        switch ($card->type) {
+            case MEDIATOR:
+                $this->evaluateDuelValues([$card, $opposingCard]);
+                break;
+            case JUDGE:
+                # code...
+                break;
+            case TREASURER:
+                # code...
+                break;
+            case ARISTOCRAT:
+                # code...
+                break;
+            case COUNSELOR:
+                # code...
+                break;
+            case MECHANICAL_DJINN:
+                # code...
+                break;
+
+            default:
+                throw new BgaSystemException("unexpected ongoing card type: " . $card->type);
+        }
+        $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
+    }
+
     function discardDuelCard(CardiaCard $card, $msg = "", $msgArgs = []) {
         $this->tokenManager->discardTokensOnDuelCard($card);
         $this->cardManager->discardDuelCard($card);
@@ -772,8 +802,8 @@ trait StateTrait {
         $this->gamestate->nextState($nextState);
     }
 
-    function onCardInHandChange(){
-        $this->cardManager->replenishHands();//if bazaar
+    function onCardInHandChange() {
+        $this->cardManager->replenishHands(); //if bazaar
     }
 
     function setRoundWinner(int $playerId) {

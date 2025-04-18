@@ -123,7 +123,7 @@ class TokenManager extends DeckManager {
         foreach ($tokens as $token) {
             $this->deck->moveCard($token->id, MATERIAL_LOCATION_DECK);
             $this->game->notifyWithName("materialMove", "", [
-                'type' => MATERIAL_TYPE_TOKEN,
+                'type' => $tokenType == TokenType::ONGOING ? MATERIAL_TYPE_ONGOING_TOKEN : MATERIAL_TYPE_TOKEN,
                 'from' => MATERIAL_LOCATION_CARD,
                 'fromArg' => $card->id,
                 'to' => MATERIAL_LOCATION_DECK,
