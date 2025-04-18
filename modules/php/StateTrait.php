@@ -676,6 +676,8 @@ trait StateTrait {
 
     /**
      * If only player has 5 signets or both have at least 5 signets but one player has more than the other, end of round.
+     * @param array|null $winners forced winners, probably because of an ability
+     * @param bool $everyoneLooses Flag indicating if all players lose the round
      * @return void 
      */
     function stFinishDuel(array $winners = null, bool $everyoneLooses = false) {
@@ -700,7 +702,13 @@ trait StateTrait {
         $this->globals->delete(GLB_SELECTED_FACTION);
         $this->globals->delete(GLB_STEP_2);
 
-        // $winner = $winners ?? $this->getSignetCountWinner();
+        if (!$winners) {
+            $signetWinner = $this->getSignetCountWinner();
+            if ($signetWinner) {
+                $winners = [$signetWinner];
+            }
+        }
+
         if (!$winners && !$everyoneLooses) {
             $winners = [];
             $withCard = $this->getNoPlayableCardWinner();
@@ -764,14 +772,21 @@ trait StateTrait {
 
     function getSignetCountWinner(): ?int {
         $playersIds = $this->getPlayersIds();
-        $signetCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSignetCount($id), $playersIds));
+        $signetCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSignetCount($this->getPlayerPosition($id)), $playersIds));
         $winner = null;
 
         //filter players with at least 5 signets
         $playersWith5Signets = array_filter($signetCounts, fn($count) => $count >= 5);
+        $this->dump('*******************playersWith5Signets', $playersWith5Signets);
+
+        //check if several players have the maximum signets count
+        $maxSignetsCount = max($signetCounts);
+        $playersWithMaxSignets = array_filter($signetCounts, fn($count) => $count == $maxSignetsCount);
+        //$this->dump('*******************playersWithMaxSignets', $playersWithMaxSignets);
 
         //check if every player from playersWith5Signets has the same signets count
-        $tieOn5SignetsOrMore = count(array_unique($playersWith5Signets)) === 1;
+        $tieOn5SignetsOrMore = count($playersWithMaxSignets) > 1;
+       // $this->dump('*******************tieOn5SignetsOrMore', $tieOn5SignetsOrMore);
         if (!$playersWith5Signets || $tieOn5SignetsOrMore) {
             //no winner yet
         } else {
@@ -780,11 +795,12 @@ trait StateTrait {
                 $winner = array_key_first($playersWith5Signets);
             } else {
                 //winner is the player with the most signets
-                $maxSignets = max($playersWith5Signets);
-                $winners = array_keys(array_filter($playersWith5Signets, fn($count) => $count == $maxSignets));
+                $winners = array_keys(array_filter($playersWith5Signets, fn($count) => $count == $maxSignetsCount));
                 $winner = $winners[0];
             }
         }
+
+        $this->dump('*******************signetCountWinner', $winner);
         return $winner;
     }
 
