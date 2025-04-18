@@ -508,7 +508,6 @@ trait StateTrait {
                 $this->gamestate->nextState('finishDuel');
                 break;
             case MAGISTRA:
-                $encounter = $card->location_arg;
                 $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
                 $this->stLooserAbility();
                 break;

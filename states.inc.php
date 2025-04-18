@@ -213,6 +213,7 @@ $playerActionsGameStates = [
             "interactiveAbilityStep2" => ST_ACTIVATE_PLAYER_FOR_ABILITY,
             "interactiveAbility" => ST_ACTIVATE_PLAYER_FOR_ABILITY, //magistra
             "finishDuel" => ST_FINISH_DUEL,
+            "nextRound" => ST_NEXT_ROUND, //djinn power copied with magistra
         ]
     ],
 
