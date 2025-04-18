@@ -319,6 +319,7 @@ trait StateTrait {
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
                 $this->discardDuelCard($ability);
                 $this->discardDuelCard($opposing);
+                $this->cardManager->reorderDuels($duelNumber);
                 break;
             case MEDIATOR:
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
