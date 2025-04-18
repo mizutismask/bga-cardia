@@ -248,7 +248,7 @@ trait StateTrait {
                 }
                 $this->gamestate->nextState('interactiveAbility');
             } else {
-                $this->notifyWithName('', clienttranslate('${cardName} ability impossible to resolve'), [
+                $this->notifyWithName('msg', clienttranslate('${cardName} ability impossible to resolve'), [
                     'cardName' => $card->name,
                 ]);
 
@@ -625,11 +625,14 @@ trait StateTrait {
     }
 
     function isAbilityPossible(CardiaCard $card, int $playerToApply, ?Faction $faction): bool {
+        $cardOwner = $this->getPlayerIdFromPosition($card->type_arg);
         switch ($card->type) {
             case PALACE_GUARD:
                 return !$faction || count($this->cardManager->getFactionCardsInHand($playerToApply, $faction)) > 0;
             case MAGISTRA:
-                return !empty($this->getSelectableCards($card, $this->getPlayerIdFromPosition($card->type_arg)));
+                return !empty($this->getSelectableCards($card, $cardOwner));
+            case SWAMP_GUARDIAN:
+                return !empty($this->getSelectableCards($card, $cardOwner));
             default:
                 return true;
         }

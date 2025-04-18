@@ -116,7 +116,6 @@ interface EnteringChooseActionArgs {
 interface EnteringInteractiveAbilityArgs {
 	abilityCard: CardiaCard
 	interactionType: 'selectFaction' | 'selectCardFromHand' | 'selectCardFromDuels'
-	prompt?: string
 	optionalSelection?: boolean //cards only
 	qty?: number //cards only
 	selectableCards?: CardiaCard[]

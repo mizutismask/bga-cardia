@@ -68,12 +68,11 @@ trait ArgsTrait {
 
     function argInteractiveAbility() {
         $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-        $prompt = $this->getPrompt($ability);
+        $promptArgs = $this->getPromptArgs($ability);
         $args = [
             'abilityCard' => $ability,
             'interactionType' => $this->getInteractionType($ability),
-            "prompt" => $prompt["prompt"],
-            ...$prompt["args"],
+            ...$promptArgs,
         ];
         if (in_array($args["interactionType"], [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $args["selectableCards"] = $this->getSelectableCards($ability);
@@ -88,12 +87,11 @@ trait ArgsTrait {
 
     function argInteractiveAbilityStep2() {
         $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-        $prompt = $this->getPrompt($ability);
+        $promptArgs = $this->getPromptArgs($ability);
         $args = [
             'abilityCard' => $ability,
             'interactionType' => $this->getInteractionTypeStep2($ability),
-            "prompt" => $prompt["prompt"],
-            ...$prompt["args"],
+            ...$promptArgs,
         ];
         if (in_array($args["interactionType"], [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $args["selectableCards"] = $this->getSelectableCards($ability);
@@ -112,7 +110,10 @@ trait ArgsTrait {
         } else if ($ability->type == INVENTOR) {
             $selectableCards = $this->cardManager->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
         } else if ($ability->type == SWAMP_GUARDIAN) {
-            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_HAND);
+            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
+            $selectableCards = array_filter($selectableCards, function ($card) use ($ability) {
+                return  $card->id != $ability->id;
+            });
         } else if ($ability->type == MAGISTRA) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
             //filter to keep only instant power type and value >= this card’s value 
@@ -130,47 +131,19 @@ trait ArgsTrait {
         return $selectableCards;
     }
 
-    function getPrompt(CardiaCard $ability) {
-        $prompt = "";
-        $defaultArgs = ["ability" => $ability->name, "otherplayer" => $ability->name, "ability" => $ability->name, 'i18n' => ['ability']];
+    function getPromptArgs(CardiaCard $ability) {
+        $defaultArgs = ["ability" => $ability->name, "ability" => $ability->name, 'i18n' => ['ability']];
         switch ($ability->type) {
             case PALACE_GUARD:
                 $faction = $this->globals->get(GLB_SELECTED_FACTION);
-                /*if ($faction) {
-                    if ($isPlayerActive) {
-                        $prompt = clienttranslate('${ability} ability: ${you} may discard a ${faction} card to prevent +7 influence on your opponent’s card');
-                    } else {
-                        $prompt = clienttranslate('${ability} ability: your opponent may discard a ${faction} card to prevent +7 influence on your card');
-                    }
-                }*/
-                return ["prompt" => $prompt, "args" => ["faction" => $faction, "ability" => $ability->name, 'i18n' => ['faction', 'ability']]];
-            case AMBUSHER:
-                $prompt = clienttranslate('${ability} ability: choose a faction your opponent will have to discard');
-                return ["prompt" => $prompt, "args" => $defaultArgs];
+                return array_merge($defaultArgs, ["faction" => $faction]);
+
             case INVENTOR:
                 $influence =  $this->globals->get(GLB_INVENTOR_PLUS_CARD) ? -3 : 3;
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to set ${influence} influence on it'), "args" => ["ability" => $ability->name, "influence" => $influence, 'i18n' => ['ability']]];
-            case VOID_MAGE:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to remove its modifiers or its ongoing tokens'), "args" => $defaultArgs];
-            case SWAMP_GUARDIAN:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to take it back in hand'), "args" => $defaultArgs];
-            case MAGISTRA:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to activate its ability'), "args" => $defaultArgs];
-            case KINESIS_MAGE:
-                $msg =  $this->globals->get(GLB_KINESIS_SOURCE_CARD) ? clienttranslate('${ability} ability: choose the destination card to put all the moved tokens and modifiers on') : clienttranslate('${ability} ability: choose the source card to move all tokens and modifiers from');
-                return ["prompt" =>  $msg, "args" => $defaultArgs];
-            case PRODIGY:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card with 8 or less influence to add +3 influence to it'), "args" => $defaultArgs];
-            case ENVOY:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose a card to add -3 influence to it, or none to add it to your next card'), "args" => $defaultArgs];
-            case REVOLUTIONARY:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards to discard from your hand'), "args" => $defaultArgs];
-            case SUCCESSOR:
-                return ["prompt" =>  clienttranslate('${ability} ability: choose 2 cards from your hand to keep'), "args" => $defaultArgs];
+                return array_merge($defaultArgs, ["influence" => $influence]);
 
             default:
-                $this->error('*******************No prompt for ', $ability->name);
-                return ["prompt" =>  "", "args" => []];
+                return $defaultArgs;
         }
     }
 
@@ -178,10 +151,11 @@ trait ArgsTrait {
         if (in_array($card->type, [PALACE_GUARD, AMBUSHER, BLACKMAILER, WITCH_KING])) {
             return InteractionType::selectFaction;
         }
-        if (in_array($card->type, [SWAMP_GUARDIAN, REVOLUTIONARY, ELEMENTAL, SUCCESSOR])) {
+        if (in_array($card->type, [REVOLUTIONARY, ELEMENTAL, SUCCESSOR])) {
             return InteractionType::selectCardFromHand;
         }
         if (in_array($card->type, [
+            SWAMP_GUARDIAN,
             VOID_MAGE,
             MAGISTRA,
             INVENTOR,

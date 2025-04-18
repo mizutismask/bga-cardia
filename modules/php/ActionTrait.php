@@ -117,7 +117,11 @@ trait ActionTrait {
                     break;
                 case PRODIGY:
                     $selectableCards = $this->getSelectableCards($interactiveAbility);
-                    $this->userAssertTrue(_("You should select one of your cards with at most 8 influence"),  $this->array_contains_card($selectableCards, $cardId));
+                    $this->userAssertTrue(_("You have to select one of your cards with at most 8 influence"),  $this->array_contains_card($selectableCards, $cardId));
+                    break;
+                case SWAMP_GUARDIAN:
+                    $selectableCards = $this->getSelectableCards($interactiveAbility);
+                    $this->userAssertTrue(_("You have to select one of your played cards (but not Swamp Guardian)"),  $this->array_contains_card($selectableCards, $cardId));
                     break;
             }
         }
