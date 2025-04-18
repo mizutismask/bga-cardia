@@ -45,6 +45,7 @@ class CardManager extends DeckManager {
                     $this->addCardsToHand(4, $playerId, $player["player_no"], true);
                 }
             }
+            $this->game->notifyCounterChange();
         }
     }
 
