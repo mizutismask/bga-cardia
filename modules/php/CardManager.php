@@ -243,6 +243,14 @@ class CardManager extends DeckManager {
         $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_HAND, MATERIAL_LOCATION_DECK);
         $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_CARD, MATERIAL_LOCATION_DECK);
         $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_ENCOUNTER, MATERIAL_LOCATION_DECK);
+
+        $query = new QueryBuilder(TABLE_CARD);
+        $query->update(["card_modifier" => 0]);
+        $query->run();
+        $this->game->notifyAllPlayers("updateModifiers", "", array(
+            'modifiers' => $this->getModifiers(),
+        ));
+
         $this->deck->shuffle("deck");
         $this->dealHands(notify: true);
         $this->game->notifyCounterChange();
