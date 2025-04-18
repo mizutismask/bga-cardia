@@ -1006,7 +1006,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	notif_newRound(notif: Notif<NotifScoreArgs>) {
 		Object.keys(this.gamedatas.players).forEach((playerId) => {
-			this.playerTables[playerId].discard.removeAll()
+			this.discards[playerId].removeAll()
 			this.playerTables[playerId].handStock?.removeAll()
 		})
 		this.centralZone.resetDuelStocks()
