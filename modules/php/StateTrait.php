@@ -467,11 +467,16 @@ trait StateTrait {
         $card = $cards[0] ?? null;
         switch ($interactiveAbility->type) {
             case PALACE_GUARD:
-                //faction has been chosen but the opponent still needs to choose a card
                 if ($this->isAbilityPossible($interactiveAbility, $opponentId, $faction)) {
+                    //faction has been chosen but the opponent still needs to choose a card
                     $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $opponentId);
                     $this->globals->set(GLB_STEP_2, true);
                     $this->gamestate->nextState('interactiveAbilityStep2');
+                } else {
+                    //add +7 influence
+                    $this->cardManager->incCardModifier($interactiveAbility, 7);
+                    $this->evaluateDuelValues([$interactiveAbility, $this->cardManager->getOpposingCard($interactiveAbility, $this->cardManager->getDuelsList())]);
+                    $this->gamestate->nextState('finishDuel');
                 }
                 break;
             case INVENTOR:
@@ -787,7 +792,7 @@ trait StateTrait {
 
         //check if every player from playersWith5Signets has the same signets count
         $tieOn5SignetsOrMore = count($playersWithMaxSignets) > 1;
-       // $this->dump('*******************tieOn5SignetsOrMore', $tieOn5SignetsOrMore);
+        // $this->dump('*******************tieOn5SignetsOrMore', $tieOn5SignetsOrMore);
         if (!$playersWith5Signets || $tieOn5SignetsOrMore) {
             //no winner yet
         } else {
