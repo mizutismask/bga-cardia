@@ -161,8 +161,14 @@ trait StateTrait {
             foreach ($players as $playerId) {
                 $judge = $this->isActiveCardInPlay(JUDGE, $playerId);
                 if ($judge) {
-                    $myCard = $minCard->type_arg == $this->getPlayerPosition($playerId) ? $minCard : $maxCard;
+                    //$this->dump('*******************judge active for ', $playerId);
+                    $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
                     $this->tokenManager->addSignetOnCard($myCard->id, null);
+                    $this->notifyWithName('msg', clienttranslate('${ability} ability: ${playerName} wins the encounter'), [
+                        "ability" => $judge->name,
+                        "playerName" => $this->getPlayerName($playerId),
+                        'i18n' => ['ability']
+                    ]);
                 }
             }
         }
@@ -218,7 +224,9 @@ trait StateTrait {
 
         if ($card && $card->powerType == PowerType::ONGOING) {
             //check is ongoing card is still active
-            $this->tokenManager->hasOngoingToken($card->id);
+            if (!$this->tokenManager->hasOngoingToken($card->id)) {
+                $card = null;
+            }
         }
         return $card;
     }

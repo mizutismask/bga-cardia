@@ -57,6 +57,7 @@ class TokenManager extends DeckManager {
     }
 
     public function addSignetOnCard(int $cardId, ?int $opposingCardId, ?bool $severalPossible = false) {
+        //$this->game->dump('*******************$this->alreadyHasSignet($cardId)', $this->alreadyHasSignet($cardId));
         if ($severalPossible || !$this->alreadyHasSignet($cardId)) {
             $signet = $this->getSignetToUse($opposingCardId);
             $this->deck->moveCard($signet->id, MATERIAL_LOCATION_CARD, $cardId);
