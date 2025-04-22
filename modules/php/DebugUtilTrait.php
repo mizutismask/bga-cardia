@@ -2,6 +2,13 @@
 
 namespace Bga\Games\Cardia;
 
+/**
+ * @property CardManager cardManager
+ * @property TokenManager $tokenManager
+ * @property GameState gamestate
+ * @property Globals globals
+ */
+
 trait DebugUtilTrait {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -36,6 +43,11 @@ trait DebugUtilTrait {
 
     function debug_reset() {
         $this->cardManager->resetDecks();
+    }
+
+    function debug_addCardInHand(int $cardType) {
+        $card = $this->cardManager->getCardOfTypeAndTypeArg(TABLE_CARD, $cardType, $this->getMostlyActivePlayerOrder());
+        $this->cardManager->moveCardToPlayerHand($card->id, $this->getMostlyActivePlayerId());
     }
 
 

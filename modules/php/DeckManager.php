@@ -4,7 +4,7 @@ namespace Bga\Games\Cardia;
 
 use Deck;
 
-class DeckManager {
+class DeckManager extends \APP_DbObject{
     protected Deck $deck;
     protected $game;
     protected $cast;
@@ -29,7 +29,7 @@ class DeckManager {
 
     public function shuffleLocationByTypeArg(string $location, int $typeArg): void {
         $cards = $this->getCardsOfTypeArgFromLocation(TABLE_CARD, $typeArg, $location);
-        
+
         $shuffled = $this->game->getRandomSlice($cards, count($cards));
         foreach ($shuffled as $i => $card) {
             $this->deck->moveCard($card->id, $location, $i);
@@ -96,6 +96,11 @@ class DeckManager {
     public function getCardsOfTypeArgFromLocation(string $tableName, int $typeArg, string $location) {
         $sql = "SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg FROM $tableName where card_location = '$location' and card_type_arg = '$typeArg'";
         return $this->cast($this->game->getCollectionFromDb($sql));
+    }
+
+    public function getCardOfTypeAndTypeArg(string $tableName, string|int $type, int $typeArg) {
+        $sql = "SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg FROM $tableName where card_type_arg = '$typeArg' and card_type = '$type'";
+        return $this->castSingle($this->game->getObjectFromDB($sql),true);
     }
 
     public function getCardsOfTypeArgFromLocationOrderBy(string $tableName, int $typeArg, string $location, string $orderBy, bool $desc = false) {
@@ -293,7 +298,7 @@ class DeckManager {
 
         if ($notify) {
             $this->game->notifyAllPlayers('materialMove', "", [
-                'type' => MATERIAL_TYPE_ACTION_CARD,
+                'type' => MATERIAL_TYPE_CARD,
                 'from' => MATERIAL_LOCATION_DECK,
                 'to' => MATERIAL_LOCATION_DISCARD,
                 'material' => [$newCard],
@@ -303,13 +308,13 @@ class DeckManager {
         return $newCard;
     }
 
-    public function moveCardToPlayerHand(int $cardId, int $playerId, bool $faceDown = false, string $notifMsg) {
+    public function moveCardToPlayerHand(int $cardId, int $playerId, bool $faceDown = false, string $notifMsg = null) {
         $this->deck->moveCard($cardId, "hand", $playerId);
         $card = $this->castSingle($this->deck->getCard($cardId));
 
         if ($faceDown) {
             $this->game->notifyPlayer($playerId, 'materialMove', "", [
-                'type' => MATERIAL_TYPE_ACTION_CARD,
+                'type' => MATERIAL_TYPE_CARD,
                 'from' => MATERIAL_LOCATION_DECK,
                 'to' => MATERIAL_LOCATION_HAND,
                 'toArg' => $this->game->getMostlyActivePlayerId(),
@@ -320,7 +325,7 @@ class DeckManager {
             ]);
         } else {
             $this->game->notifyWithName('materialMove',  $notifMsg ?? clienttranslate('${player_name} takes a card'), [ //${cardType}
-                'type' => MATERIAL_TYPE_ACTION_CARD,
+                'type' => MATERIAL_TYPE_CARD,
                 'from' => MATERIAL_LOCATION_RIVER,
                 'to' => MATERIAL_LOCATION_HAND,
                 'toArg' => $this->game->getMostlyActivePlayerId(),
