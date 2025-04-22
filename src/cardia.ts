@@ -536,7 +536,7 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private onEnteringInteractiveAbility(args: EnteringInteractiveAbilityArgs) {
-		this.setGamestateDescription(args.abilityCard.type.toString());
+		this.setGamestateDescription(args.abilityCard.type.toString())
 		if (args.interactionType === 'selectCardFromDuels') {
 			/*if (args.prompt) {
 				this.statusBar.setTitle(args.prompt, args)
@@ -613,6 +613,9 @@ class Cardia extends BaseGame implements CardiaGame {
 		log('onUpdateActionButtons: ' + stateName, args)
 		if ((this as any).isCurrentPlayerActive()) {
 			switch (stateName) {
+				case 'seeEndOfRound':
+					;(this as any).addActionButton('pass-button', _('Pass'), () => this.pass())
+					break
 				case 'chooseDuelCard':
 				case 'chooseFortuneTellerCard':
 					this.statusBar.addActionButton(
@@ -1136,7 +1139,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			stock = this.centralZone.duelStocks[encounterNumber]
 		}
 		stock.addCard(card)
-		
+
 		if (!removeTempModifiers) {
 			//convert to final modifier
 			const modifierQuery = `#duel-${encounterNumber} .slot[data-slot-id="${card.type_arg}"] .temp-modifier`

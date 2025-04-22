@@ -178,11 +178,7 @@ trait ActionTrait {
         if (!$args['canPass']) {
             throw new \BgaUserException($this->_("You cannot pass"));
         }
-
-        //$this->dbInsertContextLog(ACTION_PLAY_TICKET, $festivalId, $slotId);
-        //$this->changeNextStateFromContext();
-
-        $this->gamestate->nextState('nextPlayer');
+        $this->gamestate->setPlayerNonMultiactive($this->getMostlyActivePlayerId(), 'nextRound');
     }
 
     /** Undo all the player turn actions. 
