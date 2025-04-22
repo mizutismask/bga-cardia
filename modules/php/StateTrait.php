@@ -341,12 +341,7 @@ trait StateTrait {
                 break;
             case TREASURER:
                 if ($duelNumber > 1) {
-                    $previousDuelCards = $duels[$duelNumber - 1];
-                    $cardsWithSignet = array_filter($previousDuelCards, function ($c) use ($signets) {
-                        return !empty(array_filter($signets, fn($s) => $s->location == MATERIAL_LOCATION_CARD && $s->location_arg == $c->id));
-                    });
-
-                    $winningCard = reset($cardsWithSignet);
+                    $winningCard = $this->getWinningCard($duelNumber - 1);
                     if ($winningCard) {
                         $this->tokenManager->addSignetOnCard($winningCard->id, null, true);
                     }
@@ -436,6 +431,36 @@ trait StateTrait {
             }
         }
         $this->dump('*******************getTiedDuels', $tied);
+        return $tied;
+    }
+
+    public function getWinningCard(int $duelNumber) {
+        $duelCards = $this->cardManager->getDuelsList()[$duelNumber];
+        $signets = $this->tokenManager->getSignetsOnCards();
+        $cardsWithSignet = array_filter($duelCards, function ($c) use ($signets) {
+            return !empty(array_filter($signets, fn($s) => $s->location == MATERIAL_LOCATION_CARD && $s->location_arg == $c->id));
+        });
+
+        $winningCard = reset($cardsWithSignet);
+        return $winningCard;
+    }
+
+    /**
+     * @param array<mixed, array<mixed, object|null>> $duels 
+     * @return void 
+     */
+    function getTiedDuelsOnValues($duels) {
+        $tied = $duels;
+        foreach ($duels as $duelNumber => $duel) {
+            $duelCards = array_values($duel);
+            $card1 = array_pop($duelCards);
+            $card2 = array_pop($duelCards);
+            $tie = $this->getCardValue($card1) == $this->getCardValue($card2);
+            if (!$tie) {
+                unset($tied[$duelNumber]);
+            }
+        }
+        $this->dump('*******************getTiedDuelsOnValues', $tied);
         return $tied;
     }
 
@@ -654,10 +679,19 @@ trait StateTrait {
                 $this->evaluateDuelValues([$card, $opposingCard]);
                 break;
             case JUDGE:
-                # code...
+                $ties = $this->getTiedDuelsOnValues($duels);
+                if ($ties) {
+                    foreach ($ties as $duelNumber => $duel) {
+                        $signetToRemoveCard = $duel[$this->getPlayerIdFromPosition($card->type_arg)];
+                        $this->tokenManager->discardTokenOfTypeOnCard($signetToRemoveCard, TokenType::SIGIL);
+                    }
+                }
                 break;
             case TREASURER:
-                # code...
+                $winningCard = $this->getWinningCard($card->location_arg - 1);
+                if ($winningCard) {
+                    $this->tokenManager->discardTokenOfTypeOnCard($winningCard, TokenType::SIGIL, true);
+                }
                 break;
             case ARISTOCRAT:
                 # code...

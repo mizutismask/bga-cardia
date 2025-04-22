@@ -118,17 +118,21 @@ class TokenManager extends DeckManager {
         ]);
     }
 
-    public function discardTokenOfTypeOnCard(CardiaCard $card, TokenType $tokenType) {
+    public function discardTokenOfTypeOnCard(CardiaCard $card, TokenType $tokenType, $onlyOne = false) {
         $tokens = $this->cast($this->deck->getCardsOfTypeInLocation($tokenType->value, null, MATERIAL_LOCATION_CARD,  $card->id));
+        $count = 0;
         foreach ($tokens as $token) {
-            $this->deck->moveCard($token->id, MATERIAL_LOCATION_DECK);
-            $this->game->notifyWithName("materialMove", "", [
-                'type' => $tokenType == TokenType::ONGOING ? MATERIAL_TYPE_ONGOING_TOKEN : MATERIAL_TYPE_TOKEN,
-                'from' => MATERIAL_LOCATION_CARD,
-                'fromArg' => $card->id,
-                'to' => MATERIAL_LOCATION_DECK,
-                'material' => [$this->getCard($token->id)],
-            ]);
+            if (!$onlyOne || $count == 0) {
+                $this->deck->moveCard($token->id, MATERIAL_LOCATION_DECK);
+                $this->game->notifyWithName("materialMove", "", [
+                    'type' => $tokenType == TokenType::ONGOING ? MATERIAL_TYPE_ONGOING_TOKEN : MATERIAL_TYPE_TOKEN,
+                    'from' => MATERIAL_LOCATION_CARD,
+                    'fromArg' => $card->id,
+                    'to' => MATERIAL_LOCATION_DECK,
+                    'material' => [$this->getCard($token->id)],
+                ]);
+                $count++;
+            }
         }
     }
 
