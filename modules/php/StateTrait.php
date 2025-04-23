@@ -62,7 +62,7 @@ trait StateTrait {
                 if (isset($duels[$duelCount - 1])) {
                     $previousCard =  $duels[$duelCount - 1][$playerId];
                     if ($revealedCardValue < $this->getCardValue($previousCard, true)) {
-                        $this->cardManager->discardTopOfDeck($playerId, $player["player_no"]);
+                        $this->cardManager->discardTopOfDeck($playerId, $player["player_no"], clienttranslate('Auction house : ${playerName} discards ${cardName}'), ["playerName" => $player["player_name"]]);
                     }
                 }
             }
@@ -525,11 +525,15 @@ trait StateTrait {
                 break;
             case AMBUSHER:
                 $involvedCards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
-                foreach ($involvedCards as $c) {
-                    $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
-                    $this->cardManager->replenishHands();
+                if ($involvedCards) {
+                    foreach ($involvedCards as $c) {
+                        $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                        $this->cardManager->replenishHands();
+                    }
+                    $this->onCardInHandChange();
+                } else {
+                    $this->notifyWithName('msg', clienttranslate('${player_name} has no card of the required faction'), ['playerId' => $opponentId,]);
                 }
-                $this->onCardInHandChange();
                 $this->gamestate->nextState('finishDuel');
                 break;
             case SWAMP_GUARDIAN:
@@ -795,7 +799,7 @@ trait StateTrait {
 
         if ($everyoneLooses) {
             $winners = [];
-            self::notifyAllPlayers('msg', clienttranslate('Everyone looses, end of round'), []);
+            $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('Everyone looses, end of round'), "type" => "NEGATIVE", "temporary" => true,]);
         }
 
         $this->dump('*******************winners', $winners);
