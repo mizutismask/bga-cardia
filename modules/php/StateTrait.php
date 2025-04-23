@@ -257,8 +257,10 @@ trait StateTrait {
                 }
             }
         } else {
-            $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
-            if ($card->type != DJINN) {
+            $winnersIfAny = $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
+            if ($winnersIfAny) {
+                $this->stFinishDuel($winnersIfAny);
+            } else {
                 $this->gamestate->nextState('finishDuel');
             }
         }
@@ -314,6 +316,7 @@ trait StateTrait {
         $opponentTypeArg = $ability->type_arg == 1 ? 2 : 1;
         $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
         $playerId = $this->getPlayerIdFromPosition($ability->type_arg);
+        $winnersIfAny = null;
         switch ($ability->type) {
             case HIRED_BLADE:
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
@@ -333,11 +336,16 @@ trait StateTrait {
             case PUPPETEER:
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
                 $opponentHand = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $opposing->type_arg, MATERIAL_LOCATION_HAND);
-                $replacement = $this->getRandomValue($opponentHand);
-                $this->discardDuelCard($opposing,  clienttranslate('${cardName} is replaced by ${cardName2}'), ["cardName" => $opposing->name, "cardName2" => $replacement->name]);
-                $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opposing->location_arg, true, $opponentId);
-                $this->evaluateDuelValues([$ability, $replacement]);
-                $this->cardManager->replenishHands();
+                if ($opponentHand) {
+                    $replacement = $this->getRandomValue($opponentHand);
+                    $this->discardDuelCard($opposing,  clienttranslate('${cardName} is replaced by ${cardName2}'), ["cardName" => $opposing->name, "cardName2" => $replacement->name]);
+                    $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opposing->location_arg, true, $opponentId);
+                    $this->evaluateDuelValues([$ability, $replacement]);
+                    $this->cardManager->replenishHands();
+                } else {
+                    $winnersIfAny = [$playerId];
+                    $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('${player_name} has no card in hand to apply puppeteer ability, end of round'), "type" => "NEGATIVE", "temporary" => true, 'playerId' => $opponentId, "player_name" => $this->getPlayerName($opponentId)]);
+                }
                 break;
             case TREASURER:
                 if ($duelNumber > 1) {
@@ -348,7 +356,7 @@ trait StateTrait {
                 }
                 break;
             case DJINN:
-                $this->stFinishDuel([$playerId]);
+                $winnersIfAny = [$playerId];
                 break;
             case SURGEON:
                 $value = -5;
@@ -412,6 +420,7 @@ trait StateTrait {
                 }
                 break;
         }
+        return $winnersIfAny;
     }
 
     /**
