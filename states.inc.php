@@ -241,6 +241,8 @@ $playerActionsGameStates = [
         "descriptionmyturn" . REVOLUTIONARY => clienttranslate('${ability} ability: choose 2 cards to discard from your hand'),
         "description" . SUCCESSOR => clienttranslate('${ability} ability: ${actplayer} is choosing cards'),
         "descriptionmyturn" . SUCCESSOR => clienttranslate('${ability} ability: choose 2 cards from your hand to keep'),
+        "description" . WITCH_KING => clienttranslate('${ability} ability: ${actplayer} is choosing a faction'),
+        "descriptionmyturn" . WITCH_KING => clienttranslate('${ability} ability: Select a faction'),
 
         "args" => "argInteractiveAbility",
         "possibleactions" => [
