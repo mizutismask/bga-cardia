@@ -129,9 +129,6 @@ class Game extends \Bga\GameFramework\Table {
         // TODO: setup the initial game situation here
         $this->setupTable($players);
 
-        // Activate first player once everything has been initialized and ready.
-        $this->activeNextPlayer();
-
         /************ End of the game initialization *****/
     }
 

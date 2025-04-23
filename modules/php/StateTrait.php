@@ -29,17 +29,6 @@ trait StateTrait {
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
-
-    function stDealInitialSetup() {
-        $playersIds = $this->getPlayersIds();
-
-        foreach ($playersIds as $playerId) {
-            //$this->cardManager->pickInitialDestinationCards($playerId);
-        }
-
-        $this->gamestate->nextState('');
-    }
-
     function stDuelReveal() {
         $players = $this->getPlayers();
         $duelCount = $this->globals->inc(GLB_DUEL_COUNT, 1);
@@ -983,27 +972,6 @@ trait StateTrait {
             }
         }
         return false;
-    }
-
-    function stNextPlayer() {
-        $playerId = $this->getActivePlayerId();
-        if (!$playerId) {
-            $this->activateNextPlayerCustom();
-            $this->gamestate->nextState('nextPlayer');
-            return;
-        }
-
-        //$this->setGameStateValue(TICKETS_USED, 0);
-        $lastTurn = intval($this->getGameStateValue(LAST_TURN));
-
-        // check if it was last action from the last player or if there is no arrow left
-        if ($lastTurn == $playerId || ($this->hasReachedEndOfGameRequirements($playerId) && $this->isLastPlayer($playerId))) {
-            $this->gamestate->nextState('endScore');
-        } else {
-            //finishing round or playing normally
-            $this->activateNextPlayerCustom();
-            $this->gamestate->nextState('nextPlayer');
-        }
     }
 
     /**

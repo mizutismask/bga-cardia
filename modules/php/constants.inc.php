@@ -50,7 +50,6 @@ define('EXPANSION', 0); // 0 => base game
  * State constants
  */
 define('ST_BGA_GAME_SETUP', 1);
-define('ST_DEAL_INITIAL_SETUP', 10);
 
 define('ST_PLAYER_CHOOSE_DUEL_CARD', 30);
 define('ST_DUEL_REVEAL', 31);
@@ -66,7 +65,6 @@ define('ST_PLAYER_SEE_END_OF_ROUND', 40);
 define('ST_DUEL_EVALUATION', 41);
 define('ST_PLAYER_LIBRARIAN_ABILITY', 42);
 
-define('ST_NEXT_PLAYER', 80);
 define('ST_NEXT_REVEAL', 81);
 
 define('ST_DEBUG_END_GAME', 97);

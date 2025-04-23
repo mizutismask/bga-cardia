@@ -59,7 +59,7 @@ $basicGameStates = [
         "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => ["" => ST_DEAL_INITIAL_SETUP]
+        "transitions" => ["" => ST_PLAYER_CHOOSE_DUEL_CARD]
     ],
 
     ST_DEBUG_END_GAME => [
@@ -278,27 +278,6 @@ $playerActionsGameStates = [
 ];
 
 $gameGameStates = [
-    ST_DEAL_INITIAL_SETUP => [
-        "name" => "dealInitialSetup",
-        "description" => "",
-        "type" => "game",
-        "action" => "stDealInitialSetup",
-        "transitions" => [
-            "" => ST_NEXT_PLAYER,
-        ],
-    ],
-
-    ST_NEXT_PLAYER => [
-        "name" => "nextPlayer",
-        "description" => "",
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "updateGameProgression" => true,
-        "transitions" => [
-            "nextPlayer" => ST_PLAYER_CHOOSE_DUEL_CARD,
-            "endScore" => ST_END_SCORE,
-        ],
-    ],
 
     ST_NEXT_ROUND => [
         "name" => "nextRound",
