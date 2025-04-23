@@ -698,6 +698,10 @@ class Cardia extends BaseGame implements CardiaGame {
 						)
 					}
 					break
+				case 'librarianAbility':
+					this.statusBar.addActionButton('+2', () => this.takeAction('actChooseModifier', { modifierValue: 2 }), {})
+					this.statusBar.addActionButton('-2', () => this.takeAction('actChooseModifier', { modifierValue: -2 }), {})
+					break
 			}
 		}
 	}
@@ -1155,7 +1159,9 @@ class Cardia extends BaseGame implements CardiaGame {
 			//this.centralZone.createDuelStock(null, null) //one to prepare the next
 			stock = this.centralZone.duelStocks[encounterNumber]
 		}
-		stock.addCard(card, { fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`) })
+		stock.addCard(card, {
+			fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`)
+		})
 
 		if (!removeTempModifiers) {
 			//convert to final modifier

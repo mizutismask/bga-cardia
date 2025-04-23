@@ -2,9 +2,10 @@
 
 namespace Bga\Games\Cardia;
 
+use Bga\Games\Cardia\objects\CardiaCard;
 use Deck;
 
-class DeckManager extends \APP_DbObject{
+class DeckManager extends \APP_DbObject {
     protected Deck $deck;
     protected $game;
     protected $cast;
@@ -98,9 +99,9 @@ class DeckManager extends \APP_DbObject{
         return $this->cast($this->game->getCollectionFromDb($sql));
     }
 
-    public function getCardOfTypeAndTypeArg(string $tableName, string|int $type, int $typeArg) {
+    public function getCardOfTypeAndTypeArg(string $tableName, string|int $type, int $typeArg): CardiaCard|null {
         $sql = "SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg FROM $tableName where card_type_arg = '$typeArg' and card_type = '$type'";
-        return $this->castSingle($this->game->getObjectFromDB($sql),true);
+        return $this->castSingle($this->game->getObjectFromDB($sql), true);
     }
 
     public function getCardsOfTypeArgFromLocationOrderBy(string $tableName, int $typeArg, string $location, string $orderBy, bool $desc = false) {

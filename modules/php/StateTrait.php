@@ -43,7 +43,7 @@ trait StateTrait {
     function stDuelReveal() {
         $players = $this->getPlayers();
         $duelCount = $this->globals->inc(GLB_DUEL_COUNT, 1);
-        $stateTransition = 'finishDuel';
+        $stateTransition = 'evaluateDuel';
         $cards = [];
         $immediateLoosers = [];
         foreach ($players as $playerId => $player) {
@@ -86,17 +86,33 @@ trait StateTrait {
                 $this->stFinishDuel([], true);
             }
         } else {
-            $eval = $this->evaluateDuelValues($cards);
-
-            if ($eval["hasWinner"]) {
-                $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
-                $stateTransition = 'looserAbility';
+            $players = $this->getPlayers();
+            foreach ($players as $playerId => $player) {
+                $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, 0);
+                if ($modifierToAdd) {
+                    $this->gamestate->changeActivePlayer($playerId);
+                    $stateTransition = "librarianAbility";
+                }
             }
+        }
 
-            if (!$eval["interrupt"]) {
-                $this->dump('*******************stDuelReveal', $stateTransition);
-                $this->gamestate->nextState($stateTransition);
-            }
+        $this->gamestate->nextState($stateTransition);
+    }
+
+    function stDuelEvaluation() {
+        $stateTransition = 'finishDuel';
+        $duels = $this->cardManager->getDuelsList();
+        $cards = array_values($duels[count($duels)]);
+        $eval = $this->evaluateDuelValues($cards);
+
+        if ($eval["hasWinner"]) {
+            $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
+            $stateTransition = 'looserAbility';
+        }
+
+        if (!$eval["interrupt"]) {
+            $this->dump('*******************stDuelReveal', $stateTransition);
+            $this->gamestate->nextState($stateTransition);
         }
     }
 
@@ -418,6 +434,9 @@ trait StateTrait {
                     $this->tokenManager->addSignetOnCard($previousDuelCards[$playerId]->id, $previousDuelCards[$opponentId]->id);
                     //todo check if other ongoin power
                 }
+                break;
+            case LIBRARIAN:
+                $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, true);
                 break;
         }
         return $winnersIfAny;

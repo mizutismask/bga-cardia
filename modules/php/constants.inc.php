@@ -12,6 +12,7 @@ const GLB_ABILITY_TO_RESOLVE = 'abilityToResolve';
 const GLB_PLAYER_TO_ACTIVATE = 'playerToActivate';
 const GLB_INVENTOR_PLUS_CARD = 'inventorPlusCard';
 const GLB_NEXT_CARD_MODIFIER = 'nextCardModifier';
+const GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL = 'nextCardModifierAfterReveal'; //librarian
 const GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED = 'nextCardModifierAfterAbility';
 const GLB_STEP_2 = 'step2';
 const GLB_NEXT_STATE_AFTER_SCRAPYARD = 'nextStateAfterScrapyard';
@@ -62,6 +63,8 @@ define('ST_ACTIVATE_PLAYER_FOR_ABILITY', 37);
 define('ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD', 38);
 define('ST_PLAYER_SCRAPYARD_CHOOSE_CARD', 39);
 define('ST_PLAYER_SEE_END_OF_ROUND', 40);
+define('ST_DUEL_EVALUATION', 41);
+define('ST_PLAYER_LIBRARIAN_ABILITY', 42);
 
 define('ST_NEXT_PLAYER', 80);
 define('ST_NEXT_REVEAL', 81);

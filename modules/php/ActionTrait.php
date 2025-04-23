@@ -133,7 +133,7 @@ trait ActionTrait {
         $this->checkVersion($version);
         $this->checkAction('actInteractiveAbilityStep2');
         $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
-        
+
         $cards = [];
         $card = null;
         $this->checkSelectionIsCorrect(null, $cardIds, $interactiveAbility->type == PALACE_GUARD);
@@ -164,6 +164,23 @@ trait ActionTrait {
         }
 
         $this->applyInteractiveAbilityStep2($interactiveAbility, $card);
+    }
+
+    function actChooseModifier(int $version, int $modifierValue) {
+        $this->checkVersion($version);
+        $this->checkAction('actChooseModifier');
+        $this->userAssertTrue(_("Modifier should be -2 or +2"), $modifierValue == 2 || $modifierValue == -2);
+
+        $this->chooseLibrarianModifier($modifierValue);
+    }
+
+    function chooseLibrarianModifier(int $modifierValue) {
+        $playerId = $this->getMostlyActivePlayerId();
+        $duels = $this->cardManager->getDuelsList();
+        $card = $duels[count($duels)][$playerId];
+        $this->cardManager->incCardModifier($card, $modifierValue);
+        $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
+        $this->gamestate->nextState("evaluateDuel");
     }
 
     /**

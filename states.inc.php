@@ -77,6 +77,18 @@ $basicGameStates = [
         "action" => "stDuelReveal",
         "updateGameProgression" => false,
         "transitions" => [
+            "evaluateDuel" => ST_DUEL_EVALUATION,
+            "librarianAbility" => ST_PLAYER_LIBRARIAN_ABILITY,
+        ],
+    ],
+
+    ST_DUEL_EVALUATION => [
+        "name" => "duelEvaluation",
+        "description" => "",
+        "type" => "game",
+        "action" => "stDuelEvaluation",
+        "updateGameProgression" => false,
+        "transitions" => [
             "finishDuel" => ST_FINISH_DUEL,
             "looserAbility" => ST_LOOSER_ABILITY,
             "nextRound" => ST_PLAYER_SEE_END_OF_ROUND, //founders day
@@ -185,6 +197,19 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "opponentChooseCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
+        ]
+    ],
+    
+    ST_PLAYER_LIBRARIAN_ABILITY => [
+        "name" => "librarianAbility",
+        "description" => clienttranslate('Librarian: ${actplayer} must choose to add +2 or -2 to his card'),
+        "descriptionmyturn" => clienttranslate('Librarian: ${you} must choose to add +2 or -2 to your card'),
+        "type" => "activeplayer",
+        "possibleactions" => [
+            "actChooseModifier",
+        ],
+        "transitions" => [
+            "evaluateDuel" => ST_DUEL_EVALUATION,
         ]
     ],
 
