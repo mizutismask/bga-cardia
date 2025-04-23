@@ -798,6 +798,20 @@ class Cardia extends BaseGame implements CardiaGame {
 	///////////////////////////////////////////////////
 	//// Utility methods
 	///////////////////////////////////////////////////
+
+	/**
+	 * Returns the player ID corresponding to the given position.
+	 */
+	public getPlayerIdFromPosition(position: number): number | null {
+		const players = this.gamedatas.players
+		for (const playerId in players) {
+			if (players[playerId].playerNo === position) {
+				return Number(playerId)
+			}
+		}
+		return null
+	}
+
 	public isUserLocaleFrench() {
 		const userLocale = navigator.language || navigator.languages[0]
 		return userLocale.startsWith('fr-')
@@ -1097,7 +1111,10 @@ class Cardia extends BaseGame implements CardiaGame {
 			case 'hand':
 				log('toArg', notif.args.toArg, this.getPlayerId())
 				if (notif.args.toArg == this.getPlayerId()) {
-					this.playerTables[notif.args.toArg].handStock.addCards(cards)
+					this.playerTables[notif.args.toArg].handStock.addCards(cards, {
+						fromElement:
+							notif.args.from == 'deck' ? $(`deck-cards-counter-${notif.args.toArg}-wrapper`) : undefined
+					})
 				} else {
 					log('removeCard', card.name)
 					cards.forEach((c) => {
@@ -1138,7 +1155,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			//this.centralZone.createDuelStock(null, null) //one to prepare the next
 			stock = this.centralZone.duelStocks[encounterNumber]
 		}
-		stock.addCard(card)
+		stock.addCard(card, { fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`) })
 
 		if (!removeTempModifiers) {
 			//convert to final modifier
