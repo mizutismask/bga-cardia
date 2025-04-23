@@ -30,6 +30,9 @@ $important-message-color: #900;
     &.important-msg-warning{
         --background-color:orange;
     }
+    &.important-msg-negative{
+        --background-color:red;
+    }
 
     .important-message-text {
         display: inline-block;
