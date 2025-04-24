@@ -496,13 +496,17 @@ class Cardia extends BaseGame implements CardiaGame {
 				}
 				break
 			case 'chooseDuelCard':
-				this.onEnteringChooseDuelCard()
+				const dataArgs = args.args as EnteringChooseDuelCardArgs
+				this.onEnteringChooseDuelCard(dataArgs)
 				break
 			case 'stDuelReveal':
 				//this.centralZone.createDuelStock(null, null)
 				break
 			case 'scrapyardChooseCard':
 				this.onEnteringScrapyardChooseCard()
+				break
+			case 'blackmailerDiscard':
+				this.onEnteringBlackmailerDiscard()
 				break
 		}
 		if (this.gameFeatures.spyOnActivePlayerInGeneralActions) {
@@ -520,12 +524,20 @@ class Cardia extends BaseGame implements CardiaGame {
 		//this.missions.addCards(args._private.missions).then(()=>this.missions.setSelectableCards(args._private.choosableMissions))
 	}
 
-	private onEnteringChooseDuelCard() {
+	private onEnteringChooseDuelCard(dataArgs: EnteringChooseDuelCardArgs) {
+		if (dataArgs._private.blackmailerFaction) {
+			this.setGamestateDescription("BlackmailerAbility")
+		}
 		this.setHandAsSelectableArea()
 	}
 
 	private onEnteringScrapyardChooseCard() {
 		this.setHandAsSelectableArea()
+	}
+
+	private onEnteringBlackmailerDiscard() {
+		this.setHandAsSelectableArea()
+		this.playerTables[this.getPlayerId()].handStock.setSelectionMode('multiple')
 	}
 
 	private setHandAsSelectableArea() {
@@ -699,8 +711,30 @@ class Cardia extends BaseGame implements CardiaGame {
 					}
 					break
 				case 'librarianAbility':
-					this.statusBar.addActionButton('+2', () => this.takeAction('actChooseModifier', { modifierValue: 2 }), {})
-					this.statusBar.addActionButton('-2', () => this.takeAction('actChooseModifier', { modifierValue: -2 }), {})
+					this.statusBar.addActionButton(
+						'+2',
+						() => this.takeAction('actChooseModifier', { modifierValue: 2 }),
+						{}
+					)
+					this.statusBar.addActionButton(
+						'-2',
+						() => this.takeAction('actChooseModifier', { modifierValue: -2 }),
+						{}
+					)
+					break
+				case 'blackmailerDiscard':
+					this.statusBar.addActionButton(
+						_('Validate'),
+						() =>
+							this.takeAction('actBlackmailerDiscard', {
+								cardIds: this.playerTables[this.getPlayerId()].handStock
+									.getSelection()
+									.map((elt) => elt.id)
+									.join(',')
+							}),
+						{}
+					)
+
 					break
 			}
 		}

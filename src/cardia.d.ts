@@ -113,6 +113,12 @@ interface EnteringChooseActionArgs {
 	canResetTurn: boolean
 }
 
+interface EnteringChooseDuelCardArgs {
+	_private?: {
+		blackmailerFaction?: Faction
+	}
+}
+
 interface EnteringInteractiveAbilityArgs {
 	abilityCard: CardiaCard
 	interactionType: 'selectFaction' | 'selectCardFromHand' | 'selectCardFromDuels'

@@ -18,20 +18,17 @@ trait ArgsTrait {
     //////////// Game state arguments
     ////////////
 
-    /*function argChooseDuelCard() {
-        $playerId = intval($this->getActivePlayerId());
-
-        $destinations = $this->getPickedDestinationCards($playerId);
+    function argChooseDuelCard() {
+        $private = [];
+        foreach ($this->getPlayersIds() as $playerId) {
+            $private[$playerId]=[];
+            $private[$playerId]["blackmailerFaction"] = $this->globals->get(GLB_BLACKMAILER_FACTION . $playerId);
+        }
 
         return [
-            'minimum' => 3,
-            '_private' => [          // Using "_private" keyword, all data inside this array will be made private
-                'active' => [       // Using "active" keyword inside "_private", you select active player(s)
-                    'destinations' => $destinations,   // will be send only to active player(s)
-                ]
-            ],
+            '_private' => $private,
         ];
-    }*/
+    }
 
 
     function argChooseAction() {

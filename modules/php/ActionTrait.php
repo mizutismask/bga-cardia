@@ -21,6 +21,30 @@ trait ActionTrait {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
+    function actBlackmailerDiscard(int $version, #[IntArrayParam()] $cardIds) {
+        $this->checkVersion($version);
+        $this->checkAction('actBlackmailerDiscard');
+        $playerId = $this->getMostlyActivePlayerId();
+        $handSize = $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($playerId), MATERIAL_LOCATION_HAND);
+        $this->userAssertTrue($this->_("You have to discard 2 cards if possible"), count($cardIds) == min(2, $handSize));
+        $cards = [];
+        foreach ($cardIds as $cardId) {
+            $card = $this->cardManager->getCard($cardId);
+            $this->userAssertTrue($this->_("This card is not in your hand"), $card->location == "hand" && $card->location_arg == $playerId);
+            $cards[] = $card;
+        }
+        $this->blackmailerDiscard($cards);
+    }
+
+    function blackmailerDiscard(array $cards) {
+        $playerId = $this->getMostlyActivePlayerId();
+        foreach ($cards as $card) {
+            $this->cardManager->discardCard($playerId,  $card->id, clienttranslate('${ability}: ${player_name} discards ${cardName}'), ["cardName" => $card->name, "ability" => clienttranslate("Blackmailer")]);
+        }
+        $this->globals->delete(GLB_BLACKMAILER_FACTION . $playerId);
+        $this->gamestate->nextState('evaluateDuel');
+    }
+
     function actScrapyardChooseCard(int $version, int $cardId) {
         $this->checkVersion($version);
         $this->checkAction('actScrapyardChooseCard');

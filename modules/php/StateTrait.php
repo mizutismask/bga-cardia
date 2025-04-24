@@ -77,10 +77,18 @@ trait StateTrait {
         } else {
             $players = $this->getPlayers();
             foreach ($players as $playerId => $player) {
+                $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
+                
                 $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, 0);
                 if ($modifierToAdd) {
                     $this->gamestate->changeActivePlayer($playerId);
                     $stateTransition = "librarianAbility";
+                }
+
+                $faction = Faction::tryFrom($this->globals->get(GLB_BLACKMAILER_FACTION . $playerId, 0));
+                if ($faction && $card->faction != $faction) {
+                    $this->gamestate->changeActivePlayer($playerId);
+                    $stateTransition = "blackmailerDiscard";
                 }
             }
         }
@@ -290,8 +298,8 @@ trait StateTrait {
             REVOLUTIONARY,
             /*LIBRARIAN,*/
             PRODIGY,
-            /* BLACKMAILER,
-            ILLUSIONIST,*/
+            BLACKMAILER,
+            /*ILLUSIONIST,*/
             WITCH_KING,
             /* ELEMENTAL,*/
             SUCCESSOR
@@ -622,6 +630,14 @@ trait StateTrait {
                 foreach ($involvedCards as $c) {
                     $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
                 }
+                $this->gamestate->nextState('finishDuel');
+                break;
+            case BLACKMAILER:
+                $this->globals->set(GLB_BLACKMAILER_FACTION . $opponentId, $faction->value);
+                $this->notifyWithName('msg', clienttranslate('${player_name} chooses ${factionName} faction'), [
+                    'factionName' => $faction,
+                    'playerId' => $playerId,
+                ]);
                 $this->gamestate->nextState('finishDuel');
                 break;
         }

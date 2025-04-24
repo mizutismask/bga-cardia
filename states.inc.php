@@ -79,6 +79,7 @@ $basicGameStates = [
         "transitions" => [
             "evaluateDuel" => ST_DUEL_EVALUATION,
             "librarianAbility" => ST_PLAYER_LIBRARIAN_ABILITY,
+            "blackmailerDiscard" => ST_PLAYER_BLACKMAILER_DISCARD,
         ],
     ],
 
@@ -148,8 +149,9 @@ $playerActionsGameStates = [
         "name" => "chooseDuelCard",
         "description" => clienttranslate('${actplayer} must choose a card for the next encounter'),
         "descriptionmyturn" => clienttranslate('${you} must choose a card for the next encounter'),
+        "descriptionmyturnBlackmailerAbility" => clienttranslate('${you} must play a ${_private.blackmailerFaction} card or face Blackmailer consequences'),
         "type" => "multipleactiveplayer",
-        //"args" => "argChooseDuelCard",
+        "args" => "argChooseDuelCard",
         'action' => 'stActivatePlayersToChooseDuelCard',
         "possibleactions" => [
             "actChooseDuelCard",
@@ -184,6 +186,19 @@ $playerActionsGameStates = [
             "nextRound" => ST_PLAYER_SEE_END_OF_ROUND,
             "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
             "chooseFortuneTellerCard" => ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD,
+        ]
+    ],
+
+    ST_PLAYER_BLACKMAILER_DISCARD => [
+        "name" => "blackmailerDiscard",
+        "description" => clienttranslate('${actplayer} must choose 2 cards to discard'),
+        "descriptionmyturn" => clienttranslate('${you} did not play the required faction, so ${you} must choose 2 cards to discard'),
+        "type" => "activeplayer",
+        "possibleactions" => [
+            "actBlackmailerDiscard",
+        ],
+        "transitions" => [
+            "evaluateDuel" => ST_DUEL_EVALUATION,
         ]
     ],
 
@@ -243,6 +258,8 @@ $playerActionsGameStates = [
         "descriptionmyturn" . SUCCESSOR => clienttranslate('${ability} ability: choose 2 cards from your hand to keep'),
         "description" . WITCH_KING => clienttranslate('${ability} ability: ${actplayer} is choosing a faction'),
         "descriptionmyturn" . WITCH_KING => clienttranslate('${ability} ability: Select a faction'),
+        "description" . BLACKMAILER => clienttranslate('${ability} ability: ${actplayer} is choosing a faction'),
+        "descriptionmyturn" . BLACKMAILER => clienttranslate('${ability} ability: Select a faction'),
 
         "args" => "argInteractiveAbility",
         "possibleactions" => [

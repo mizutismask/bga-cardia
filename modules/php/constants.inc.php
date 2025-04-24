@@ -11,6 +11,7 @@ const GLB_SELECTED_CARD_ID = 'selectedCardId';
 const GLB_ABILITY_TO_RESOLVE = 'abilityToResolve';
 const GLB_PLAYER_TO_ACTIVATE = 'playerToActivate';
 const GLB_INVENTOR_PLUS_CARD = 'inventorPlusCard';
+const GLB_BLACKMAILER_FACTION = 'blackMailerFaction';
 const GLB_NEXT_CARD_MODIFIER = 'nextCardModifier';
 const GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL = 'nextCardModifierAfterReveal'; //librarian
 const GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED = 'nextCardModifierAfterAbility';
@@ -64,6 +65,7 @@ define('ST_PLAYER_SCRAPYARD_CHOOSE_CARD', 39);
 define('ST_PLAYER_SEE_END_OF_ROUND', 40);
 define('ST_DUEL_EVALUATION', 41);
 define('ST_PLAYER_LIBRARIAN_ABILITY', 42);
+define('ST_PLAYER_BLACKMAILER_DISCARD', 43);
 
 define('ST_NEXT_REVEAL', 81);
 
