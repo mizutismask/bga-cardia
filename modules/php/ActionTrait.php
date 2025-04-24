@@ -147,6 +147,10 @@ trait ActionTrait {
                     $selectableCards = $this->getSelectableCards($interactiveAbility);
                     $this->userAssertTrue(_("You have to select one of your played cards (but not Swamp Guardian)"),  $this->array_contains_card($selectableCards, $cardId));
                     break;
+                case ILLUSIONIST:
+                    $selectableCards = $this->getSelectableCards($interactiveAbility);
+                    $this->userAssertTrue(_("The copied card must be one of your losing cards"),  $this->array_contains_card($selectableCards, $cardId));
+                    break;
             }
         }
 

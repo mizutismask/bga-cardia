@@ -9,6 +9,7 @@ use Bga\Games\Cardia\objects\PowerType;
 
 /**
  * @property CardManager cardManager
+ * @property TokenManager tokenManager
  * @property GameState gamestate
  * @property Globals globals
  */
@@ -21,7 +22,7 @@ trait ArgsTrait {
     function argChooseDuelCard() {
         $private = [];
         foreach ($this->getPlayersIds() as $playerId) {
-            $private[$playerId]=[];
+            $private[$playerId] = [];
             $private[$playerId]["blackmailerFaction"] = $this->globals->get(GLB_BLACKMAILER_FACTION . $playerId);
         }
 
@@ -123,11 +124,15 @@ trait ArgsTrait {
             $selectableCards = array_filter($selectableCards, function ($card) {
                 return $this->getCardValue($card, true) <= 8;
             });
+        } else if ($ability->type == ILLUSIONIST) {
+            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
+            $selectableCards = array_filter($selectableCards, function ($card) use ($ability) {
+                return (!$this->tokenManager->hasSignet($card->id)) && $card->id != $ability->id;
+            });
         }
         //$this->dump('*******************argSelectableCards', $selectableCards);
         return $selectableCards;
     }
-
     function getPromptArgs(CardiaCard $ability) {
         $defaultArgs = ["ability" => $ability->name, "ability" => $ability->name, 'i18n' => ['ability']];
         switch ($ability->type) {

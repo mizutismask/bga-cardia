@@ -78,7 +78,7 @@ trait StateTrait {
             $players = $this->getPlayers();
             foreach ($players as $playerId => $player) {
                 $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
-                
+
                 $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, 0);
                 if ($modifierToAdd) {
                     $this->gamestate->changeActivePlayer($playerId);
@@ -270,7 +270,14 @@ trait StateTrait {
                 }
             }
         } else {
-            $winnersIfAny = $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
+            $winnersIfAny = null;
+            if ($possible) {
+                $winnersIfAny = $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
+            } else {
+                $this->notifyWithName('msg', clienttranslate('${cardName} ability impossible to resolve'), [
+                    'cardName' => $card->name,
+                ]);
+            }
             if ($winnersIfAny) {
                 $this->stFinishDuel($winnersIfAny);
             } else {
@@ -299,7 +306,7 @@ trait StateTrait {
             /*LIBRARIAN,*/
             PRODIGY,
             BLACKMAILER,
-            /*ILLUSIONIST,*/
+            ILLUSIONIST,
             WITCH_KING,
             /* ELEMENTAL,*/
             SUCCESSOR
@@ -572,6 +579,9 @@ trait StateTrait {
             case MAGISTRA:
                 $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
                 $this->stLooserAbility();
+            case ILLUSIONIST:
+                $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
+                $this->stLooserAbility();
                 break;
             case PRODIGY:
                 $this->cardManager->incCardModifier($card, 3);
@@ -702,6 +712,8 @@ trait StateTrait {
             case MAGISTRA:
                 return !empty($this->getSelectableCards($card, $cardOwner));
             case SWAMP_GUARDIAN:
+                return !empty($this->getSelectableCards($card, $cardOwner));
+            case ILLUSIONIST:
                 return !empty($this->getSelectableCards($card, $cardOwner));
             default:
                 return true;
