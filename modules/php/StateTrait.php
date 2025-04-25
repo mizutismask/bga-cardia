@@ -148,7 +148,7 @@ trait StateTrait {
             $this->tokenManager->addSignetOnCard($maxCard->id, $minCard->id);
 
             if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
-                $this->tokenManager->addSignetOnCard($maxCard->id, null, true); //todo reevaluate everything when ongoing removed
+                $this->tokenManager->addSignetOnCard($maxCard->id, null, true);
             }
             if ($this->isActiveCardInPlay(MECHANICAL_DJINN, $winningPlayerId)) {
                 $djinn = $this->cardManager->getCardInPlay(MECHANICAL_DJINN, $winningPlayerId);
@@ -186,6 +186,18 @@ trait StateTrait {
             }
         }
 
+        $players = $this->getPlayersIds();
+        foreach ($players as $playerId) {
+            if ($this->isActiveCardInPlay(COUNSELOR, $playerId)) {
+                $counselor = $this->cardManager->getCardInPlay(COUNSELOR, $playerId);
+                //check if this card is immediately before the counselor
+                $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
+                if ($counselor && $counselor->location_arg == $myCard->location_arg + 1) {
+                    $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg != $this->getPlayerPosition($playerId)));
+                    $this->tokenManager->addSignetOnCard($myCard->id, $opponentCard->id);
+                }
+            }
+        }
 
         if ($this->getScenery() == FOUNDERS_DAY) {
             $finalWinners = $this->getPlayersHavingSuccessiveWins(3);
@@ -691,6 +703,7 @@ trait StateTrait {
                     $reevaluate = true;
                     foreach ($tokens as $token) {
                         $this->tokenManager->discardTokenOfTypeOnCard($source, TokenType::ONGOING);
+                        $this->onRemovingOngoingTokenOnCard($source);
                         $this->tokenManager->addOngoingTokenOnCard($destination->id);
                     }
                 }
@@ -743,13 +756,16 @@ trait StateTrait {
                 }
                 break;
             case ARISTOCRAT:
-                # code...
+                $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::SIGIL, true);
                 break;
             case COUNSELOR:
-                # code...
+                $previousDuel = $card->location_arg - 1;
+                if ($previousDuel > 0) {
+                    $this->evaluateDuelValues($this->cardManager->getDuelsList()[$previousDuel]);
+                }
                 break;
             case MECHANICAL_DJINN:
-                # code...
+                //nothing to do
                 break;
 
             default:
