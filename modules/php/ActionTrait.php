@@ -97,7 +97,7 @@ trait ActionTrait {
     }
 
     function checkSelectionIsCorrect(?Faction $faction, ?array $cardIds, bool $skipFactionCheck = false) {
-        $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $interactiveAbility = $this->getAbilityToResolve();
         $interactionType = $this->getInteractionType($interactiveAbility);
         if ($interactionType == InteractionType::selectFaction && !$skipFactionCheck) {
             $this->userAssertTrue(_("You have to select a faction"), $interactiveAbility &&  $faction);
@@ -116,7 +116,7 @@ trait ActionTrait {
         $this->checkVersion($version);
         $this->checkAction('actInteractiveAbility');
         $playerId = $this->getMostlyActivePlayerId();
-        $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $interactiveAbility = $this->getAbilityToResolve();;
         $cards = [];
         $this->checkSelectionIsCorrect(Faction::tryFrom($faction), $cardIds);
         if ($cardIds) {
@@ -151,6 +151,10 @@ trait ActionTrait {
                     $selectableCards = $this->getSelectableCards($interactiveAbility);
                     $this->userAssertTrue(_("The copied card must be one of your losing cards"),  $this->array_contains_card($selectableCards, $cardId));
                     break;
+                case ELEMENTAL:
+                    $selectableCards = $this->getSelectableCards($interactiveAbility);
+                    $this->userAssertTrue(_("The copied card must be in your hand and have instant ability"),  $this->array_contains_card($selectableCards, $cardId));
+                    break;
             }
         }
 
@@ -160,7 +164,7 @@ trait ActionTrait {
     function actInteractiveAbilityStep2(int $version, #[IntArrayParam()] ?array $cardIds) {
         $this->checkVersion($version);
         $this->checkAction('actInteractiveAbilityStep2');
-        $interactiveAbility = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $interactiveAbility = $this->getAbilityToResolve();
 
         $cards = [];
         $card = null;

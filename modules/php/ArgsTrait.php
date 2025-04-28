@@ -64,8 +64,23 @@ trait ArgsTrait {
         return $counters;
     }
 
+    function getAbilityToResolve(): CardiaCard|null {
+        $abilityId = $this->globals->get(GLB_ABILITY_TO_RESOLVE);
+        $ability = $abilityId ? $this->cardManager->getCard($abilityId, true) : null;
+        $copiedType = $this->globals->get(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
+        if ($ability && $copiedType) {
+            $this->copyAbility($ability, $copiedType);
+        }
+        return $ability;
+    }
+
+    function getOriginalAbilityToResolveType(): int {
+        $abilityId = $this->globals->get(GLB_ABILITY_TO_RESOLVE);
+        return $this->cardManager->getCard($abilityId, true)->type;
+    }
+
     function argInteractiveAbility() {
-        $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $ability = $this->getAbilityToResolve();
         $promptArgs = $this->getPromptArgs($ability);
         $args = [
             'abilityCard' => $ability,
@@ -84,7 +99,7 @@ trait ArgsTrait {
     }
 
     function argInteractiveAbilityStep2() {
-        $ability = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $ability = $this->getAbilityToResolve();
         $promptArgs = $this->getPromptArgs($ability);
         $args = [
             'abilityCard' => $ability,
@@ -109,26 +124,31 @@ trait ArgsTrait {
             $selectableCards = $this->cardManager->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
         } else if ($ability->type == SWAMP_GUARDIAN) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
-            $selectableCards = array_filter($selectableCards, function ($card) use ($ability) {
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($ability) {
                 return  $card->id != $ability->id;
-            });
+            }));
         } else if ($ability->type == MAGISTRA) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
             //filter to keep only instant power type and value >= this card’s value 
             $abilityValue = $this->getCardValue($ability, true);
-            $selectableCards = array_filter($selectableCards, function ($card) use ($abilityValue, $ability) {
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($abilityValue, $ability) {
                 return $card->powerType == PowerType::IMMEDIATE && $card->id != $ability->id && $this->getCardValue($card, true) >= $abilityValue;
-            });
+            }));
         } else if ($ability->type == PRODIGY) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
-            $selectableCards = array_filter($selectableCards, function ($card) {
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) {
                 return $this->getCardValue($card, true) <= 8;
-            });
+            }));
         } else if ($ability->type == ILLUSIONIST) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
-            $selectableCards = array_filter($selectableCards, function ($card) use ($ability) {
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($ability) {
                 return (!$this->tokenManager->hasSignet($card->id)) && $card->id != $ability->id;
-            });
+            }));
+        } else if ($ability->type == ELEMENTAL) {
+            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_HAND);
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) {
+                return $card->powerType == PowerType::IMMEDIATE;
+            }));
         }
         //$this->dump('*******************argSelectableCards', $selectableCards);
         return $selectableCards;

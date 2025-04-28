@@ -256,8 +256,17 @@ trait StateTrait {
         return $card;
     }
 
+    function copyAbility(CardiaCard &$card, int $abilityToCopy) {
+        $this->dump('*******************ability copied from ', $card->name);
+        $cardInfo = $this->CARDIA_CARDS[$abilityToCopy];
+        $this->dump('*******************ability copied to ', $cardInfo->name);
+        $card->type = $abilityToCopy;
+        $card->name = clienttranslate("{$card->name} copying {$cardInfo->name}");
+    }
+
     function stLooserAbility() {
-        $card = $this->cardManager->getCard($this->globals->get(GLB_ABILITY_TO_RESOLVE));
+        $card = $this->getAbilityToResolve();
+
         $possible = $this->isAbilityPossible($card, $this->getPlayerIdFromPosition($card->type_arg), null);
         $this->dump('*******************isAbilityNeedingInteraction', $this->isAbilityNeedingInteraction($card));
         $this->dump('*******************isAbilityPossible', $possible);
@@ -315,12 +324,11 @@ trait StateTrait {
             KINESIS_MAGE,
             ENVOY,
             REVOLUTIONARY,
-            /*LIBRARIAN,*/
             PRODIGY,
             BLACKMAILER,
             ILLUSIONIST,
             WITCH_KING,
-            /* ELEMENTAL,*/
+            ELEMENTAL,
             SUCCESSOR
         ];
         return in_array($card->type, $abilitiesNeedingInteraction);
@@ -662,6 +670,12 @@ trait StateTrait {
                 ]);
                 $this->gamestate->nextState('finishDuel');
                 break;
+            case ELEMENTAL:
+                $this->cardManager->discardCard($playerId, $card->id, clienttranslate('${player_name} discards ${cardName} and copies its effect'), ["cardName" => $card->name, "player_name" => $this->getPlayerName($playerId)]);
+                $this->globals->set(GLB_ABILITY_TO_RESOLVE, $interactiveAbility->id);
+                $this->globals->set(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE, $card->type);
+                $this->stLooserAbility();
+                break;
         }
     }
 
@@ -727,6 +741,8 @@ trait StateTrait {
             case SWAMP_GUARDIAN:
                 return !empty($this->getSelectableCards($card, $cardOwner));
             case ILLUSIONIST:
+                return !empty($this->getSelectableCards($card, $cardOwner));
+            case ELEMENTAL:
                 return !empty($this->getSelectableCards($card, $cardOwner));
             default:
                 return true;
@@ -802,8 +818,7 @@ trait StateTrait {
     }
 
     function stActivatePlayersToChooseDuelCard() {
-        $abilityId = $this->globals->get(GLB_ABILITY_TO_RESOLVE);
-        $ability = $abilityId ? $this->cardManager->getCard($abilityId, true) : null;
+        $ability = $this->getAbilityToResolve();
         if ($ability && $ability->type == FORTUNE_TELLER) {
             $this->gamestate->setPlayersMultiactive([$this->getPlayerIdFromPosition($ability->type_arg)], "duelReveal", true);
         } else {
@@ -824,7 +839,7 @@ trait StateTrait {
         $anyModif = false;
         foreach ($this->getPlayers() as $playerId => $players) {
             $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId, 0);
-            if ($modifierToAdd != 0 && $finishingDuel[$playerId]->type != ENGINEER) {
+            if ($modifierToAdd != 0 && $finishingDuel[$playerId]->type != ENGINEER && $finishingDuel[$playerId]->type != ELEMENTAL) {
                 $anyModif = true;
                 $this->cardManager->incCardModifier($finishingDuel[$playerId], $modifierToAdd);
                 $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
@@ -873,14 +888,16 @@ trait StateTrait {
                 }
             }
         } else {
-            $abilityId = $this->globals->get(GLB_ABILITY_TO_RESOLVE);
-            if ($abilityId) {
-                $ability = $this->cardManager->getCard($abilityId);
-                if ($ability->type == FORTUNE_TELLER) {
-                    $nextState = 'chooseFortuneTellerCard';
-                    $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($ability->type)));
-                }
+            $ability =  $this->getAbilityToResolve();
+            if ($ability && $ability->type == FORTUNE_TELLER) {
+                $nextState = 'chooseFortuneTellerCard';
+                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($ability->type)));
             }
+
+            if ($this->getOriginalAbilityToResolveType() == ELEMENTAL) {
+                $this->cardManager->pickAdditionalCard();
+            }
+            $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
 
             $location = $this->getScenery();
             if ($location == BAZAAR) {

@@ -9,6 +9,7 @@ const GLBL_ROUND = 'round';
 const GLB_SELECTED_FACTION = 'selectedFaction';
 const GLB_SELECTED_CARD_ID = 'selectedCardId';
 const GLB_ABILITY_TO_RESOLVE = 'abilityToResolve';
+const GLB_ABILITY_TO_RESOLVE_COPIED_TYPE = 'abilityToResolveCopiedType';
 const GLB_PLAYER_TO_ACTIVATE = 'playerToActivate';
 const GLB_INVENTOR_PLUS_CARD = 'inventorPlusCard';
 const GLB_BLACKMAILER_FACTION = 'blackMailerFaction';

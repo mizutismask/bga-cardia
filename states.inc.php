@@ -262,6 +262,8 @@ $playerActionsGameStates = [
         "descriptionmyturn" . BLACKMAILER => clienttranslate('${ability} ability: Select a faction'),
         "description" . ILLUSIONIST => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
         "descriptionmyturn" . ILLUSIONIST => clienttranslate('${ability} ability: choose one of your loosing cards to activate its ability'),
+        "description" . ELEMENTAL => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
+        "descriptionmyturn" . ELEMENTAL => clienttranslate('${ability} ability: choose a card in your hand to copy its ability'),
 
         "args" => "argInteractiveAbility",
         "possibleactions" => [
