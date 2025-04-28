@@ -200,10 +200,17 @@ trait StateTrait {
             if ($counselor) {
                 //check if this card is immediately before the counselor
                 $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
+                $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == ($myCard->type_arg == 1 ? 2 : 1)));
                 if ($counselor && $counselor->location_arg == $myCard->location_arg + 1) {
                     $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg != $this->getPlayerPosition($playerId)));
                     $signetOwnerChanged = $this->tokenManager->addSignetOnCard($myCard->id, $opponentCard->id);
                     $this->addSerpentTempleDiscarder($myCard->location_arg, $signetOwnerChanged, $this->getOpponentId($playerId));
+                    if ($signetOwnerChanged) {
+                        $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
+                            'cardName1' => $myCard->name,
+                            'cardName2' => $opponentCard->name,
+                        ]);
+                    }
                 }
             }
         }
@@ -480,6 +487,12 @@ trait StateTrait {
                     $previousDuelCards = $duels[$duelNumber - 1];
                     $signetOwnerChanged = $this->tokenManager->addSignetOnCard($previousDuelCards[$playerId]->id, $previousDuelCards[$opponentId]->id);
                     $this->addSerpentTempleDiscarder($previousDuelCards[$playerId]->location_arg, $signetOwnerChanged, $opponentId);
+                    if ($signetOwnerChanged) {
+                        $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
+                            'cardName1' => $previousDuelCards[$playerId]->name,
+                            'cardName2' => $previousDuelCards[$opponentId]->name,
+                        ]);
+                    }
                     //todo check if other ongoin power
                 }
                 break;

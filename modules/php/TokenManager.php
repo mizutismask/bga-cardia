@@ -61,7 +61,7 @@ class TokenManager extends DeckManager {
         //$this->game->dump('*******************$this->alreadyHasSignet($cardId)', $this->alreadyHasSignet($cardId));
         if ($severalPossible || !$this->hasSignet($cardId)) {
             $signet = $this->getSignetToUse($opposingCardId);
-            $winnerChanged = $signet->location == MATERIAL_LOCATION_CARD;
+            $winnerChanged = $signet->location == MATERIAL_LOCATION_CARD || $signet->location == MATERIAL_LOCATION_DECK;
             $this->deck->moveCard($signet->id, MATERIAL_LOCATION_CARD, $cardId);
             $this->game->notifyWithName("materialMove",  "", [
                 'type' => MATERIAL_TYPE_TOKEN,
