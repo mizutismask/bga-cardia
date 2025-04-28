@@ -21,6 +21,28 @@ trait ActionTrait {
     //////////////////////////////////////////////////////////////////////////////
     //////////// Player actions
     //////////// 
+    function actSerpentTempleDiscard(int $version, int $cardId) {
+        $this->checkVersion($version);
+        $this->checkAction('actSerpentTempleDiscard');
+        $playerId = $this->getMostlyActivePlayerId();
+        $card = $this->cardManager->getCard($cardId);
+        $this->userAssertTrue($this->_("This card is not in your hand"), $card->location == "hand" && $card->location_arg == $playerId);
+
+        $this->applySerpentTemple($this->getMostlyActivePlayerId(), $card);
+        $this->gamestate->nextState("finishDuel");
+    }
+
+    function applySerpentTemple(int $discardingPlayer, CardiaCard $card) {
+        $opponentId = $this->getOpponentId($discardingPlayer);
+        $this->cardManager->discardCard($discardingPlayer, $card->id, clienttranslate('Serpent temple: ${player_name} discards ${cardName} and ${player_name2} draws a card'), [
+            "cardName" => $card->name,
+            "player_name" => $this->getPlayerName($discardingPlayer),
+            "player_name2" => $this->getPlayerName($opponentId)
+        ]);
+        $this->onCardInHandChange();
+        $this->cardManager->addCardsToHand(1, $opponentId, $card->type_arg == 1 ? 2 : 1, true);
+    }
+
     function actBlackmailerDiscard(int $version, #[IntArrayParam()] $cardIds) {
         $this->checkVersion($version);
         $this->checkAction('actBlackmailerDiscard');

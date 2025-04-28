@@ -508,6 +508,9 @@ class Cardia extends BaseGame implements CardiaGame {
 			case 'blackmailerDiscard':
 				this.onEnteringBlackmailerDiscard()
 				break
+			case 'serpentTempleDiscard':
+				this.setHandAsSelectableArea()
+				break
 		}
 		if (this.gameFeatures.spyOnActivePlayerInGeneralActions) {
 			this.addArrowsToActivePlayer(args)
@@ -645,6 +648,13 @@ class Cardia extends BaseGame implements CardiaGame {
 					)
 					//this.setActionBarChooseAction(false)
 					break
+				case 'serpentTempleDiscard':
+					this.statusBar.addActionButton(
+						_('Validate'),
+						() => this.serpentTempleDiscardAction(this.playerTables[this.getPlayerId()].handStock),
+						{}
+					)
+					break
 				case 'interactiveAbility':
 				case 'interactiveAbilityStep2':
 					const typedArgs = args as EnteringInteractiveAbilityArgs
@@ -772,6 +782,14 @@ class Cardia extends BaseGame implements CardiaGame {
 	private chooseScrapyardCardAction(stock: CardStock<CardiaCard>) {
 		this.ensureStockSelection([stock], _('You have to select a card'), () => {
 			this.takeAction('actScrapyardChooseCard', {
+				cardId: stock.getSelection()[0].id
+			})
+		})
+	}
+
+	private serpentTempleDiscardAction(stock: CardStock<CardiaCard>) {
+		this.ensureStockSelection([stock], _('You have to select a card'), () => {
+			this.takeAction('actSerpentTempleDiscard', {
 				cardId: stock.getSelection()[0].id
 			})
 		})

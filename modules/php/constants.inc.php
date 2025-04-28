@@ -19,6 +19,9 @@ const GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED = 'nextCardModifierAfterAbi
 const GLB_STEP_2 = 'step2';
 const GLB_NEXT_STATE_AFTER_SCRAPYARD = 'nextStateAfterScrapyard';
 const GLB_KINESIS_SOURCE_CARD = 'kinesisSourceCard';
+const GLB_SERPENT_TEMPLE_DISCARDERS = 'serpentDiscarders';
+const GLB_ROUND_WINNERS = 'roundWinners';
+const GLB_ROUND_EVERYONE_LOOSES = 'everyoneLooses';
 define("GS_PLAYER_TURN_NUMBER", 'playerturn_nbr');
 
 /*
@@ -67,6 +70,7 @@ define('ST_PLAYER_SEE_END_OF_ROUND', 40);
 define('ST_DUEL_EVALUATION', 41);
 define('ST_PLAYER_LIBRARIAN_ABILITY', 42);
 define('ST_PLAYER_BLACKMAILER_DISCARD', 43);
+define('ST_PLAYER_SERPENT_TEMPLE_DISCARD', 44);
 
 define('ST_NEXT_REVEAL', 81);
 

@@ -128,6 +128,7 @@ $basicGameStates = [
             "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
             "chooseFortuneTellerCard" => ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD,
             "chooseScrapyardCard" => ST_PLAYER_SCRAPYARD_CHOOSE_CARD,
+            "serpentTempleDiscard" => ST_PLAYER_SERPENT_TEMPLE_DISCARD,
         ],
     ],
 
@@ -205,13 +206,26 @@ $playerActionsGameStates = [
     ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD => [
         "name" => "chooseFortuneTellerCard",
         "description" => clienttranslate('Fortune teller: ${actplayer} must choose a card for the next encounter'),
-        "descriptionmyturn" => clienttranslate('${you} must choose a card for the next encounter'),
+        "descriptionmyturn" => clienttranslate('Fortune teller: ${you} must choose a card for the next encounter'),
         "type" => "activeplayer",
         "possibleactions" => [
             "actChooseDuelCard",
         ],
         "transitions" => [
             "opponentChooseCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
+        ]
+    ],
+
+    ST_PLAYER_SERPENT_TEMPLE_DISCARD => [
+        "name" => "serpentTempleDiscard",
+        "description" => clienttranslate('Serpent temple: ${actplayer} must discard a card from his hand'),
+        "descriptionmyturn" => clienttranslate('Serpent temple: ${you} must discard a card from your hand'),
+        "type" => "activeplayer",
+        "possibleactions" => [
+            "actSerpentTempleDiscard",
+        ],
+        "transitions" => [
+            "finishDuel" => ST_FINISH_DUEL,
         ]
     ],
     

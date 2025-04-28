@@ -70,9 +70,13 @@ trait StateTrait {
 
         if ($immediateLoosers) {
             if (count($immediateLoosers) == 1) {
-                $this->stFinishDuel([$this->getOpponentId(reset($immediateLoosers))]);
+                $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
+                $this->globals->set(GLB_ROUND_WINNERS, [$this->getOpponentId(reset($immediateLoosers))]);
+                $this->stFinishDuel();
             } else {
-                $this->stFinishDuel([], true);
+                $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, true);
+                $this->globals->set(GLB_ROUND_WINNERS, []);
+                $this->stFinishDuel();
             }
         } else {
             $players = $this->getPlayers();
@@ -135,6 +139,7 @@ trait StateTrait {
         if ($minCard->id != $maxCard->id) {
             $hasWinner = true;
             $winningPlayerId = $this->getPlayerIdFromPosition($maxCard->type_arg);
+            $loosingPlayerId = $this->getPlayerIdFromPosition($minCard->type_arg);
 
             $operator = ">";
             $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}: ${winnerValue} ${operator} ${looserValue}'), [
@@ -145,7 +150,8 @@ trait StateTrait {
                 'cardName2' => $minCard->name,
             ]);
 
-            $this->tokenManager->addSignetOnCard($maxCard->id, $minCard->id);
+            $signetOwnerChanged = $this->tokenManager->addSignetOnCard($maxCard->id, $minCard->id);
+            $this->addSerpentTempleDiscarder($maxCard->location_arg, $signetOwnerChanged, $loosingPlayerId);
 
             if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
                 $this->tokenManager->addSignetOnCard($maxCard->id, null, true);
@@ -156,7 +162,9 @@ trait StateTrait {
                 if ($djinn && $djinn->location_arg == $maxCard->location_arg - 1) {
                     //win the game
                     $interrupt = true;
-                    $this->stFinishDuel([$winningPlayerId]);
+                    $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
+                    $this->globals->set(GLB_ROUND_WINNERS, [$winningPlayerId]);
+                    $this->stFinishDuel();
                 }
             }
         } else {
@@ -188,13 +196,14 @@ trait StateTrait {
 
         $players = $this->getPlayersIds();
         foreach ($players as $playerId) {
-            if ($this->isActiveCardInPlay(COUNSELOR, $playerId)) {
-                $counselor = $this->cardManager->getCardInPlay(COUNSELOR, $playerId);
+            $counselor = $this->isActiveCardInPlay(COUNSELOR, $playerId);
+            if ($counselor) {
                 //check if this card is immediately before the counselor
                 $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
                 if ($counselor && $counselor->location_arg == $myCard->location_arg + 1) {
                     $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg != $this->getPlayerPosition($playerId)));
-                    $this->tokenManager->addSignetOnCard($myCard->id, $opponentCard->id);
+                    $signetOwnerChanged = $this->tokenManager->addSignetOnCard($myCard->id, $opponentCard->id);
+                    $this->addSerpentTempleDiscarder($myCard->location_arg, $signetOwnerChanged, $this->getOpponentId($playerId));
                 }
             }
         }
@@ -202,13 +211,26 @@ trait StateTrait {
         if ($this->getScenery() == FOUNDERS_DAY) {
             $finalWinners = $this->getPlayersHavingSuccessiveWins(3);
             if (count($finalWinners) > 0) {
-                $this->stFinishDuel($finalWinners);
+                $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
+                $this->globals->set(GLB_ROUND_WINNERS, $finalWinners);
+                $this->stFinishDuel();
                 $interrupt = true;
             }
         }
         $result = ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard, "interrupt" => $interrupt];
 
         return $result;
+    }
+
+    function addSerpentTempleDiscarder(int $encounterNumber, bool $signetOwnerChanged, int $opponentPlayerId) {
+        if ($this->getScenery() == SERPENT_TEMPLE) {
+            $isPreviousDuel = $encounterNumber < $this->globals->get(GLB_DUEL_COUNT);
+            if ($isPreviousDuel) {
+                $discarders = $this->globals->get(GLB_SERPENT_TEMPLE_DISCARDERS);
+                array_push($discarders, $opponentPlayerId);
+                $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, $discarders);
+            }
+        }
     }
 
     function getPlayersHavingSuccessiveWins(int $minimumWins) {
@@ -246,7 +268,6 @@ trait StateTrait {
 
     function isActiveCardInPlay($cardType, $playerId) {
         $card = $this->cardManager->getCardInPlay($cardType, $playerId);
-
         if ($card && $card->powerType == PowerType::ONGOING) {
             //check is ongoing card is still active
             if (!$this->tokenManager->hasOngoingToken($card->id)) {
@@ -300,7 +321,9 @@ trait StateTrait {
                 ]);
             }
             if ($winnersIfAny) {
-                $this->stFinishDuel($winnersIfAny);
+                $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
+                $this->globals->set(GLB_ROUND_WINNERS, $winnersIfAny);
+                $this->stFinishDuel();
             } else {
                 $this->gamestate->nextState('finishDuel');
             }
@@ -455,7 +478,8 @@ trait StateTrait {
             case COUNSELOR:
                 if ($duelNumber > 1) {
                     $previousDuelCards = $duels[$duelNumber - 1];
-                    $this->tokenManager->addSignetOnCard($previousDuelCards[$playerId]->id, $previousDuelCards[$opponentId]->id);
+                    $signetOwnerChanged = $this->tokenManager->addSignetOnCard($previousDuelCards[$playerId]->id, $previousDuelCards[$opponentId]->id);
+                    $this->addSerpentTempleDiscarder($previousDuelCards[$playerId]->location_arg, $signetOwnerChanged, $opponentId);
                     //todo check if other ongoin power
                 }
                 break;
@@ -832,7 +856,10 @@ trait StateTrait {
      * @param bool $everyoneLooses Flag indicating if all players lose the round
      * @return void 
      */
-    function stFinishDuel(array $winners = null, bool $everyoneLooses = false) {
+    function stFinishDuel() {
+        $everyoneLooses = $this->globals->get(GLB_ROUND_EVERYONE_LOOSES);
+        $winners = $this->globals->get(GLB_ROUND_WINNERS);
+
         //add engineer influence if any
         $duels = $this->cardManager->getDuelsList();
         $finishingDuel = array_pop($duels);
@@ -853,6 +880,41 @@ trait StateTrait {
         $this->globals->delete(GLB_SELECTED_CARD_ID);
         $this->globals->delete(GLB_SELECTED_FACTION);
         $this->globals->delete(GLB_STEP_2);
+
+        //apply serpent temple discard
+        $serpentWinners = null;
+        if (!$winners) {
+            if ($this->getScenery() == SERPENT_TEMPLE) {
+                $discarders = $this->globals->get(GLB_SERPENT_TEMPLE_DISCARDERS);
+                if ($discarders) {
+                    $discarderPlayer = array_shift($discarders);
+                    if ($discarderPlayer) {
+                        if ($this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($discarderPlayer), MATERIAL_LOCATION_HAND) > 0) {
+                            $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, $discarders);
+                            $this->gamestate->changeActivePlayer($discarderPlayer);
+                            $this->gamestate->nextState("serpentTempleDiscard");
+                            return;
+                        }
+                        $this->notifyAllPlayers(
+                            'importantMessage',
+                            "",
+                            [
+                                "message" => clienttranslate('Serpent temple: ${player_name} has no card in hand to discard, thus looses the round'),
+                                "type" => "POSITIVE",
+                                "temporary" => true,
+                                "player_name" => $this->getPlayerName($discarderPlayer),
+                            ]
+                        );
+                        //$this->globals->set(GLB_ROUND_WINNERS, [$this->getOpponentId($discarderPlayer)]);
+                        $serpentWinners = [$this->getOpponentId($discarderPlayer)];
+                    }
+                }
+            }
+        }
+
+        if (!$winners) {
+            $winners = $serpentWinners;
+        }
 
         if (!$winners) {
             $signetWinner = $this->getSignetCountWinner();
@@ -1011,6 +1073,9 @@ trait StateTrait {
         } else {
             $this->globals->set(GLB_DUEL_COUNT, 0);
             $this->globals->inc(GLBL_ROUND, 1);
+            $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
+            $this->globals->delete(GLB_ROUND_WINNERS);
+            $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
             $currentRound++;
 
             self::notifyAllPlayers('newRound', clienttranslate('&#10148; Round ${round}'), ["round" => $currentRound]);
