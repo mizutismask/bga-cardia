@@ -7,7 +7,6 @@
 
 	.card-stock {
 		--direction: column !important;
-		
 
 		.slot {
 			@include card-size;
@@ -19,7 +18,6 @@
 		@include card-size;
 		width: 100%;
 		height: unset;
-		
 	}
 
 	.duel-wrapper {
@@ -59,5 +57,12 @@
 				width: 50%;
 			}
 		}
+	}
+}
+
+@media screen and (hover: none) and (pointer: coarse) and (orientation: landscape) {
+	/* Styles for touch devices in landscape mode */
+	.vs-icon {
+		font-size: x-large !important;
 	}
 }
