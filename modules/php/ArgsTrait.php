@@ -76,7 +76,8 @@ trait ArgsTrait {
 
     function getOriginalAbilityToResolveType(): int {
         $abilityId = $this->globals->get(GLB_ABILITY_TO_RESOLVE);
-        return $this->cardManager->getCard($abilityId, true)->type;
+        $ability = $abilityId ? $this->cardManager->getCard($abilityId, true) : null;
+        return $ability ? $ability->type : -1;
     }
 
     function argInteractiveAbility() {
