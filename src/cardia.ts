@@ -528,7 +528,7 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private onEnteringChooseDuelCard(dataArgs: EnteringChooseDuelCardArgs) {
-		if (dataArgs._private.blackmailerFaction) {
+		if (dataArgs?._private?.blackmailerFaction) {
 			this.setGamestateDescription("BlackmailerAbility")
 		}
 		this.setHandAsSelectableArea()
@@ -540,14 +540,14 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private onEnteringBlackmailerDiscard() {
 		this.setHandAsSelectableArea()
-		this.playerTables[this.getPlayerId()].handStock.setSelectionMode('multiple')
+		this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode('multiple')
 	}
 
 	private setHandAsSelectableArea() {
 		this.centralZone.duelStocks.forEach((stock) => {
 			stock.setSelectionMode('none')
 		})
-		this.playerTables[this.getPlayerId()].handStock.setSelectionMode('single')
+		this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode('single')
 	}
 
 	private onEnteringInteractiveAbility(args: EnteringInteractiveAbilityArgs) {
@@ -560,17 +560,17 @@ class Cardia extends BaseGame implements CardiaGame {
 			this.centralZone.duelStocks.forEach((stock) => {
 				stock.setSelectionMode('single')
 			})
-			this.playerTables[this.getPlayerId()].handStock.setSelectionMode('none')
+			this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode('none')
 			if (args.selectableCards) {
-				this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args['selectableCards'])
+				this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args['selectableCards'])
 			}
 		} else if (args.interactionType === 'selectCardFromHand') {
 			this.centralZone.duelStocks.forEach((stock) => {
 				stock.setSelectionMode('none')
 			})
-			this.playerTables[this.getPlayerId()].handStock.setSelectionMode(args.qty > 1 ? 'multiple' : 'single')
+			this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode(args.qty > 1 ? 'multiple' : 'single')
 			if (args.selectableCards) {
-				this.playerTables[this.getPlayerId()].handStock.setSelectableCards(args.selectableCards)
+				this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args.selectableCards)
 			}
 		}
 	}
@@ -1167,7 +1167,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			case 'hand':
 				log('toArg', notif.args.toArg, this.getPlayerId())
 				if (notif.args.toArg == this.getPlayerId()) {
-					this.playerTables[notif.args.toArg].handStock.addCards(cards, {
+					this.playerTables[notif.args.toArg]?.handStock.addCards(cards, {
 						fromElement:
 							notif.args.from == 'deck' ? $(`deck-cards-counter-${notif.args.toArg}-wrapper`) : undefined
 					})
