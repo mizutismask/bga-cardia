@@ -1,27 +1,30 @@
 .central-zone {
-	gap: .6%;
+	gap: 0.6%;
 	width: 100%;
-	display: grid;
+	display: flex;
 
-	grid-template-columns:repeat(var(--duels-count), 1fr) auto;
+	//grid-template-columns:repeat(var(--duels-count), 1fr) auto;
 
 	.card-stock {
 		--direction: column !important;
+		
 
 		.slot {
-			
+			@include card-size;
+			width: 100%;
 		}
 	}
 
 	.card {
 		@include card-size;
-		width: auto;
+		width: 100%;
 		height: unset;
 		
 	}
 
 	.duel-wrapper {
-		max-width: $CARD_WIDTH;
+		width: $CARD_WIDTH;
+		max-width: calc(100% / var(--duels-count));
 		position: relative;
 		.vs-icon {
 			font-style: oblique;
@@ -37,7 +40,7 @@
 			background-color: $main-color;
 			border-radius: 45%;
 			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-			box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.3)
+			box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.3);
 		}
 	}
 }
@@ -49,7 +52,8 @@
 		.card-stock {
 			--direction: row !important;
 			--wrap: nowrap !important;
-			max-width: 50%;
+			width: unset;
+			max-width: 40%;
 			.slot {
 				width: 50%;
 			}

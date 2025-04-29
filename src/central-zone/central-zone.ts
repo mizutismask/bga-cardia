@@ -24,7 +24,7 @@ class CentralZone {
 	}
 
 	private updateCssVariables() {
-		document.documentElement.style.setProperty('--duels-count', Math.max(8,this.duelCounter).toString())// this.duelCounter.toString())
+		document.documentElement.style.setProperty('--duels-count', this.duelCounter.toString())// Math.max(8,this.duelCounter).toString())
 	}
 
 	public createDuelStock(duelNumber: number, duel: { [playerId: string]: CardiaCard }): string {
