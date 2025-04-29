@@ -749,7 +749,8 @@ trait StateTrait {
                     $this->cardManager->updateCardModifier($destination, $modifiers);
                     $reevaluate = true;
                 }
-                $tokens = $this->tokenManager->getOngoingTokensOnCards($source->id);
+                $tokens = $this->tokenManager->getOngoingTokensOnCards();
+                $tokens = array_values(array_filter($this->tokenManager->getOngoingTokensOnCards(), fn($c) => $c->location_arg == $source->id));
                 if ($tokens) {
                     $reevaluate = true;
                     foreach ($tokens as $token) {
