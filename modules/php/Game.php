@@ -223,8 +223,22 @@ class Game extends \Bga\GameFramework\Table {
             // game is over
             return 100;
         }
-        //return 100 * $this->getHighestCompletedDestinationsCount() / $this->getInitialDestinationCardNumber();
-        return 0;
+
+        $signetCounts = [];
+        foreach ($this->getPlayers() as $playerId => $player) {
+            $signetCounts[$playerId] = $this->tokenManager->getSignetCount(intval($player["player_no"]));
+        }
+        $maxSignets = min(5, max($signetCounts));
+        $duelProgression  = 0;
+        if ($stateName != "seeEndOfRound") {
+            $duelProgression  =  100 * ($maxSignets) / 5;
+        }
+
+        //$this->dump('******************maxSignets*', $maxSignets);
+        //$this->dump('******************duelProgression*', $duelProgression);
+
+        $round = intval($this->globals->get(GLBL_ROUND));
+        return (100 * $this->getMaxScore() / 2) + $duelProgression / ($round == 3 ? 3 : 2);
     }
 
     function getGameVersion(): int {
