@@ -628,7 +628,7 @@ trait StateTrait {
             case SWAMP_GUARDIAN:
                 $encounter = $card->location_arg;
                 $opposingCard = $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList());
-                $this->cardManager->discardDuelCard($opposingCard);
+                $this->discardDuelCard($opposingCard);
                 $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId);
                 $this->cardManager->reorderDuels($encounter);
                 $this->gamestate->nextState('finishDuel');
@@ -720,7 +720,7 @@ trait StateTrait {
         switch ($interactiveAbility->type) {
             case PALACE_GUARD:
                 if ($card) {
-                    $this->cardManager->discardDuelCard($card);
+                    $this->discardDuelCard($card);
                     $this->cardManager->replenishHands();
                 } else {
                     //add +7 influence
