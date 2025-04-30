@@ -93,7 +93,7 @@ class TokenManager extends DeckManager {
         if (!$signet) {
             $signets = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::SIGIL->value, null, MATERIAL_LOCATION_DECK));
             if (!$signets) {
-                throw new \BgaUserException(self::_("No more signets"));
+                throw new \BgaUserException(_("No more signets"));
             }
             $signet = reset($signets);
         }
@@ -108,7 +108,7 @@ class TokenManager extends DeckManager {
     public function addOngoingTokenOnCard(int $cardId) {
         $tokens = $this->cast($this->deck->getCardsOfTypeInLocation(TokenType::ONGOING->value, null, MATERIAL_LOCATION_DECK));
         if (!$tokens) {
-            throw new \BgaUserException(self::_("No more ongoing tokens"));
+            throw new \BgaUserException(_("No more ongoing tokens"));
         }
         $token = reset($tokens);
         $this->deck->moveCard($token->id, MATERIAL_LOCATION_CARD, $cardId);
@@ -121,7 +121,7 @@ class TokenManager extends DeckManager {
         ]);
     }
 
-    public function discardTokenOfTypeOnCard(CardiaCard $card, TokenType $tokenType, $onlyOne = false) {
+    public function discardTokenOfTypeOnCard(CardiaCard $card, TokenType $tokenType, $onlyOne = false): int {
         $tokens = $this->cast($this->deck->getCardsOfTypeInLocation($tokenType->value, null, MATERIAL_LOCATION_CARD,  $card->id));
         $count = 0;
         foreach ($tokens as $token) {
@@ -137,6 +137,7 @@ class TokenManager extends DeckManager {
                 $count++;
             }
         }
+        return $count;
     }
 
     public function discardTokensOnDuelCard(CardiaCard $card) {

@@ -180,7 +180,7 @@ class CardManager extends DeckManager {
     function discardTopOfDeck(int $playerId, int $playerPosition, string $message=null, array $msgArgs=[]) {
         $top = $this->getCastedTopOfLocationForTypeArg(MATERIAL_LOCATION_DECK, $playerPosition);
         if ($top) {
-            $this->discardCard($playerId, $top->id, $message?? clienttranslate('${player_name} discards ${cardName}'), array_merge ($msgArgs, ["cardName" => $top->name]));
+            $this->discardCard($playerId, $top->id, $message?? clienttranslate('${player_name} discards ${cardName}'), array_merge ($msgArgs, ["cardName" => $top->name, "playerId" => $playerId]));
         } else {
             $this->game->notifyWithName("msg",  clienttranslate('${player_name} has no card in deck to discard'), [
                 'playerId' => $playerId,

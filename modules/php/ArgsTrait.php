@@ -150,6 +150,10 @@ trait ArgsTrait {
             $selectableCards = array_values(array_filter($selectableCards, function ($card) {
                 return $card->powerType == PowerType::IMMEDIATE;
             }));
+        } else if ($ability->type == REVOLUTIONARY) {
+            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_HAND);
+        } else if ($ability->type == VOID_MAGE) {
+            $selectableCards = $this->cardManager->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
         }
         //$this->dump('*******************argSelectableCards', $selectableCards);
         return $selectableCards;

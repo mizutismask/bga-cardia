@@ -23,6 +23,8 @@ namespace Bga\Games\Cardia;
 
 use Deck;
 use Bga\Games\Cardia\objects\CardiaCard;
+use Bga\Games\Cardia\objects\Faction;
+use Bga\Games\Cardia\objects\InteractionType;
 
 //require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 require_once("constants.inc.php");
@@ -273,6 +275,8 @@ class Game extends \Bga\GameFramework\Table {
      * As a consequence, there is no current player associated to this action. In your zombieTurn function,
      * you must _never_ use `getCurrentPlayerId()` or `getCurrentPlayerName()`, otherwise it will fail with a
      * "Not logged" error message.
+     * 
+     * Plays the first card in hand if needed, or randomly selects a faction
      *
      * @param array{ type: string, name: string } $state
      * @param int $active_player
@@ -284,8 +288,47 @@ class Game extends \Bga\GameFramework\Table {
 
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
+                case 'librarianAbility':
+                    $possibleValues = [2, -2];
+                    $this->chooseLibrarianModifier($active_player, $this->getRandomValue($possibleValues));
+                    break;
+                case 'blackmailerDiscard':
+                    $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($active_player), MATERIAL_LOCATION_HAND);
+                    $this->blackmailerDiscard($this->getRandomSlice($cards, min(2, count($cards))));
+                    break;
+                case 'serpentTempleDiscard':
+                    $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($active_player), MATERIAL_LOCATION_HAND);
+                    $this->applySerpentTemple($active_player, array_shift($cards));
+                    break;
+                case 'chooseFortuneTellerCard':
+                    $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($active_player), MATERIAL_LOCATION_HAND);
+                    $this->chooseDuelCard($active_player, array_shift($cards));
+                    break;
+                case 'interactiveAbility':
+                    $args = $this->argInteractiveAbility();
+                    $faction = null;
+                    $cards = [];
+                    $possibleOptions = ['removeModifiers', 'removeOngoingToken'];
+                    $option = $this->getRandomValue($possibleOptions); //for void mage
+                    if ($args['interactionType'] == InteractionType::selectFaction) {
+                        $possibleFactions = Faction::cases();
+                        $faction =  $this->getRandomValue($possibleFactions);
+                        $this->globals->set(GLB_SELECTED_FACTION, $faction->value);
+                    } else {
+                        $cards = $this->getRandomSlice($args["selectableCards"], $args["qty"]);
+                    }
+                    $this->applyInteractiveAbility($args['abilityCard'], $faction, $cards, $option);
+                    break;
+                case 'interactiveAbilityStep2':
+                    $args = $this->argInteractiveAbilityStep2();
+                    $card = null;
+                    if ($args['interactionType'] != InteractionType::selectFaction) {
+                        $card = array_shift($args["selectableCards"]);
+                    }
+                    $this->applyInteractiveAbilityStep2($args['abilityCard'], $card);
+                    break;
                 default:
-                    $this->gamestate->jumpToState(ST_NEXT_PLAYER);
+                    throw new \feException("Zombie mode not supported at this game state: " . $statename);
                     break;
             }
 
@@ -293,8 +336,22 @@ class Game extends \Bga\GameFramework\Table {
         }
 
         if ($state['type'] === "multipleactiveplayer") {
-            // Make sure player is in a non blocking status for role turn
-            $this->gamestate->setPlayerNonMultiactive($active_player, '');
+            switch ($statename) {
+                case 'chooseDuelCard':
+                    $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($active_player), MATERIAL_LOCATION_HAND);
+                    $this->chooseDuelCard($active_player, array_shift($cards));
+                    break;
+                case 'scrapyardChooseCard':
+                    $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($active_player), MATERIAL_LOCATION_HAND);
+                    $this->chooseScrapyardCard($active_player, array_shift($cards));
+                    break;
+
+                default:
+                    // Make sure player is in a non blocking status for role turn
+                    $this->gamestate->setPlayerNonMultiactive($active_player, '');
+                    break;
+            }
+
 
             return;
         }

@@ -578,7 +578,7 @@ trait StateTrait {
         $opponentTypeArg = $interactiveAbility->type_arg == 1 ? 2 : 1;
         $opponentId = $this->getPlayerIdFromPosition($opponentTypeArg);
         $playerId = $this->getPlayerIdFromPosition($interactiveAbility->type_arg);
-        $card = $cards[0] ?? null;
+        $card = reset($cards) ?? null;
         switch ($interactiveAbility->type) {
             case PALACE_GUARD:
                 if ($this->isAbilityPossible($interactiveAbility, $opponentId, $faction)) {
@@ -606,9 +606,11 @@ trait StateTrait {
                     $this->cardManager->updateCardModifier($card, 0);
                     $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
                 } else {
-                    $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
+                    $tokenCount = $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
                     //todo reevaluate everything
-                    $this->onRemovingOngoingTokenOnCard($card);
+                    if ($tokenCount > 0) {
+                        $this->onRemovingOngoingTokenOnCard($card);
+                    }
                 }
                 $this->gamestate->nextState('finishDuel');
                 break;
@@ -894,6 +896,7 @@ trait StateTrait {
         $this->globals->delete(GLB_SELECTED_CARD_ID);
         $this->globals->delete(GLB_SELECTED_FACTION);
         $this->globals->delete(GLB_STEP_2);
+        $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
 
         //apply serpent temple discard
         $serpentWinners = null;

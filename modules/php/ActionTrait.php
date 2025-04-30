@@ -29,7 +29,6 @@ trait ActionTrait {
         $this->userAssertTrue($this->_("This card is not in your hand"), $card->location == "hand" && $card->location_arg == $playerId);
 
         $this->applySerpentTemple($this->getMostlyActivePlayerId(), $card);
-        $this->gamestate->nextState("finishDuel");
     }
 
     function applySerpentTemple(int $discardingPlayer, CardiaCard $card) {
@@ -41,6 +40,7 @@ trait ActionTrait {
         ]);
         $this->onCardInHandChange();
         $this->cardManager->addCardsToHand(1, $opponentId, $card->type_arg == 1 ? 2 : 1, true);
+        $this->gamestate->nextState("finishDuel");
     }
 
     function actBlackmailerDiscard(int $version, #[IntArrayParam()] $cardIds) {
@@ -75,11 +75,11 @@ trait ActionTrait {
         $this->userAssertTrue($this->_("This card is not in your hand"), $card->location == "hand" && $card->location_arg == $playerId);
 
         $this->chooseScrapyardCard($this->getMostlyActivePlayerId(), $card);
-        $this->gamestate->setPlayerNonMultiactive($playerId, $this->globals->get(GLB_NEXT_STATE_AFTER_SCRAPYARD));
     }
 
     function chooseScrapyardCard(int $playerId, CardiaCard $card) {
         $this->cardManager->moveCardToBottomOfDeck($card, $playerId);
+        $this->gamestate->setPlayerNonMultiactive($playerId, $this->globals->get(GLB_NEXT_STATE_AFTER_SCRAPYARD));
     }
 
     function actChooseDuelCard(int $version, int $cardId) {

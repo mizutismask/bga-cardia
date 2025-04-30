@@ -14,12 +14,12 @@ trait PlayerUtilTrait {
      *
      * @return integer player position (as player_no) from database
      */
-    function getPlayerPosition($player_id) {
+    function getPlayerPosition($player_id): int {
         $players = $this->loadPlayersBasicInfos();
         if (!isset($players[$player_id])) {
             return -1;
         }
-        return $players[$player_id]['player_no'];
+        return intval($players[$player_id]['player_no']);
     }
 
     function getPlayersInOrder() {
@@ -130,7 +130,7 @@ trait PlayerUtilTrait {
     function isEveryPlayerScoreEqualTo(int $score) {
         return $this->getUniqueValueFromDB("SELECT count(*) from player where player_score = $score") == $this->getPlayerCount();
     }
-    
+
     function incPlayerField(int $playerId, String $field, int $delta) {
         static::DbQuery("UPDATE player SET `$field` = `$field` + $delta where `player_id` = $playerId");
     }
