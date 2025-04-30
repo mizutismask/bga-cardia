@@ -31,7 +31,7 @@ trait ExpansionTrait {
     function getTokensToGenerate() {
         $tokens = [];
 
-        $tokens[] = ['type' => TokenType::SIGIL->value, 'type_arg' => 0, 'nbr' => 11];
+        $tokens[] = ['type' => TokenType::SIGIL->value, 'type_arg' => 0, 'nbr' => 11 + 8]; //+8 just in case you play judge after numerous encounters and you need a lot more signets that expected
         $tokens[] = ['type' => TokenType::ONGOING->value, 'type_arg' => 0, 'nbr' => 6];
 
         return $tokens;
