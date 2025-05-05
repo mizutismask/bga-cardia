@@ -338,6 +338,29 @@ svg {
 	}
 }
 
+.faction {
+	background: url('img/factions.png') no-repeat;
+	width: 21px;//28px;
+    height: 21px;//31px;
+
+	&.faction-G{
+		background-size: 400%;
+		background-position: 0 0%;
+	}
+	&.faction-R{
+		background-size: 400%;
+		background-position: 33% 0%;
+	}
+	&.faction-Y{
+		background-size: 400%;
+		background-position: 66% 0%;
+	}
+	&.faction-B{
+		background-size: 400%;
+		background-position: 100% 0%;
+	}
+}
+
 .card .card-sides .card-side.front .card-info {
 	pointer-events: all;
 }

@@ -517,7 +517,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private onEnteringChooseDuelCard(dataArgs: EnteringChooseDuelCardArgs) {
 		if (dataArgs?._private?.blackmailerFaction) {
-			this.setGamestateDescription("BlackmailerAbility")
+			this.setGamestateDescription('BlackmailerAbility')
 		}
 		this.setHandAsSelectableArea()
 	}
@@ -636,7 +636,15 @@ class Cardia extends BaseGame implements CardiaGame {
 					const typedArgs = args as EnteringInteractiveAbilityArgs
 					if (typedArgs.interactionType === 'selectFaction') {
 						;['G', 'Y', 'R', 'B'].forEach((faction) => {
-							this.statusBar.addActionButton(faction, () => this.selectFaction(faction), {})
+							this.addImageActionButton(
+								`select_faction_button_${faction}`,
+								createDiv(`faction faction-${faction}`, `faction-${faction}-content`),
+								'primary',
+								'',
+								() => {
+									this.selectFaction(faction)
+								}
+							)
 						})
 					} else if (typedArgs.interactionType === 'selectCardFromDuels') {
 						if (typedArgs.abilityCard.type == VOID_MAGE) {
