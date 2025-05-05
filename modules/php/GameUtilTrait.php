@@ -3,22 +3,25 @@
 namespace Bga\Games\Cardia;
 
 use Bga\Games\Cardia\objects\CardiaCard;
+use Bga\Games\Cardia\objects\Faction;
 
 trait GameUtilTrait {
 
     //////////////////////////////////////////////////////////////////////////////
     //////////// Utility functions
     ////////////
-    /*function getColorName(int $color) {
+    function getColorName(Faction $color) {
         switch ($color) {
-            case BLUE:
-                return clienttranslate("blue");
-            case YELLOW:
+            case Faction::GREEN:
+                return clienttranslate("green");
+            case Faction::YELLOW:
                 return clienttranslate("yellow");
-            case RED:
+            case Faction::BLUE:
+                return clienttranslate("blue");
+            case Faction::RED:
                 return clienttranslate("red");
         }
-    }*/
+    }
 
     /**
      * Transforms a card Db object to Card class.

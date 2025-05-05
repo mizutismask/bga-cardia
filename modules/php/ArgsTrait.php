@@ -159,11 +159,11 @@ trait ArgsTrait {
         return $selectableCards;
     }
     function getPromptArgs(CardiaCard $ability) {
-        $defaultArgs = ["ability" => $ability->name, "ability" => $ability->name, 'i18n' => ['ability']];
+        $defaultArgs = ["ability" => $ability->name, "ability" => $ability->name, 'i18n' => ['ability', "faction"]];
         switch ($ability->type) {
             case PALACE_GUARD:
-                $faction = $this->globals->get(GLB_SELECTED_FACTION);
-                return array_merge($defaultArgs, ["faction" => $faction]);
+                $faction = Faction::tryFrom($this->globals->get(GLB_SELECTED_FACTION));
+                return array_merge($defaultArgs, ["faction" => $faction ? $this->getColorName($faction) : null]);
 
             case INVENTOR:
                 $influence =  $this->globals->get(GLB_INVENTOR_PLUS_CARD) ? -3 : 3;
