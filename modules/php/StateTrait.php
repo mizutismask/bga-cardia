@@ -194,22 +194,26 @@ trait StateTrait {
             }
         }
 
-        $players = $this->getPlayersIds();
-        foreach ($players as $playerId) {
-            $counselor = $this->isActiveCardInPlay(COUNSELOR, $playerId);
-            if ($counselor) {
-                //check if this card is immediately before the counselor
-                $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
-                $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == ($myCard->type_arg == 1 ? 2 : 1)));
-                if ($counselor && $counselor->location_arg == $myCard->location_arg + 1) {
-                    $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg != $this->getPlayerPosition($playerId)));
-                    $signetOwnerChanged = $this->tokenManager->addSignetOnCard($myCard->id, $opponentCard->id);
-                    $this->addSerpentTempleDiscarder($myCard->location_arg, $signetOwnerChanged, $this->getOpponentId($playerId));
-                    if ($signetOwnerChanged) {
-                        $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
-                            'cardName1' => $myCard->name,
-                            'cardName2' => $opponentCard->name,
-                        ]);
+        if ($this->array_every($cards, fn($c) => $c->type == COUNSELOR) && $this->hasEveryoneActiveCardInPlay(COUNSELOR)) {
+            $this->notifyWithName('msg', clienttranslate('2 activated counselors in the same encounter cancel each other out'), []);
+        } else {
+            $players = $this->getPlayersIds();
+            foreach ($players as $playerId) {
+                $counselor = $this->isActiveCardInPlay(COUNSELOR, $playerId);
+                if ($counselor) {
+                    //check if this card is immediately before the counselor
+                    $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
+                    $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == ($myCard->type_arg == 1 ? 2 : 1)));
+                    if ($counselor && $counselor->location_arg == $myCard->location_arg + 1) {
+                        $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg != $this->getPlayerPosition($playerId)));
+                        $signetOwnerChanged = $this->tokenManager->addSignetOnCard($myCard->id, $opponentCard->id);
+                        $this->addSerpentTempleDiscarder($myCard->location_arg, $signetOwnerChanged, $this->getOpponentId($playerId));
+                        if ($signetOwnerChanged) {
+                            $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
+                                'cardName1' => $myCard->name,
+                                'cardName2' => $opponentCard->name,
+                            ]);
+                        }
                     }
                 }
             }
@@ -282,6 +286,19 @@ trait StateTrait {
             }
         }
         return $card;
+    }
+
+    function hasEveryoneActiveCardInPlay(int $cardType): bool {
+        $players = $this->getPlayersIds();
+        $hasEveryoneActiveCardInPlay = true;
+        foreach ($players as $playerId) {
+            $card = $this->isActiveCardInPlay($cardType, $playerId);
+            if (!$card) {
+                $hasEveryoneActiveCardInPlay = false;
+                break;
+            }
+        }
+        return $hasEveryoneActiveCardInPlay;
     }
 
     function copyAbility(CardiaCard &$card, int $abilityToCopy) {
