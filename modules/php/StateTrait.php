@@ -918,6 +918,8 @@ trait StateTrait {
                 $this->cardManager->incCardModifier($finishingDuel[$playerId], $modifierToAdd);
                 $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
             }
+
+            $this->giveExtraTime($playerId);
         }
         if ($anyModif) {
             $this->evaluateDuelValues(array_values($finishingDuel));
