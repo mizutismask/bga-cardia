@@ -58,7 +58,6 @@ class Cardia extends BaseGame implements CardiaGame {
 	public cardsManager: CardsManager
 	private originalTextChooseAction: string
 
-	private scoreBoard: ScoreBoard
 	private ticketsCounters: Counter[] = []
 	private handCardsCounters: Counter[] = []
 	private centralZone: CentralZone
@@ -96,10 +95,6 @@ class Cardia extends BaseGame implements CardiaGame {
 		if (gamedatas.lastTurn) {
 			this.notif_lastTurn(false)
 		}
-		if (Number(gamedatas.gamestate.id) >= 90) {
-			// score or end
-			this.onEnteringEndScore()
-		}
 
 		Object.values(this.gamedatas.playerOrderWorkingWithSpectators).forEach((p) => {
 			this.setupPlayer(this.gamedatas.players[p])
@@ -114,13 +109,6 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setupHelpPopin()
 		this.setupLocation()
 		this.setupData()
-
-		this.scoreBoard = new ScoreBoard(this, this.getPlayersInOrder())
-		this.gamedatas.scores?.forEach((s) => this.scoreBoard.updateScore(s.playerId, s.scoreType, s.score))
-		if (this.gamedatas.winners) {
-			this.gamedatas.winners.forEach((pId) => this.scoreBoard.highlightWinnerScore(pId))
-		}
-		removeClass('animatedScore')
 		this.setupNotifications()
 
 		log('Ending game setup')
@@ -587,18 +575,6 @@ class Cardia extends BaseGame implements CardiaGame {
 		return actions
 	}
 
-	/**
-	 * Show score board.
-	 */
-	private onEnteringEndScore() {
-		const lastTurnBar = document.getElementById('last-round')
-		if (lastTurnBar) {
-			lastTurnBar.style.display = 'none'
-		}
-
-		document.getElementById('score').style.display = 'flex'
-	}
-
 	// onLeavingState: this method is called each time we are leaving a game state.
 	//                 You can use this method to perform some user interface changes at this moment.
 	//
@@ -1050,8 +1026,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		const notifs = [
 			//['claimedRoute', ANIMATION_MS],
 			['points', 1],
-			['score', ANIMATION_MS],
-			['highlightWinnerScore', ANIMATION_MS],
+			//['score', ANIMATION_MS],
 			['materialMove', ANIMATION_MS],
 			['lastTurn', 1],
 			['importantMessage', 3000],
@@ -1066,15 +1041,6 @@ class Cardia extends BaseGame implements CardiaGame {
 			dojo.subscribe(notif[0], this, `notif_${notif[0]}`)
 			;(this as any).notifqueue.setSynchronous(notif[0], notif[1])
 		})
-	}
-
-	/**
-	 * Updates a total or subtotal
-	 * @param notif
-	 */
-	notif_score(notif: Notif<NotifScoreArgs>) {
-		log('notif_score', notif)
-		this.scoreBoard.updateScore(notif.args.playerId, notif.args.scoreType, notif.args.score)
 	}
 
 	notif_newRound(notif: Notif<NotifScoreArgs>) {
@@ -1225,12 +1191,5 @@ class Cardia extends BaseGame implements CardiaGame {
 				dojo.destroy(el)
 			})
 		}
-	}
-
-	/**
-	 * Highlight winner for end score.
-	 */
-	notif_highlightWinnerScore(notif: Notif<NotifWinnerArgs>) {
-		this.scoreBoard?.highlightWinnerScore(notif.args.playerId)
 	}
 }

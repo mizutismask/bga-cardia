@@ -1,8 +1,8 @@
 <?xml version="1.0" standalone="no"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1299pt" height="1293pt" viewBox="0.00 0.00 1299.30 1292.68">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1300pt" height="1293pt" viewBox="0.00 0.00 1300.30 1292.68">
 <g id="graph0" class="graph" transform="translate(4,1288.6800537109375) scale(1)" data-name="D">
 
-<polygon fill="white" stroke="none" points="-4,4 -4,-1288.68 1295.3,-1288.68 1295.3,4 -4,4" style=""/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-1288.68 1296.3,-1288.68 1296.3,4 -4,4" style=""/>
 <!-- n1 -->
 <g id="node1" class="node" pointer-events="visible" data-name="n1">
 
@@ -28,25 +28,25 @@
 <!-- n97 -->
 <g id="node2" class="node" pointer-events="visible" data-name="n97">
 
-<ellipse fill="none" stroke="red" cx="1029" cy="-160.67" rx="87.97" ry="18" style=""/>
-<text text-anchor="middle" x="1029" y="-156.47" font-family="Times,serif" font-size="14.00" style="">97_debugGameEnd</text>
+<ellipse fill="none" stroke="red" cx="841" cy="-160.67" rx="87.97" ry="18" style=""/>
+<text text-anchor="middle" x="841" y="-156.47" font-family="Times,serif" font-size="14.00" style="">97_debugGameEnd</text>
 </g>
 <!-- n99 -->
 <g id="node8" class="node" pointer-events="visible" data-name="n99">
 
-<polygon fill="none" stroke="red" points="1073.87,-89.8 984.13,-89.8 984.13,-0.07 1073.87,-0.07 1073.87,-89.8" style=""/>
-<polyline fill="none" stroke="red" points="996.13,-89.8 984.13,-77.8" style=""/>
-<polyline fill="none" stroke="red" points="984.13,-12.07 996.13,-0.07" style=""/>
-<polyline fill="none" stroke="red" points="1061.87,-0.07 1073.87,-12.07" style=""/>
-<polyline fill="none" stroke="red" points="1073.87,-77.8 1061.87,-89.8" style=""/>
-<text text-anchor="middle" x="1029" y="-40.73" font-family="Times,serif" font-size="14.00" style="">99_gameEnd</text>
+<polygon fill="none" stroke="red" points="947.87,-89.8 858.13,-89.8 858.13,-0.07 947.87,-0.07 947.87,-89.8" style=""/>
+<polyline fill="none" stroke="red" points="870.13,-89.8 858.13,-77.8" style=""/>
+<polyline fill="none" stroke="red" points="858.13,-12.07 870.13,-0.07" style=""/>
+<polyline fill="none" stroke="red" points="935.87,-0.07 947.87,-12.07" style=""/>
+<polyline fill="none" stroke="red" points="947.87,-77.8 935.87,-89.8" style=""/>
+<text text-anchor="middle" x="903" y="-40.73" font-family="Times,serif" font-size="14.00" style="">99_gameEnd</text>
 </g>
 <!-- n97&#45;&gt;n99 -->
 <g id="edge2" class="edge" data-name="n97-&gt;n99">
 
-<path fill="none" stroke="black" d="M1029,-142.4C1029,-131.3 1029,-116.22 1029,-101.28" style=""/>
-<polygon fill="black" stroke="black" points="1032.5,-101.46 1029,-91.46 1025.5,-101.46 1032.5,-101.46" style=""/>
-<text text-anchor="middle" x="1055.82" y="-112.07" font-family="Times,serif" font-size="14.00" style="">endGame</text>
+<path fill="none" stroke="black" d="M850.42,-142.4C856.64,-130.98 865.17,-115.33 873.55,-99.96" style=""/>
+<polygon fill="black" stroke="black" points="876.57,-101.73 878.28,-91.28 870.42,-98.38 876.57,-101.73" style=""/>
+<text text-anchor="middle" x="894.82" y="-112.07" font-family="Times,serif" font-size="14.00" style="">endGame</text>
 </g>
 <!-- n31 -->
 <g id="node3" class="node" pointer-events="visible" data-name="n31">
@@ -109,27 +109,27 @@
 <!-- n32 -->
 <g id="node7" class="node" pointer-events="visible" data-name="n32">
 
-<polygon fill="none" stroke="orange" points="509,-533.87 415,-515.87 509,-497.87 603,-515.87 509,-533.87" style=""/>
-<text text-anchor="middle" x="509" y="-511.67" font-family="Times,serif" font-size="14.00" style="">32_finishDuel</text>
+<polygon fill="none" stroke="orange" points="510,-533.87 416,-515.87 510,-497.87 604,-515.87 510,-533.87" style=""/>
+<text text-anchor="middle" x="510" y="-511.67" font-family="Times,serif" font-size="14.00" style="">32_finishDuel</text>
 </g>
 <!-- n41&#45;&gt;n32 -->
 <g id="edge6" class="edge" data-name="n41-&gt;n32">
 
-<path fill="none" stroke="black" d="M265.09,-857.33C197.89,-827.45 46.79,-747.24 76,-640.67 83.37,-613.76 85.04,-602.52 108,-586.67 159.31,-551.26 330.39,-531.5 431.77,-522.64" style=""/>
-<polygon fill="black" stroke="black" points="431.99,-526.14 441.66,-521.8 431.39,-519.16 431.99,-526.14" style=""/>
+<path fill="none" stroke="black" d="M265.09,-857.33C197.89,-827.45 46.79,-747.24 76,-640.67 83.37,-613.76 85.04,-602.51 108,-586.67 159.44,-551.18 330.95,-531.45 432.57,-522.62" style=""/>
+<polygon fill="black" stroke="black" points="432.83,-526.11 442.49,-521.78 432.23,-519.14 432.83,-526.11" style=""/>
 <text text-anchor="middle" x="111.55" y="-689.27" font-family="Times,serif" font-size="14.00" style="">finishDuel</text>
 </g>
 <!-- n40 -->
 <g id="node10" class="node" pointer-events="visible" data-name="n40">
 
-<ellipse fill="none" stroke="green" cx="561" cy="-338.27" rx="89.21" ry="18" style=""/>
-<text text-anchor="middle" x="561" y="-334.07" font-family="Times,serif" font-size="14.00" style="">40_seeEndOfRound</text>
+<ellipse fill="none" stroke="green" cx="562" cy="-338.27" rx="89.21" ry="18" style=""/>
+<text text-anchor="middle" x="562" y="-334.07" font-family="Times,serif" font-size="14.00" style="">40_seeEndOfRound</text>
 </g>
 <!-- n41&#45;&gt;n40 -->
 <g id="edge8" class="edge" data-name="n41-&gt;n40">
 
-<path fill="none" stroke="black" d="M224.72,-863.44C137.14,-853.28 0,-829.93 0,-783.27 0,-783.27 0,-783.27 0,-426.07 0,-379.66 303.69,-354.55 464.19,-344.53" style=""/>
-<polygon fill="black" stroke="black" points="464.21,-348.03 473.98,-343.92 463.78,-341.05 464.21,-348.03" style=""/>
+<path fill="none" stroke="black" d="M224.72,-863.44C137.14,-853.28 0,-829.93 0,-783.27 0,-783.27 0,-783.27 0,-426.07 0,-379.55 304.63,-354.48 465.33,-344.49" style=""/>
+<polygon fill="black" stroke="black" points="465.37,-348 475.13,-343.89 464.94,-341.01 465.37,-348" style=""/>
 <text text-anchor="middle" x="30.72" y="-600.47" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
 </g>
 <!-- n37 -->
@@ -148,15 +148,15 @@
 <!-- n33&#45;&gt;n32 -->
 <g id="edge10" class="edge" data-name="n33-&gt;n32">
 
-<path fill="none" stroke="black" d="M577.45,-765.72C599.04,-731.5 643.95,-647.83 612,-586.67 599.08,-561.93 572.96,-544.38 550.26,-533.07" style=""/>
-<polygon fill="black" stroke="black" points="552.04,-530.04 541.5,-528.95 549.06,-536.37 552.04,-530.04" style=""/>
+<path fill="none" stroke="black" d="M577.41,-765.74C598.91,-731.56 643.66,-647.98 612,-586.67 599.34,-562.14 573.65,-544.64 551.22,-533.3" style=""/>
+<polygon fill="black" stroke="black" points="552.77,-530.16 542.24,-529.02 549.76,-536.48 552.77,-530.16" style=""/>
 <text text-anchor="middle" x="651.55" y="-644.87" font-family="Times,serif" font-size="14.00" style="">finishDuel</text>
 </g>
 <!-- n33&#45;&gt;n40 -->
 <g id="edge11" class="edge" data-name="n33-&gt;n40">
 
-<path fill="none" stroke="black" d="M592.11,-768C630,-745.93 696.26,-698.37 685,-640.67 664.2,-534.13 604.93,-418 576.54,-366.49" style=""/>
-<polygon fill="black" stroke="black" points="579.64,-364.86 571.71,-357.83 573.52,-368.27 579.64,-364.86" style=""/>
+<path fill="none" stroke="black" d="M592.08,-768C629.94,-745.94 696.16,-698.4 685,-640.67 664.42,-534.21 605.61,-418.04 577.42,-366.5" style=""/>
+<polygon fill="black" stroke="black" points="580.53,-364.9 572.63,-357.84 574.41,-368.28 580.53,-364.9" style=""/>
 <text text-anchor="middle" x="695.72" y="-556.07" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
 </g>
 <!-- n35 -->
@@ -188,55 +188,55 @@
 <!-- n32&#45;&gt;n30 -->
 <g id="edge15" class="edge" data-name="n32-&gt;n30">
 
-<path fill="none" stroke="black" d="M581.76,-520.43C637.3,-524.58 707.92,-533.39 730,-551.87 748.69,-567.51 748,-579.3 748,-603.67 748,-1049.67 748,-1049.67 748,-1049.67 748,-1080.6 775.24,-1102.35 802.36,-1116.35" style=""/>
+<path fill="none" stroke="black" d="M582.43,-520.47C637.72,-524.64 708.02,-533.47 730,-551.87 748.69,-567.52 748,-579.3 748,-603.67 748,-1049.67 748,-1049.67 748,-1049.67 748,-1080.6 775.24,-1102.35 802.36,-1116.35" style=""/>
 <polygon fill="black" stroke="black" points="800.8,-1119.48 811.33,-1120.68 803.85,-1113.18 800.8,-1119.48" style=""/>
 <text text-anchor="middle" x="794.65" y="-822.47" font-family="Times,serif" font-size="14.00" style="">chooseDuelCard</text>
 </g>
 <!-- n32&#45;&gt;n40 -->
 <g id="edge14" class="edge" data-name="n32-&gt;n40">
 
-<path fill="none" stroke="black" d="M511.04,-498.08C513.88,-476.96 519.81,-439.74 529.56,-409.07 534.1,-394.77 540.76,-379.5 546.77,-366.9" style=""/>
-<polygon fill="black" stroke="black" points="549.89,-368.49 551.16,-357.97 543.61,-365.4 549.89,-368.49" style=""/>
-<text text-anchor="middle" x="559.72" y="-422.87" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
+<path fill="none" stroke="black" d="M512.04,-498.08C514.88,-476.96 520.81,-439.74 530.56,-409.07 535.1,-394.77 541.76,-379.5 547.77,-366.9" style=""/>
+<polygon fill="black" stroke="black" points="550.89,-368.49 552.16,-357.97 544.61,-365.4 550.89,-368.49" style=""/>
+<text text-anchor="middle" x="560.72" y="-422.87" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
 </g>
 <!-- n39 -->
 <g id="node11" class="node" pointer-events="visible" data-name="n39">
 
-<ellipse fill="none" stroke="green" cx="744" cy="-427.07" rx="110.6" ry="18" style=""/>
-<text text-anchor="middle" x="744" y="-422.87" font-family="Times,serif" font-size="14.00" style="">39_scrapyardChooseCard</text>
+<ellipse fill="none" stroke="green" cx="745" cy="-427.07" rx="110.6" ry="18" style=""/>
+<text text-anchor="middle" x="745" y="-422.87" font-family="Times,serif" font-size="14.00" style="">39_scrapyardChooseCard</text>
 </g>
 <!-- n32&#45;&gt;n39 -->
 <g id="edge17" class="edge" data-name="n32-&gt;n39">
 
-<path fill="none" stroke="black" d="M540.21,-503.34C578.35,-489.25 643.53,-465.18 689.91,-448.05" style=""/>
-<polygon fill="black" stroke="black" points="691.09,-451.35 699.25,-444.6 688.66,-444.78 691.09,-451.35" style=""/>
-<text text-anchor="middle" x="708.42" y="-467.27" font-family="Times,serif" font-size="14.00" style="">chooseScrapyardCard</text>
+<path fill="none" stroke="black" d="M541.21,-503.34C579.35,-489.25 644.53,-465.18 690.91,-448.05" style=""/>
+<polygon fill="black" stroke="black" points="692.09,-451.35 700.25,-444.6 689.66,-444.78 692.09,-451.35" style=""/>
+<text text-anchor="middle" x="709.42" y="-467.27" font-family="Times,serif" font-size="14.00" style="">chooseScrapyardCard</text>
 </g>
 <!-- n38 -->
 <g id="node13" class="node" pointer-events="visible" data-name="n38">
 
-<ellipse fill="none" stroke="blue" cx="891" cy="-338.27" rx="124.41" ry="18" style=""/>
-<text text-anchor="middle" x="891" y="-334.07" font-family="Times,serif" font-size="14.00" style="">38_chooseFortuneTellerCard</text>
+<ellipse fill="none" stroke="blue" cx="892" cy="-338.27" rx="124.41" ry="18" style=""/>
+<text text-anchor="middle" x="892" y="-334.07" font-family="Times,serif" font-size="14.00" style="">38_chooseFortuneTellerCard</text>
 </g>
 <!-- n32&#45;&gt;n38 -->
 <g id="edge16" class="edge" data-name="n32-&gt;n38">
 
-<path fill="none" stroke="black" d="M579.41,-510.88C671.96,-504.05 827.15,-486.59 864,-445.07 882.86,-423.82 888.89,-391.19 890.65,-367.78" style=""/>
-<polygon fill="black" stroke="black" points="894.13,-368.17 891.15,-358.01 887.14,-367.82 894.13,-368.17" style=""/>
-<text text-anchor="middle" x="954.53" y="-422.87" font-family="Times,serif" font-size="14.00" style="">chooseFortuneTellerCard</text>
+<path fill="none" stroke="black" d="M580.41,-510.88C672.96,-504.05 828.15,-486.59 865,-445.07 883.86,-423.82 889.89,-391.19 891.65,-367.78" style=""/>
+<polygon fill="black" stroke="black" points="895.13,-368.17 892.15,-358.01 888.14,-367.82 895.13,-368.17" style=""/>
+<text text-anchor="middle" x="955.53" y="-422.87" font-family="Times,serif" font-size="14.00" style="">chooseFortuneTellerCard</text>
 </g>
 <!-- n44 -->
 <g id="node14" class="node" pointer-events="visible" data-name="n44">
 
-<ellipse fill="none" stroke="blue" cx="330" cy="-427.07" rx="112.87" ry="18" style=""/>
-<text text-anchor="middle" x="330" y="-422.87" font-family="Times,serif" font-size="14.00" style="">44_serpentTempleDiscard</text>
+<ellipse fill="none" stroke="blue" cx="331" cy="-427.07" rx="112.87" ry="18" style=""/>
+<text text-anchor="middle" x="331" y="-422.87" font-family="Times,serif" font-size="14.00" style="">44_serpentTempleDiscard</text>
 </g>
 <!-- n32&#45;&gt;n44 -->
 <g id="edge18" class="edge" data-name="n32-&gt;n44">
 
-<path fill="none" stroke="black" d="M453.67,-508C428.37,-503.01 398.84,-494.46 375.28,-479.87 364.76,-473.36 355.35,-463.65 347.87,-454.39" style=""/>
-<polygon fill="black" stroke="black" points="350.8,-452.47 341.97,-446.62 345.23,-456.7 350.8,-452.47" style=""/>
-<text text-anchor="middle" x="438.36" y="-467.27" font-family="Times,serif" font-size="14.00" style="">serpentTempleDiscard</text>
+<path fill="none" stroke="black" d="M454.67,-508C429.37,-503.01 399.84,-494.46 376.28,-479.87 365.76,-473.36 356.35,-463.65 348.87,-454.39" style=""/>
+<polygon fill="black" stroke="black" points="351.8,-452.47 342.97,-446.62 346.23,-456.7 351.8,-452.47" style=""/>
+<text text-anchor="middle" x="439.36" y="-467.27" font-family="Times,serif" font-size="14.00" style="">serpentTempleDiscard</text>
 </g>
 <!-- n30&#45;&gt;n31 -->
 <g id="edge19" class="edge" data-name="n30-&gt;n31">
@@ -248,64 +248,64 @@
 <!-- n34 -->
 <g id="node18" class="node" pointer-events="visible" data-name="n34">
 
-<polygon fill="none" stroke="orange" points="902,-267.47 805.94,-249.47 902,-231.47 998.06,-249.47 902,-267.47" style=""/>
-<text text-anchor="middle" x="902" y="-245.27" font-family="Times,serif" font-size="14.00" style="">34_nextRound</text>
+<polygon fill="none" stroke="orange" points="903,-267.47 806.94,-249.47 903,-231.47 999.06,-249.47 903,-267.47" style=""/>
+<text text-anchor="middle" x="903" y="-245.27" font-family="Times,serif" font-size="14.00" style="">34_nextRound</text>
 </g>
 <!-- n40&#45;&gt;n34 -->
 <g id="edge20" class="edge" data-name="n40-&gt;n34">
 
-<path fill="none" stroke="black" d="M615.03,-323.52C680.05,-306.97 788.35,-279.4 851.67,-263.28" style=""/>
-<polygon fill="black" stroke="black" points="852.28,-266.74 861.11,-260.88 850.55,-259.95 852.28,-266.74" style=""/>
-<text text-anchor="middle" x="792.72" y="-289.67" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
+<path fill="none" stroke="black" d="M616.03,-323.52C681.05,-306.97 789.35,-279.4 852.67,-263.28" style=""/>
+<polygon fill="black" stroke="black" points="853.28,-266.74 862.11,-260.88 851.55,-259.95 853.28,-266.74" style=""/>
+<text text-anchor="middle" x="793.72" y="-289.67" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
 </g>
 <!-- n39&#45;&gt;n30 -->
 <g id="edge22" class="edge" data-name="n39-&gt;n30">
 
-<path fill="none" stroke="black" d="M791.17,-443.74C821.78,-457.21 856,-480.06 856,-514.87 856,-1049.67 856,-1049.67 856,-1049.67 856,-1069.07 856,-1090.91 856,-1107.83" style=""/>
+<path fill="none" stroke="black" d="M791.43,-443.71C821.85,-457.22 856,-480.13 856,-514.87 856,-1049.67 856,-1049.67 856,-1049.67 856,-1069.07 856,-1090.91 856,-1107.83" style=""/>
 <polygon fill="black" stroke="black" points="852.5,-1107.66 856,-1117.66 859.5,-1107.66 852.5,-1107.66" style=""/>
 <text text-anchor="middle" x="902.65" y="-778.07" font-family="Times,serif" font-size="14.00" style="">chooseDuelCard</text>
 </g>
 <!-- n39&#45;&gt;n40 -->
 <g id="edge21" class="edge" data-name="n39-&gt;n40">
 
-<path fill="none" stroke="black" d="M705.34,-409.78C692.02,-404.03 677.07,-397.41 663.56,-391.07 643.24,-381.53 620.96,-370.36 602.38,-360.85" style=""/>
-<polygon fill="black" stroke="black" points="604.03,-357.76 593.54,-356.3 600.83,-363.99 604.03,-357.76" style=""/>
-<text text-anchor="middle" x="693.72" y="-378.47" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
+<path fill="none" stroke="black" d="M706.34,-409.78C693.02,-404.03 678.07,-397.41 664.56,-391.07 644.24,-381.53 621.96,-370.36 603.38,-360.85" style=""/>
+<polygon fill="black" stroke="black" points="605.03,-357.76 594.54,-356.3 601.83,-363.99 605.03,-357.76" style=""/>
+<text text-anchor="middle" x="694.72" y="-378.47" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
 </g>
 <!-- n39&#45;&gt;n38 -->
 <g id="edge23" class="edge" data-name="n39-&gt;n38">
 
-<path fill="none" stroke="black" d="M734.3,-409C729.47,-398 726.14,-383.99 733.94,-374.27 741.51,-364.82 761.98,-357.75 785.73,-352.54" style=""/>
-<polygon fill="black" stroke="black" points="786.26,-356.01 795.36,-350.58 784.86,-349.15 786.26,-356.01" style=""/>
-<text text-anchor="middle" x="804.53" y="-378.47" font-family="Times,serif" font-size="14.00" style="">chooseFortuneTellerCard</text>
+<path fill="none" stroke="black" d="M735.3,-409C730.47,-398 727.14,-383.99 734.94,-374.27 742.51,-364.82 762.98,-357.75 786.73,-352.54" style=""/>
+<polygon fill="black" stroke="black" points="787.26,-356.01 796.36,-350.58 785.86,-349.15 787.26,-356.01" style=""/>
+<text text-anchor="middle" x="805.53" y="-378.47" font-family="Times,serif" font-size="14.00" style="">chooseFortuneTellerCard</text>
 </g>
 <!-- n43&#45;&gt;n41 -->
 <g id="edge24" class="edge" data-name="n43-&gt;n41">
 
 <path fill="none" stroke="black" d="M373.84,-941.72C358.6,-928.09 337.18,-908.92 320.67,-894.15" style=""/>
 <polygon fill="black" stroke="black" points="323.45,-891.94 313.67,-887.88 318.79,-897.16 323.45,-891.94" style=""/>
-<text text-anchor="middle" x="389.92" y="-911.27" font-family="Times,serif" font-size="14.00" style="">evaluateDuel</text>
+<text text-anchor="middle" x="390.92" y="-911.27" font-family="Times,serif" font-size="14.00" style="">evaluateDuel</text>
 </g>
 <!-- n38&#45;&gt;n30 -->
 <g id="edge25" class="edge" data-name="n38-&gt;n30">
 
-<path fill="none" stroke="black" d="M979,-351.37C1020.9,-362.61 1062,-384.29 1062,-426.07 1062,-1049.67 1062,-1049.67 1062,-1049.67 1062,-1100.85 1007.34,-1122.33 954.33,-1131.13" style=""/>
-<polygon fill="black" stroke="black" points="953.93,-1127.65 944.56,-1132.6 954.97,-1134.58 953.93,-1127.65" style=""/>
-<text text-anchor="middle" x="1122.66" y="-733.67" font-family="Times,serif" font-size="14.00" style="">opponentChooseCard</text>
+<path fill="none" stroke="black" d="M980,-351.37C1021.9,-362.61 1063,-384.29 1063,-426.07 1063,-1049.67 1063,-1049.67 1063,-1049.67 1063,-1101.06 1008.07,-1122.54 954.81,-1131.28" style=""/>
+<polygon fill="black" stroke="black" points="954.36,-1127.81 944.98,-1132.74 955.39,-1134.73 954.36,-1127.81" style=""/>
+<text text-anchor="middle" x="1123.66" y="-733.67" font-family="Times,serif" font-size="14.00" style="">opponentChooseCard</text>
 </g>
 <!-- n44&#45;&gt;n32 -->
 <g id="edge26" class="edge" data-name="n44-&gt;n32">
 
-<path fill="none" stroke="black" d="M305.66,-444.93C293.59,-455.32 283.43,-468.75 292.9,-479.87 309.31,-499.15 367.16,-507.84 418.88,-511.74" style=""/>
-<polygon fill="black" stroke="black" points="418.42,-515.22 428.64,-512.42 418.91,-508.24 418.42,-515.22" style=""/>
-<text text-anchor="middle" x="322.55" y="-467.27" font-family="Times,serif" font-size="14.00" style="">finishDuel</text>
+<path fill="none" stroke="black" d="M306.66,-444.93C294.59,-455.32 284.43,-468.75 293.9,-479.87 310.31,-499.15 368.16,-507.84 419.88,-511.74" style=""/>
+<polygon fill="black" stroke="black" points="419.42,-515.22 429.64,-512.42 419.91,-508.24 419.42,-515.22" style=""/>
+<text text-anchor="middle" x="323.55" y="-467.27" font-family="Times,serif" font-size="14.00" style="">finishDuel</text>
 </g>
 <!-- n42&#45;&gt;n41 -->
 <g id="edge27" class="edge" data-name="n42-&gt;n41">
 
-<path fill="none" stroke="black" d="M552.81,-944.22C519.31,-933.51 472.46,-918.87 431,-907.07 404.75,-899.6 375.44,-891.92 350.85,-885.67" style=""/>
-<polygon fill="black" stroke="black" points="351.94,-882.33 341.38,-883.27 350.22,-889.12 351.94,-882.33" style=""/>
-<text text-anchor="middle" x="522.92" y="-911.27" font-family="Times,serif" font-size="14.00" style="">evaluateDuel</text>
+<path fill="none" stroke="black" d="M553.09,-944.18C519.8,-933.45 473.23,-918.8 432,-907.07 405.46,-899.52 375.81,-891.8 350.98,-885.55" style=""/>
+<polygon fill="black" stroke="black" points="351.96,-882.18 341.41,-883.15 350.26,-888.97 351.96,-882.18" style=""/>
+<text text-anchor="middle" x="523.92" y="-911.27" font-family="Times,serif" font-size="14.00" style="">evaluateDuel</text>
 </g>
 <!-- n35&#45;&gt;n37 -->
 <g id="edge28" class="edge" data-name="n35-&gt;n37">
@@ -324,64 +324,44 @@
 <!-- n35&#45;&gt;n32 -->
 <g id="edge30" class="edge" data-name="n35-&gt;n32">
 
-<path fill="none" stroke="black" d="M261.21,-589.04C317.39,-572.68 407.66,-546.39 462.35,-530.46" style=""/>
-<polygon fill="black" stroke="black" points="463.04,-533.9 471.67,-527.74 461.09,-527.18 463.04,-533.9" style=""/>
-<text text-anchor="middle" x="415.55" y="-556.07" font-family="Times,serif" font-size="14.00" style="">finishDuel</text>
+<path fill="none" stroke="black" d="M261.38,-589.04C317.75,-572.68 408.32,-546.39 463.19,-530.46" style=""/>
+<polygon fill="black" stroke="black" points="463.92,-533.89 472.55,-527.74 461.97,-527.17 463.92,-533.89" style=""/>
+<text text-anchor="middle" x="416.55" y="-556.07" font-family="Times,serif" font-size="14.00" style="">finishDuel</text>
 </g>
 <!-- n35&#45;&gt;n40 -->
 <g id="edge31" class="edge" data-name="n35-&gt;n40">
 
-<path fill="none" stroke="black" d="M204.17,-586.47C190.68,-549.35 165.42,-460.89 208,-409.07 239.93,-370.2 371.37,-352.62 464.49,-344.91" style=""/>
-<polygon fill="black" stroke="black" points="464.73,-348.41 474.42,-344.12 464.18,-341.43 464.73,-348.41" style=""/>
-<text text-anchor="middle" x="216.72" y="-467.27" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
+<path fill="none" stroke="black" d="M204.3,-586.47C191.08,-549.35 166.42,-460.89 209,-409.07 240.93,-370.2 372.37,-352.62 465.49,-344.91" style=""/>
+<polygon fill="black" stroke="black" points="465.73,-348.41 475.42,-344.12 465.18,-341.43 465.73,-348.41" style=""/>
+<text text-anchor="middle" x="217.72" y="-467.27" font-family="Times,serif" font-size="14.00" style="">nextRound</text>
 </g>
 <!-- n36&#45;&gt;n32 -->
 <g id="edge32" class="edge" data-name="n36-&gt;n32">
 
-<path fill="none" stroke="black" d="M491.35,-586.52C494.4,-574.48 498.55,-558.11 502.05,-544.28" style=""/>
-<polygon fill="black" stroke="black" points="505.38,-545.41 504.44,-534.86 498.59,-543.69 505.38,-545.41" style=""/>
-<text text-anchor="middle" x="528.55" y="-556.07" font-family="Times,serif" font-size="14.00" style="">finishDuel</text>
+<path fill="none" stroke="black" d="M491.54,-586.52C494.74,-574.48 499.07,-558.11 502.74,-544.28" style=""/>
+<polygon fill="black" stroke="black" points="506.06,-545.42 505.23,-534.86 499.29,-543.63 506.06,-545.42" style=""/>
+<text text-anchor="middle" x="529.55" y="-556.07" font-family="Times,serif" font-size="14.00" style="">finishDuel</text>
 </g>
 <!-- n34&#45;&gt;n97 -->
 <g id="edge35" class="edge" data-name="n34-&gt;n97">
 
-<path fill="none" stroke="black" d="M911.34,-233.11C918.91,-221.76 930.47,-206.62 943.81,-196.67 952.09,-190.49 961.62,-185.2 971.24,-180.75" style=""/>
-<polygon fill="black" stroke="black" points="972.48,-184.02 980.27,-176.84 969.7,-177.6 972.48,-184.02" style=""/>
-<text text-anchor="middle" x="988.1" y="-200.87" font-family="Times,serif" font-size="14.00" style="">debugEndGame</text>
+<path fill="none" stroke="black" d="M882.57,-234.95C874.93,-229.08 866.68,-221.67 860.81,-213.47 855.78,-206.45 851.84,-197.99 848.85,-189.95" style=""/>
+<polygon fill="black" stroke="black" points="852.18,-188.9 845.71,-180.52 845.54,-191.11 852.18,-188.9" style=""/>
+<text text-anchor="middle" x="905.1" y="-200.87" font-family="Times,serif" font-size="14.00" style="">debugEndGame</text>
 </g>
 <!-- n34&#45;&gt;n99 -->
 <g id="edge34" class="edge" data-name="n34-&gt;n99">
 
-<path fill="none" stroke="black" d="M892.28,-233.18C880,-211.74 862.3,-172.07 878.36,-142.67 898.48,-105.84 939.28,-80.95 973.36,-65.65" style=""/>
-<polygon fill="black" stroke="black" points="974.49,-68.97 982.29,-61.8 971.73,-62.54 974.49,-68.97" style=""/>
-<text text-anchor="middle" x="904.82" y="-156.47" font-family="Times,serif" font-size="14.00" style="">endGame</text>
+<path fill="none" stroke="black" d="M929.04,-235.89C937.64,-230.31 946.23,-222.85 951,-213.47 969.28,-177.51 955.5,-133.56 938.09,-99.7" style=""/>
+<polygon fill="black" stroke="black" points="941.4,-98.46 933.58,-91.31 935.24,-101.78 941.4,-98.46" style=""/>
+<text text-anchor="middle" x="985.82" y="-156.47" font-family="Times,serif" font-size="14.00" style="">endGame</text>
 </g>
 <!-- n34&#45;&gt;n30 -->
 <g id="edge33" class="edge" data-name="n34-&gt;n30">
 
-<path fill="none" stroke="black" d="M948.25,-259.21C1031.5,-275.59 1198,-311.56 1198,-337.27 1198,-1049.67 1198,-1049.67 1198,-1049.67 1198,-1100.59 1053.74,-1121.98 952.6,-1130.72" style=""/>
-<polygon fill="black" stroke="black" points="952.6,-1127.21 942.93,-1131.53 953.18,-1134.19 952.6,-1127.21" style=""/>
-<text text-anchor="middle" x="1244.65" y="-689.27" font-family="Times,serif" font-size="14.00" style="">chooseDuelCard</text>
-</g>
-<!-- n98 -->
-<g id="node19" class="node" pointer-events="visible" data-name="n98">
-
-<polygon fill="none" stroke="orange" points="1128,-267.47 1041.19,-249.47 1128,-231.47 1214.81,-249.47 1128,-267.47" style=""/>
-<text text-anchor="middle" x="1128" y="-245.27" font-family="Times,serif" font-size="14.00" style="">98_endScore</text>
-</g>
-<!-- n98&#45;&gt;n97 -->
-<g id="edge37" class="edge" data-name="n98-&gt;n97">
-
-<path fill="none" stroke="black" d="M1090.82,-238.85C1076.13,-233.45 1060.09,-225.35 1048.81,-213.47 1042.61,-206.94 1038.29,-198.27 1035.31,-189.9" style=""/>
-<polygon fill="black" stroke="black" points="1038.67,-188.92 1032.46,-180.34 1031.97,-190.92 1038.67,-188.92" style=""/>
-<text text-anchor="middle" x="1093.1" y="-200.87" font-family="Times,serif" font-size="14.00" style="">debugEndGame</text>
-</g>
-<!-- n98&#45;&gt;n99 -->
-<g id="edge36" class="edge" data-name="n98-&gt;n99">
-
-<path fill="none" stroke="black" d="M1134.2,-232.33C1136.14,-226.48 1138.03,-219.76 1139,-213.47 1143.85,-181.85 1141.66,-170.57 1126,-142.67 1114.9,-122.89 1098.6,-104.42 1082.53,-89.03" style=""/>
-<polygon fill="black" stroke="black" points="1084.99,-86.54 1075.28,-82.3 1080.23,-91.67 1084.99,-86.54" style=""/>
-<text text-anchor="middle" x="1166.82" y="-156.47" font-family="Times,serif" font-size="14.00" style="">endGame</text>
+<path fill="none" stroke="black" d="M965.77,-256.13C1052.66,-265.74 1199,-289.07 1199,-337.27 1199,-1049.67 1199,-1049.67 1199,-1049.67 1199,-1100.73 1054.31,-1122.08 952.88,-1130.77" style=""/>
+<polygon fill="black" stroke="black" points="952.86,-1127.26 943.18,-1131.57 953.43,-1134.24 952.86,-1127.26" style=""/>
+<text text-anchor="middle" x="1245.65" y="-689.27" font-family="Times,serif" font-size="14.00" style="">chooseDuelCard</text>
 </g>
 </g>
 </svg>

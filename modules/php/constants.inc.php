@@ -75,10 +75,8 @@ define('ST_PLAYER_SERPENT_TEMPLE_DISCARD', 44);
 define('ST_NEXT_REVEAL', 81);
 
 define('ST_DEBUG_END_GAME', 97);
-define('ST_END_SCORE', 98);
 
 define('ST_END_GAME', 99);
-define('END_SCORE', 100);
 
 
 /*

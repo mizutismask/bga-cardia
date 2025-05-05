@@ -328,17 +328,6 @@ $gameGameStates = [
             "debugEndGame" => ST_DEBUG_END_GAME,
         ],
     ],
-
-    ST_END_SCORE => [
-        "name" => "endScore",
-        "description" => "",
-        "type" => "game",
-        "action" => "stEndScore",
-        "transitions" => [
-            "endGame" => ST_END_GAME,
-            "debugEndGame" => ST_DEBUG_END_GAME,
-        ],
-    ],
 ];
 
 $machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;

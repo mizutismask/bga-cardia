@@ -1110,6 +1110,10 @@ trait StateTrait {
             $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
             $this->globals->delete(GLB_ROUND_WINNERS);
             $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED);
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL);
+            $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
+            $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
             $currentRound++;
 
             self::notifyAllPlayers('newRound', clienttranslate('&#10148; Round ${round}'), ["round" => $currentRound]);
@@ -1134,97 +1138,4 @@ trait StateTrait {
         return false;
     }
 
-    /**
-     * Activates next player, also giving him extra time.
-     */
-    function activateNextPlayerCustom() {
-        $player_id = $this->activeNextPlayer();
-        $this->giveExtraTime($player_id);
-        $this->incStat(1, 'turns_number', $player_id);
-        $this->incStat(1, 'turns_number');
-        $this->notifyWithName('msg', clienttranslate('&#10148; Start of ${player_name}\'s turn'));
-        //$this->makeSavepoint();
-    }
-
-    function stEndScore() {
-        $this->score();
-
-        if ($this->isStudio()) {
-            $this->gamestate->nextState('debugEndGame');
-        } else {
-            $this->gamestate->nextState('endGame');
-        }
-    }
-
-    function score() {
-        $sql = "SELECT player_id id, player_score score, player_no playerNo FROM player ORDER BY player_no ASC";
-        $players = $this->getCollectionFromDb($sql);
-
-        // points gained during the game
-        $totalScore = [];
-        foreach ($players as $playerId => $playerDb) {
-            $totalScore[$playerId] = intval($playerDb['score']);
-        }
-
-        //end of game points
-
-        // failed destinations 
-        /* $destinationsResults = [];
-        $completedDestinationsCount = [];
-        foreach ($players as $playerId => $playerDb) {
-            $completedDestinationsCount[$playerId] = 0;
-            $uncompletedDestinations = [];
-            $completedDestinations = [];
-
-            $destinations = $this->getDestinationsFromDb($this->destinations->getCardsInLocation('hand', $playerId));
-
-            foreach ($destinations as &$destination) {
-                $completed = boolval($this->getUniqueValueFromDb("SELECT `completed` FROM `destination` WHERE `card_id` = $destination->id"));
-                if ($completed) {
-                    $completedDestinationsCount[$playerId]++;
-                    $completedDestinations[] = $destination;
-                    $this->incStat(1, STAT_POINTS_WITH_PLAYER_COMPLETED_DESTINATIONS, $playerId);
-                } else {
-                    $totalScore[$playerId] += -1;
-                    $this->incScore($playerId, -1);
-                    if ($this->isDestinationRevealed($destination->id)) {
-                        $totalScore[$playerId] += -1;
-                        $this->incScore($playerId, -1);
-                        $this->incStat(-1, STAT_POINTS_WITH_REVEALED_DESTINATIONS, $playerId);
-                    }
-                    $this->incStat(1, STAT_POINTS_LOST_WITH_UNCOMPLETED_DESTINATIONS, $playerId);
-                    $uncompletedDestinations[] = $destination;
-                }
-            }
-
-            $destinationsResults[$playerId] = $uncompletedDestinations;
-        }
-*/
-        foreach ($players as $playerId => $playerDb) {
-            static::DbQuery("UPDATE player SET `player_score` = $totalScore[$playerId] where `player_id` = $playerId");
-            static::DbQuery("UPDATE player SET `player_score_aux` = `player_remaining_tickets` where `player_id` = $playerId");
-        }
-
-        $bestScore = max($totalScore);
-        $playersWithScore = [];
-        foreach ($players as $playerId => &$player) {
-            $player['playerNo'] = intval($player['playerNo']);
-            $player['ticketsCount'] = $this->getRemainingTicketsCount($playerId);
-            $player['score'] = $totalScore[$playerId];
-            $playersWithScore[$playerId] = $player;
-        }
-        $this->notifyAllPlayers('bestScore', '', [
-            'bestScore' => $bestScore,
-            'players' => array_values($playersWithScore),
-        ]);
-
-        // highlight winner(s)
-        foreach ($totalScore as $playerId => $playerScore) {
-            if ($playerScore == $bestScore) {
-                $this->notifyAllPlayers('highlightWinnerScore', '', [
-                    'playerId' => $playerId,
-                ]);
-            }
-        }
-    }
 }

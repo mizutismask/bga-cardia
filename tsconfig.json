@@ -44,7 +44,6 @@
 		"src/stock-utils.ts",
 		"src/utils.ts",
 		"src/slide-utils.ts",
-		"src/end-score/end-score.ts",
 		"src/player-table/player-table.ts",
 		"src/central-zone/central-zone.ts",
 		"src/settings.ts",
