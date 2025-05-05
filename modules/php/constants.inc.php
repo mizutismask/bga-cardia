@@ -5,7 +5,7 @@
  */
 const GLB_LAST_CHOSEN_CARD = 'lastChosenCard';
 const GLB_DUEL_COUNT = 'duelCount';
-const GLBL_ROUND = 'round';
+const GLB_ROUND = 'round';
 const GLB_SELECTED_FACTION = 'selectedFaction';
 const GLB_SELECTED_CARD_ID = 'selectedCardId';
 const GLB_ABILITY_TO_RESOLVE = 'abilityToResolve';

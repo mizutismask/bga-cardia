@@ -138,7 +138,7 @@ class Game extends \Bga\GameFramework\Table {
         $this->setupSharedItems();
         $this->cardManager->dealHands();
         $this->globals->set(GLB_DUEL_COUNT, 0);
-        $this->globals->set(GLBL_ROUND, 1);
+        $this->globals->set(GLB_ROUND, 1);
         $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
         foreach ($players as $playerId => $player) {
         }
@@ -239,7 +239,7 @@ class Game extends \Bga\GameFramework\Table {
         //$this->dump('******************maxSignets*', $maxSignets);
         //$this->dump('******************duelProgression*', $duelProgression);
 
-        $round = intval($this->globals->get(GLBL_ROUND));
+        $round = intval($this->globals->get(GLB_ROUND));
         return (100 * $this->getMaxScore() / 2) + $duelProgression / ($round == 3 ? 3 : 2);
     }
 

@@ -35,6 +35,9 @@ trait StateTrait {
         $stateTransition = 'evaluateDuel';
         $cards = [];
         $immediateLoosers = [];
+        $currentRound = $this->globals->get(GLB_ROUND);
+        $this->incStat(1, "game_encounters_round_$currentRound");
+
         foreach ($players as $playerId => $player) {
             $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
             $cards[] = $this->cardManager->playCard($card, $playerId, $duelCount);
@@ -122,6 +125,8 @@ trait StateTrait {
         $maxCard = null;
         $minCard = null;
         $interrupt = false;
+        $currentRound = $this->globals->get(GLB_ROUND);
+
         foreach ($cards as $card) {
             if ($minCard === null) {
                 $minCard = $card;
@@ -150,11 +155,11 @@ trait StateTrait {
                 'cardName2' => $minCard->name,
             ]);
 
-            $signetOwnerChanged = $this->tokenManager->addSignetOnCard($maxCard->id, $minCard->id);
-            $this->addSerpentTempleDiscarder($maxCard->location_arg, $signetOwnerChanged, $loosingPlayerId);
-
+            $signetOwnerChanged = $this->addSignetOnCard($maxCard->id, $minCard->id);
+            $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
+           
             if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
-                $this->tokenManager->addSignetOnCard($maxCard->id, null, true);
+                $this->addSignetOnCard($maxCard->id, null, true);
             }
             if ($this->isActiveCardInPlay(MECHANICAL_DJINN, $winningPlayerId)) {
                 $djinn = $this->cardManager->getCardInPlay(MECHANICAL_DJINN, $winningPlayerId);
@@ -184,7 +189,7 @@ trait StateTrait {
                 if ($judge) {
                     //$this->dump('*******************judge active for ', $playerId);
                     $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
-                    $this->tokenManager->addSignetOnCard($myCard->id, null);
+                    $this->addSignetOnCard($myCard->id, null);
                     $this->notifyWithName('msg', clienttranslate('${ability} ability: ${playerName} wins the encounter'), [
                         "ability" => $judge->name,
                         "playerName" => $this->getPlayerName($playerId),
@@ -206,8 +211,8 @@ trait StateTrait {
                     $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == ($myCard->type_arg == 1 ? 2 : 1)));
                     if ($counselor && $counselor->location_arg == $myCard->location_arg + 1) {
                         $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg != $this->getPlayerPosition($playerId)));
-                        $signetOwnerChanged = $this->tokenManager->addSignetOnCard($myCard->id, $opponentCard->id);
-                        $this->addSerpentTempleDiscarder($myCard->location_arg, $signetOwnerChanged, $this->getOpponentId($playerId));
+                        $signetOwnerChanged = $this->addSignetOnCard($myCard->id, $opponentCard->id);
+                        $this->addSerpentTempleDiscarder($myCard->location_arg, $this->getOpponentId($playerId));
                         if ($signetOwnerChanged) {
                             $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
                                 'cardName1' => $myCard->name,
@@ -233,7 +238,7 @@ trait StateTrait {
         return $result;
     }
 
-    function addSerpentTempleDiscarder(int $encounterNumber, bool $signetOwnerChanged, int $opponentPlayerId) {
+    function addSerpentTempleDiscarder(int $encounterNumber, int $opponentPlayerId) {
         if ($this->getScenery() == SERPENT_TEMPLE) {
             $isPreviousDuel = $encounterNumber < $this->globals->get(GLB_DUEL_COUNT);
             if ($isPreviousDuel) {
@@ -438,7 +443,7 @@ trait StateTrait {
                 if ($duelNumber > 1) {
                     $winningCard = $this->getWinningCard($duelNumber - 1);
                     if ($winningCard) {
-                        $this->tokenManager->addSignetOnCard($winningCard->id, null, true);
+                        $this->addSignetOnCard($winningCard->id, null, true);
                     }
                 }
                 break;
@@ -502,8 +507,8 @@ trait StateTrait {
             case COUNSELOR:
                 if ($duelNumber > 1) {
                     $previousDuelCards = $duels[$duelNumber - 1];
-                    $signetOwnerChanged = $this->tokenManager->addSignetOnCard($previousDuelCards[$playerId]->id, $previousDuelCards[$opponentId]->id);
-                    $this->addSerpentTempleDiscarder($previousDuelCards[$playerId]->location_arg, $signetOwnerChanged, $opponentId);
+                    $signetOwnerChanged = $this->addSignetOnCard($previousDuelCards[$playerId]->id, $previousDuelCards[$opponentId]->id);
+                    $this->addSerpentTempleDiscarder($previousDuelCards[$playerId]->location_arg, $opponentId);
                     if ($signetOwnerChanged) {
                         $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
                             'cardName1' => $previousDuelCards[$playerId]->name,
@@ -520,6 +525,15 @@ trait StateTrait {
         return $winnersIfAny;
     }
 
+    public function addSignetOnCard(int $cardId, ?int $opposingCardId, ?bool $severalPossible = false): bool {
+        $signetOwnerChanged = $this->tokenManager->addSignetOnCard($cardId, $opposingCardId, $severalPossible);
+        if ($signetOwnerChanged) {
+            $card = $this->cardManager->getCard($cardId);
+            $playerId = $this->getPlayerIdFromPosition($card->type_arg);
+            $this->incStat(1, "game_stolen_signets", $playerId);
+        }
+        return $signetOwnerChanged;
+    }
     /**
      * @param array<mixed, array<mixed, object|null>> $duels 
      * @return void 
@@ -986,8 +1000,8 @@ trait StateTrait {
         } else {
             $ability =  $this->getAbilityToResolve();
             if ($ability && $ability->type == FORTUNE_TELLER) {
+                $this->gamestate->changeActivePlayer($this->getOpponentId($this->getPlayerIdFromPosition($ability->type_arg)));
                 $nextState = 'chooseFortuneTellerCard';
-                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $this->getOpponentId($this->getPlayerIdFromPosition($ability->type)));
             }
 
             if ($this->getOriginalAbilityToResolveType() == ELEMENTAL) {
@@ -1096,7 +1110,11 @@ trait StateTrait {
 
     function stNextRound() {
         $players = $this->loadPlayersBasicInfos();
-        $currentRound = $this->globals->get(GLBL_ROUND);
+        $currentRound = $this->globals->get(GLB_ROUND);
+        foreach ($players as $playerId => $player) {
+            $count = $this->tokenManager->getSignetCount($player["player_no"]);
+            $this->setStat($count, "game_signets_round_$currentRound", $playerId);
+        }
 
         if ($this->hasReachedEndOfGameRequirements()) {
             if ($this->isStudio()) {
@@ -1106,7 +1124,7 @@ trait StateTrait {
             }
         } else {
             $this->globals->set(GLB_DUEL_COUNT, 0);
-            $this->globals->inc(GLBL_ROUND, 1);
+            $this->globals->inc(GLB_ROUND, 1);
             $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
             $this->globals->delete(GLB_ROUND_WINNERS);
             $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
@@ -1137,5 +1155,4 @@ trait StateTrait {
         }
         return false;
     }
-
 }

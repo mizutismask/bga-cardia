@@ -1,20 +1,40 @@
 {
     "table": {
-      "turns_number": {
-        "id": 10,
-        "name": "Number of turns",
+      "game_encounters_round_1": {
+        "id": 11,
+        "name": "Encounters in round 1",
+        "type": "int"
+      },
+      "game_encounters_round_2": {
+        "id": 12,
+        "name": "Encounters in round 2",
+        "type": "int"
+      },
+      "game_encounters_round_3": {
+        "id": 13,
+        "name": "Encounters in round 3",
         "type": "int"
       }
     },
     "player": {
-      "turns_number": {
-        "id": 10,
-        "name": "Number of turns",
+      "game_signets_round_1": {
+        "id": 50,
+        "name": "Signets in round 1",
         "type": "int"
       },
-      "game_toto": {
-        "id": 11,
-        "name": "toto",
+      "game_signets_round_2": {
+        "id": 51,
+        "name": "Signets in round 2",
+        "type": "int"
+      },
+      "game_signets_round_3": {
+        "id": 52,
+        "name": "Signets in round 3",
+        "type": "int"
+      },
+      "game_stolen_signets": {
+        "id": 53,
+        "name": "Stolen signets",
         "type": "int"
       }
     }
