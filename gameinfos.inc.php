@@ -75,7 +75,7 @@ $gameinfos = [
     'language_dependency' => false,
 
     // Colors attributed to players
-    'player_colors' => ["ff0000", "008000", "0000ff", "ffa500", "773300"],
+    'player_colors' => ["722889", "336fb5"],
 
     'db_undo_support' => false,
 
