@@ -72,6 +72,9 @@ svg {
 	height: 100%;
 	width: auto;
 }
+#void-area{
+	display: none;
+}
 
 .zone-title {
 	color: #965e17;
@@ -364,6 +367,10 @@ svg {
 
 .card .card-sides .card-side.front .card-info {
 	pointer-events: all;
+}
+
+.card .card-sides .card-side {
+	overflow: visible;//fix to allow complete animation of tokens coming into the card
 }
 
 .log {
