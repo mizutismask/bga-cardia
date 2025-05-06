@@ -19,6 +19,8 @@ declare const playSound
 const IMAGE_ITEMS_PER_ROW = 4
 const IMAGE_LOCATIONS_PER_ROW = 4
 const ACTION_TIMER_DURATION = 6
+const TOKEN_MOVE_DURATION = 1000
+const ANIMATED_TOKEN_Z_INDEX = '50'
 
 const HIRED_BLADE = 101
 const VOID_MAGE = 102
@@ -423,12 +425,12 @@ class Cardia extends BaseGame implements CardiaGame {
 			)
 		} else if ($(location)) {
 			dojo.place(`<div id="${signetDivId}" class="signet-icon"></div>`, 'void-area')
-			document.getElementById(`cardia-card-${cardId}`).style.zIndex = '50'
+			document.getElementById(`cardia-card-${cardId}`).style.zIndex = ANIMATED_TOKEN_Z_INDEX
 			this.animationManager
 				.attachWithAnimation(
 					new BgaSlideAnimation({
 						element: $(signetDivId),
-						duration: 1000
+						duration: TOKEN_MOVE_DURATION
 					}),
 					$(location)
 				)
@@ -457,7 +459,20 @@ class Cardia extends BaseGame implements CardiaGame {
 				$(location)
 			)
 		} else if ($(location)) {
-			dojo.place(`<div id="${tokenDivId}" class="ongoing-icon"></div>`, location)
+			dojo.place(`<div id="${tokenDivId}" class="ongoing-icon"></div>`, 'void-area')
+			document.getElementById(`cardia-card-${cardId}`).style.zIndex = ANIMATED_TOKEN_Z_INDEX
+			this.animationManager
+				.attachWithAnimation(
+					new BgaSlideAnimation({
+						element: $(tokenDivId),
+						duration: TOKEN_MOVE_DURATION
+					}),
+					$(location)
+				)
+				.then(() => {
+					document.getElementById(`cardia-card-${cardId}`).style.zIndex = '0'
+					//this.animationManager.play(new BgaPauseAnimation({}))
+				})
 		} else {
 			console.error('can’t put ongoing token on ' + location)
 		}
