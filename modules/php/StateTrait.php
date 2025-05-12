@@ -166,19 +166,14 @@ trait StateTrait {
 
             if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
                 $this->addSignetOnCard($maxCard->id, null, true);
-            }
-            if ($this->isActiveCardInPlay(MECHANICAL_DJINN, $winningPlayerId)) {
-                $djinn = $this->cardManager->getCardInPlay(MECHANICAL_DJINN, $winningPlayerId);
-                //check if this card is immediately following the djinn
-                if ($djinn && $djinn->location_arg == $maxCard->location_arg - 1) {
-                    //win the game
-                    $interrupt = true;
-                    $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
-                    $this->globals->set(GLB_ROUND_WINNERS, [$winningPlayerId]);
-                    $this->stFinishDuel();
-                }
+                $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
+                    'ability' => $maxCard,
+                    'cardName' => $maxCard->name,
+                    'location' => false,
+                ]);
             }
         } else {
+
             //tie->remove signets if any
             foreach ($cards as $card) {
                 $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::SIGIL);
@@ -933,6 +928,25 @@ trait StateTrait {
         }
         if ($anyModif) {
             $this->evaluateDuelValues(array_values($finishingDuel));
+        }
+
+        //handle mechanical djinn if in play
+        $duels = $this->cardManager->getDuelsList();
+        $duelNumber = $this->globals->get(GLB_DUEL_COUNT);
+        foreach ($this->getPlayers() as $playerId => $players) {
+            if ($djinn = $this->isActiveCardInPlay(MECHANICAL_DJINN, $playerId)) {
+                //check if this card is immediately following the djinn
+                if ($djinn && $djinn->location_arg == $duelNumber - 1 && $this->tokenManager->hasSignet($duels[$duelNumber][$playerId]->id)) {
+                    //win the game
+                    $winners = [$playerId];
+                    $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
+                        'ability' => $djinn,
+                        'cardName' => $djinn->name,
+                        'location' => false,
+                    ]);
+                    break;
+                }
+            }
         }
 
         //reset data
