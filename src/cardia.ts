@@ -19,7 +19,7 @@ declare const playSound
 const IMAGE_ITEMS_PER_ROW = 4
 const IMAGE_LOCATIONS_PER_ROW = 4
 const ACTION_TIMER_DURATION = 6
-const TOKEN_MOVE_DURATION = 1000
+const TOKEN_MOVE_DURATION = 500
 const ANIMATED_TOKEN_Z_INDEX = '50'
 
 const HIRED_BLADE = 101
@@ -1070,13 +1070,67 @@ class Cardia extends BaseGame implements CardiaGame {
 			['updateCounters', 1],
 			['newRound', 1],
 			['nextCardModifier', 1],
-			['updateModifiers', 1]
+			['updateModifiers', 1],
+			['duelResult', ANIMATION_MS * 2],
+			['power', ANIMATION_MS * 2]
 		]
 
 		notifs.forEach((notif) => {
 			dojo.subscribe(notif[0], this, `notif_${notif[0]}`)
 			;(this as any).notifqueue.setSynchronous(notif[0], notif[1])
 		})
+	}
+
+	notif_duelResult(notif: Notif<NotifDuelResult>) {
+		log('notif_duelResult', notif)
+		this.statusBar.setTitle(notif.log, notif.args)
+		if (notif.args.winningCard) {
+			return this.animationManager
+				.play(
+					new BgaCumulatedAnimation({
+						animations: [
+							new BgaPauseAnimation({
+								animationClass: 'bounce-top',
+								duration: 1500,
+								classes: ['cardia-card'],
+								element: this.cardsManager
+									.getCardStock(notif.args.winningCard)
+									.getCardElement(notif.args.winningCard)
+							})
+						]
+					})
+				)
+				.then(() => {})
+		}
+	}
+	
+	notif_power(notif: Notif<NotifPower>) {
+		log('notif_power', notif)
+		this.statusBar.setTitle(notif.log, notif.args)
+		if (notif.args.ability) {
+			return this.animationManager
+				.play(
+					new BgaPauseAnimation({
+						animationClass: 'shake-bottom',
+						delay: 2500,
+						duration: 1500,
+						element: this.cardsManager.getCardStock(notif.args.ability).getCardElement(notif.args.ability)
+					})
+				)
+				.then(() => {})
+		}
+		if (notif.args.location) {
+			return this.animationManager
+				.play(
+					new BgaPauseAnimation({
+						animationClass: 'heartbeat',
+						delay: 2500,
+						duration: 1500,
+						element: $("player_board_location")
+					})
+				)
+				.then(() => {})
+		}
 	}
 
 	notif_newRound(notif: Notif<NotifScoreArgs>) {
@@ -1176,7 +1230,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				} else {
 					log('removeCard', card.name)
 					cards.forEach((c) => {
-						this.cardsManager.getCardStock(card).removeCard(c)
+						this.cardsManager.getCardStock(card)?.removeCard(c)
 					})
 				}
 				break
@@ -1194,7 +1248,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				break
 			case 'deck':
 				cards.forEach((c) => {
-					this.cardsManager.getCardStock(card).removeCard(c)
+					this.cardsManager.getCardStock(card)?.removeCard(c)
 				})
 				break
 			default:

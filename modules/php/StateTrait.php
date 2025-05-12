@@ -54,6 +54,7 @@ trait StateTrait {
                 if (isset($duels[$duelCount - 1])) {
                     $previousCard =  $duels[$duelCount - 1][$playerId];
                     if ($revealedCardValue < $this->getCardValue($previousCard, true)) {
+                        $this->notifyLocationPower();
                         $this->cardManager->discardTopOfDeck($playerId, $player["player_no"], clienttranslate('Auction house : ${playerName} discards ${cardName}'), ["playerName" => $player["player_name"]]);
                     }
                 }
@@ -65,6 +66,7 @@ trait StateTrait {
                     $previousCard =  $duels[$duelCount - 1][$playerId];
                     if ($card->faction == $previousCard->faction) {
                         //immediatly loose the round
+                        $this->notifyLocationPower();
                         $immediateLoosers[] = $playerId;
                     }
                 }
@@ -147,17 +149,19 @@ trait StateTrait {
             $loosingPlayerId = $this->getPlayerIdFromPosition($minCard->type_arg);
 
             $operator = ">";
-            $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}: ${winnerValue} ${operator} ${looserValue}'), [
+            $this->notifyWithName('duelResult', clienttranslate('${cardName1} beats ${cardName2}: ${winnerValue} ${operator} ${looserValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
                 'looserValue' => $minCard->modifiedValue,
                 'operator' => $operator,
                 'cardName1' => $maxCard->name,
                 'cardName2' => $minCard->name,
+                'winningCard' => $maxCard,
+                //'loosingCard' => $minCard,
             ]);
 
             $signetOwnerChanged = $this->addSignetOnCard($maxCard->id, $minCard->id);
             $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
-           
+
             if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
                 $this->addSignetOnCard($maxCard->id, null, true);
             }
@@ -227,6 +231,7 @@ trait StateTrait {
         if ($this->getScenery() == FOUNDERS_DAY) {
             $finalWinners = $this->getPlayersHavingSuccessiveWins(3);
             if (count($finalWinners) > 0) {
+                $this->notifyLocationPower();
                 $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
                 $this->globals->set(GLB_ROUND_WINNERS, $finalWinners);
                 $this->stFinishDuel();
@@ -242,6 +247,7 @@ trait StateTrait {
         if ($this->getScenery() == SERPENT_TEMPLE) {
             $isPreviousDuel = $encounterNumber < $this->globals->get(GLB_DUEL_COUNT);
             if ($isPreviousDuel) {
+                $this->notifyLocationPower();
                 $discarders = $this->globals->get(GLB_SERPENT_TEMPLE_DISCARDERS);
                 array_push($discarders, $opponentPlayerId);
                 $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, $discarders);
@@ -396,8 +402,10 @@ trait StateTrait {
      * @throws BgaUserException 
      */
     function applyAbility(CardiaCard $ability, array $duels, array $signets, int $duelNumber) {
-        $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
+        $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
+            'ability' => $ability,
             'cardName' => $ability->name,
+            'location' => false,
         ]);
         $this->dump('*******************applyAbility', $ability->name);
 
@@ -939,6 +947,7 @@ trait StateTrait {
                 if ($discarders) {
                     $discarderPlayer = array_shift($discarders);
                     if ($discarderPlayer) {
+                        $this->notifyLocationPower();
                         if ($this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($discarderPlayer), MATERIAL_LOCATION_HAND) > 0) {
                             $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, $discarders);
                             $this->gamestate->changeActivePlayer($discarderPlayer);
@@ -1019,6 +1028,7 @@ trait StateTrait {
             }
 
             if ($location == GRAND_LIBRARY || $location == SCRAPYARD) {
+                $this->notifyLocationPower();
                 $this->cardManager->pickAdditionalCard(); //get one more card
             }
 
@@ -1028,6 +1038,13 @@ trait StateTrait {
             }
         }
         $this->gamestate->nextState($nextState);
+    }
+
+    function notifyLocationPower() {
+        $this->notifyWithName('power', clienttranslate('${cardName} effect triggered'), [
+            'cardName' => $this->LOCATIONS[$this->getScenery()],
+            'location' => true,
+        ]);
     }
 
     function onCardInHandChange() {

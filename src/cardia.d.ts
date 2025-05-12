@@ -140,6 +140,16 @@ interface NotifScoreArgs {
 	scoreType: string
 }
 
+interface NotifDuelResult {
+	winningCard: CardiaCard
+	loosingCard: CardiaCard
+}
+
+interface NotifPower {
+	ability?: CardiaCard
+	location?: boolean
+}
+
 interface NotifCounter {
 	counterName: string
 	counterValue: number

@@ -38,6 +38,7 @@ class CardManager extends DeckManager {
 
     public function replenishHands() {
         if (isset($this->castParameters["location"]) && $this->castParameters["location"] == BAZAAR) {
+            $this->game->$this->notifyLocationPower();
             $players = $this->game->loadPlayersBasicInfos();
             foreach ($players as $playerId => $player) {
                 $cardsCount = count($this->getCardsOfTypeArgFromLocation(TABLE_CARD, $player["player_no"], MATERIAL_LOCATION_HAND));

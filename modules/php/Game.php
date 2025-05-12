@@ -46,6 +46,7 @@ class Game extends \Bga\GameFramework\Table {
     private CardManager $cardManager;
     private TokenManager $tokenManager;
     public $CARDIA_CARDS;
+    public $LOCATIONS;
 
     function __construct() {
         // Your global variables labels:

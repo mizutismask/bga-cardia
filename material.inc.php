@@ -61,3 +61,14 @@ $this->CARDIA_CARDS = [
   215 => new CardiaCardInfo(15, PowerType::ONGOING, Faction::RED, self::_("Mechanical Djinn")),
   216 => new CardiaCardInfo(16, PowerType::IMMEDIATE, Faction::BLUE, self::_("Successor")),
 ];
+
+$this->LOCATIONS = [
+  SERPENT_TEMPLE => self::_("Serpent Temple"),
+  BAZAAR => self::_("Bazaar"),
+  FOUNDERS_DAY => self::_("Founder’s day"),
+  GRAND_LIBRARY => self::_("Grand Library"),
+  SCRAPYARD => self::_("Scrapyard"),
+  AUCTION_HOUSE => self::_("Auction House"),
+  HAUNTED_CATACOMBS => self::_("Haunted Catacombs"),
+  FOGGY_SWAMP => self::_("Foggy Swamp"),  
+];

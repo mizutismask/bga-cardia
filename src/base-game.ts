@@ -50,19 +50,8 @@ abstract class BaseGame {
 		dojo.place(
 			`
 		<div id="custom-game-area">
-			<div id="score">
-				<div id="table-wrapper">
-					<table>
-						<thead>
-							<tr id="scoretr"></tr>
-						</thead>
-						<tbody id="score-table-body">
-						</tbody>
-					</table>
-				</div>
-			</div>
-
 			<div id="player-tables"></div>
+			<div id="void-area"></div>
 		</div>`,
 			'game_play_area_background',
 			'after'
@@ -363,6 +352,7 @@ abstract class BaseGame {
 	public takeAction(action: string, data?: any, options?: { lock: boolean; checkAction: boolean }): Promise<void> {
 		data = data || {}
 		data.version = this.gamedatas.version
+		log("takeAction", action, data, options)
 		return (this as any).bgaPerformAction(action, data, options)
 	}
 
