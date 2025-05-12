@@ -39,6 +39,12 @@ class CentralZone {
 			mapCardToSlot: (card) => `${card.type_arg}`
 		})
 		this.duelStocks[duelId].setSelectionMode('none')
+		this.duelStocks[duelId].onSelectionChange= (selection: Array<CardiaCard>, lastChange: CardiaCard) => {
+			if (selection) {
+				//deselect all other stocks
+				this.duelStocks.forEach(stock => { if(stock != this.duelStocks[duelId]) stock.unselectAll(true) })
+			}
+		}
 		this.updateCssVariables()
 		if (duel) {
 			this.duelStocks[duelId].addCards(Object.values(duel))
