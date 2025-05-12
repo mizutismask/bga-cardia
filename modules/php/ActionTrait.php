@@ -171,7 +171,7 @@ trait ActionTrait {
                     break;
                 case ILLUSIONIST:
                     $selectableCards = $this->getSelectableCards($interactiveAbility);
-                    $this->userAssertTrue(_("The copied card must be one of your losing cards"),  $this->array_contains_card($selectableCards, $cardId));
+                    $this->userAssertTrue(_("The copied card must be one of your losing cards (and not Illusionist)"),  $this->array_contains_card($selectableCards, $cardId));
                     break;
                 case ELEMENTAL:
                     $selectableCards = $this->getSelectableCards($interactiveAbility);

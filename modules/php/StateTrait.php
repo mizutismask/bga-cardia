@@ -813,11 +813,8 @@ trait StateTrait {
             case PALACE_GUARD:
                 return !$faction || count($this->cardManager->getFactionCardsInHand($playerToApply, $faction)) > 0;
             case MAGISTRA:
-                return !empty($this->getSelectableCards($card, $cardOwner));
             case SWAMP_GUARDIAN:
-                return !empty($this->getSelectableCards($card, $cardOwner));
             case ILLUSIONIST:
-                return !empty($this->getSelectableCards($card, $cardOwner));
             case ELEMENTAL:
                 return !empty($this->getSelectableCards($card, $cardOwner));
             default:

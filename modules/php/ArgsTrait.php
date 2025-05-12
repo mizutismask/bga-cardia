@@ -142,8 +142,10 @@ trait ArgsTrait {
             }));
         } else if ($ability->type == ILLUSIONIST) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
-            $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($ability) {
-                return (!$this->tokenManager->hasSignet($card->id)) && $card->id != $ability->id;
+            $duels = $this->cardManager->getDuelsList();
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($ability,$duels) {
+                $opposingCard = $this->cardManager->getOpposingCard($card, $duels);
+                return ($this->tokenManager->hasSignet($opposingCard->id)) && $card->id != $ability->id;
             }));
         } else if ($ability->type == ELEMENTAL) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_HAND);
