@@ -1103,7 +1103,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				.then(() => {})
 		}
 	}
-	
+
 	notif_power(notif: Notif<NotifPower>) {
 		log('notif_power', notif)
 		this.statusBar.setTitle(notif.log, notif.args)
@@ -1126,7 +1126,7 @@ class Cardia extends BaseGame implements CardiaGame {
 						animationClass: 'heartbeat',
 						delay: 2500,
 						duration: 1500,
-						element: $("player_board_location")
+						element: $('player_board_location')
 					})
 				)
 				.then(() => {})
@@ -1217,7 +1217,9 @@ class Cardia extends BaseGame implements CardiaGame {
 		const card = cards.at(0)
 		switch (notif.args.to) {
 			case 'discard':
-				this.discards[notif.args.toArg].addCard(card)
+				this.discards[notif.args.toArg].addCard(card, {
+					fromElement: $(`overall_player_board_${notif.args.toArg}`)
+				})
 				this.updateModifierOnElement($(`cardia-card-${card.id}-modifier-value`), 0)
 				break
 			case 'hand':
