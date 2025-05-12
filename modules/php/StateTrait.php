@@ -55,7 +55,7 @@ trait StateTrait {
                     $previousCard =  $duels[$duelCount - 1][$playerId];
                     if ($revealedCardValue < $this->getCardValue($previousCard, true)) {
                         $this->notifyLocationPower();
-                        $this->cardManager->discardTopOfDeck($playerId, $player["player_no"], clienttranslate('Auction house : ${playerName} discards ${cardName}'), ["playerName" => $player["player_name"]]);
+                        $this->cardManager->discardTopOfDeck($playerId, $player["player_no"], clienttranslate('Auction house : ${player_name} discards ${cardName}'), ["player_name" => $player["player_name"]]);
                     }
                 }
             }
