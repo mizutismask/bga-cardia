@@ -154,6 +154,8 @@ trait ArgsTrait {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_HAND);
         } else if ($ability->type == VOID_MAGE) {
             $selectableCards = $this->cardManager->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
+        } else if ($ability->type == KINESIS_MAGE) {
+            $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
         }
         //$this->dump('*******************argSelectableCards', $selectableCards);
         return $selectableCards;

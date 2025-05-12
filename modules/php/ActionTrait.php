@@ -177,6 +177,10 @@ trait ActionTrait {
                     $selectableCards = $this->getSelectableCards($interactiveAbility);
                     $this->userAssertTrue(_("The copied card must be in your hand and have instant ability"),  $this->array_contains_card($selectableCards, $cardId));
                     break;
+                case KINESIS_MAGE:
+                    $selectableCards = $this->getSelectableCards($interactiveAbility);
+                    $this->userAssertTrue(_("This card is not one of yours"), $this->array_contains_card($selectableCards, $cardId));
+                    break;
             }
         }
 
@@ -212,6 +216,9 @@ trait ActionTrait {
                     case INVENTOR:
                         $this->userAssertTrue(_("This card is not part of an encounter"), $card->location == MATERIAL_LOCATION_ENCOUNTER);
                         $this->userAssertTrue(_("You’ve already modified this card, choose another one"), $card->id != $this->globals->get(GLB_INVENTOR_PLUS_CARD));
+                        break;
+                    case KINESIS_MAGE:
+                        $this->userAssertTrue(_("This card is not one of yours"), $this->array_contains_card($selectableCards, $cardId));
                         break;
                 }
             }
