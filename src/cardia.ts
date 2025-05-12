@@ -610,17 +610,9 @@ class Cardia extends BaseGame implements CardiaGame {
 		log('Leaving state: ' + stateName)
 
 		switch (stateName) {
-			/* Example:
-        
-        case 'myGameState':
-        
-            // Hide the HTML block we are displaying only during this game state
-            dojo.style( 'my_html_block_id', 'display', 'none' );
-            
-            break;
-        */
-
-			case 'dummmy':
+			case 'interactiveAbility':
+			case 'interactiveAbilityStep2':
+				this.centralZone.duelStocks.forEach((stock) => stock.unselectAll())
 				break
 		}
 	}
