@@ -59,6 +59,7 @@ trait StateTrait {
                     }
                 }
             }
+
             if ($this->getScenery() == HAUNTED_CATACOMBS) {
                 $revealedCardValue = $card->faction;
                 $duels = $this->cardManager->getDuelsList();
@@ -101,8 +102,9 @@ trait StateTrait {
                 }
             }
         }
-
-        $this->gamestate->nextState($stateTransition);
+        if (!$immediateLoosers) {
+            $this->gamestate->nextState($stateTransition);
+        }
     }
 
     function stDuelEvaluation() {
@@ -662,7 +664,7 @@ trait StateTrait {
                     }
                     $this->onCardInHandChange();
                 } else {
-                    $this->notifyWithName('msg', clienttranslate('${player_name} has no card of the required faction'), ['playerId' => $opponentId,]);
+                    $this->notifyWithName('msg', clienttranslate('${player_name} has no ${factionColor} faction card'), ['playerId' => $opponentId, "factionColor" => $this->getColorName($faction)]);
                 }
                 $this->gamestate->nextState('finishDuel');
                 break;

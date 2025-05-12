@@ -80,6 +80,7 @@ $basicGameStates = [
             "evaluateDuel" => ST_DUEL_EVALUATION,
             "librarianAbility" => ST_PLAYER_LIBRARIAN_ABILITY,
             "blackmailerDiscard" => ST_PLAYER_BLACKMAILER_DISCARD,
+            "nextRound" => ST_PLAYER_SEE_END_OF_ROUND //haunted catacombs
         ],
     ],
 
@@ -228,7 +229,7 @@ $playerActionsGameStates = [
             "finishDuel" => ST_FINISH_DUEL,
         ]
     ],
-    
+
     ST_PLAYER_LIBRARIAN_ABILITY => [
         "name" => "librarianAbility",
         "description" => clienttranslate('Librarian: ${actplayer} must choose to add +2 or -2 to his card'),
