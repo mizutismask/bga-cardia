@@ -1158,15 +1158,7 @@ trait StateTrait {
                 $this->gamestate->nextState('endGame');
             }
         } else {
-            $this->globals->set(GLB_DUEL_COUNT, 0);
-            $this->globals->inc(GLB_ROUND, 1);
-            $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
-            $this->globals->delete(GLB_ROUND_WINNERS);
-            $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
-            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED);
-            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL);
-            $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
-            $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
+            $this->endOfRoundReset();
             $currentRound++;
 
             self::notifyAllPlayers('newRound', clienttranslate('&#10148; Round ${round}'), ["round" => $currentRound]);
@@ -1179,6 +1171,18 @@ trait StateTrait {
 
     function endOfRoundReset() {
         $this->globals->set(GLB_DUEL_COUNT, 0);
+        $this->globals->inc(GLB_ROUND, 1);
+        $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
+        $this->globals->delete(GLB_ROUND_WINNERS);
+        $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
+        $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
+        $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
+
+        foreach ($this->getPlayersIds() as $playerId) {
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
+            $this->globals->delete(GLB_LAST_CHOSEN_CARD . $playerId);
+        }
     }
 
     function hasReachedEndOfGameRequirements(): bool {
