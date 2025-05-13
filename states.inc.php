@@ -80,7 +80,7 @@ $basicGameStates = [
             "evaluateDuel" => ST_DUEL_EVALUATION,
             "librarianAbility" => ST_PLAYER_LIBRARIAN_ABILITY,
             "blackmailerDiscard" => ST_PLAYER_BLACKMAILER_DISCARD,
-            "nextRound" => ST_PLAYER_SEE_END_OF_ROUND //haunted catacombs
+            "nextRound" => ST_END_OF_ROUND //haunted catacombs
         ],
     ],
 
@@ -93,7 +93,7 @@ $basicGameStates = [
         "transitions" => [
             "finishDuel" => ST_FINISH_DUEL,
             "looserAbility" => ST_LOOSER_ABILITY,
-            "nextRound" => ST_PLAYER_SEE_END_OF_ROUND, //founders day
+            "nextRound" => ST_END_OF_ROUND, //founders day
         ],
     ],
 
@@ -104,7 +104,7 @@ $basicGameStates = [
         "transitions" => [
             "interactiveAbility" => ST_ACTIVATE_PLAYER_FOR_ABILITY,
             "finishDuel" => ST_FINISH_DUEL, //not sure
-            "nextRound" => ST_PLAYER_SEE_END_OF_ROUND, //djinn power
+            "nextRound" => ST_END_OF_ROUND, //djinn power
         ]
     ],
 
@@ -125,12 +125,22 @@ $basicGameStates = [
         "action" => "stFinishDuel",
         "updateGameProgression" => true,
         "transitions" => [
-            "nextRound" => ST_PLAYER_SEE_END_OF_ROUND,
+            "nextRound" => ST_END_OF_ROUND,
             "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
             "chooseFortuneTellerCard" => ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD,
             "chooseScrapyardCard" => ST_PLAYER_SCRAPYARD_CHOOSE_CARD,
             "serpentTempleDiscard" => ST_PLAYER_SERPENT_TEMPLE_DISCARD,
         ],
+    ],
+
+    ST_END_OF_ROUND => [
+        "name" => "endOfRound",
+        "type" => "game",
+        "action" => "stEndOfRound",
+        "transitions" => [
+            "seeEndOfRound" => ST_PLAYER_SEE_END_OF_ROUND,
+            "nextRound" => ST_NEXT_ROUND, 
+        ]
     ],
 
 
@@ -185,7 +195,7 @@ $playerActionsGameStates = [
             "actScrapyardChooseCard",
         ],
         "transitions" => [
-            "nextRound" => ST_PLAYER_SEE_END_OF_ROUND,
+            "nextRound" => ST_END_OF_ROUND,
             "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
             "chooseFortuneTellerCard" => ST_PLAYER_CHOOSE_FORTUNE_TELLER_CARD,
         ]
@@ -288,7 +298,7 @@ $playerActionsGameStates = [
             "interactiveAbilityStep2" => ST_ACTIVATE_PLAYER_FOR_ABILITY,
             "interactiveAbility" => ST_ACTIVATE_PLAYER_FOR_ABILITY, //magistra
             "finishDuel" => ST_FINISH_DUEL,
-            "nextRound" => ST_PLAYER_SEE_END_OF_ROUND, //djinn power copied with magistra
+            "nextRound" => ST_END_OF_ROUND, //djinn power copied with magistra
         ]
     ],
 

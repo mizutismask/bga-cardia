@@ -928,7 +928,6 @@ trait StateTrait {
         }
 
         //handle mechanical djinn if in play
-        $duels = $this->cardManager->getDuelsList();
         $duelNumber = $this->globals->get(GLB_DUEL_COUNT);
         foreach ($this->getPlayers() as $playerId => $players) {
             if ($djinn = $this->isActiveCardInPlay(MECHANICAL_DJINN, $playerId)) {
@@ -1138,6 +1137,14 @@ trait StateTrait {
             }
         }
         return $winner;
+    }
+
+    function stEndOfRound() {
+        if ($this->hasReachedEndOfGameRequirements()) {
+            $this->gamestate->nextState('nextRound');
+        } else {
+            $this->gamestate->nextState('seeEndOfRound');
+        }
     }
 
     function stNextRound() {

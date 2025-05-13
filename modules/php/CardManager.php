@@ -159,7 +159,7 @@ class CardManager extends DeckManager {
     }
 
     function getDuelsList() {
-        $cards = $this->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
+        $cards = $this->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER, null, "card_location_arg");
         $duels = [];
         foreach ($cards as $card) {
             $duels[$card->location_arg][$this->game->getPlayerIdFromPosition($card->type_arg)] = $card;

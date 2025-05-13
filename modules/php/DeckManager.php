@@ -90,8 +90,8 @@ class DeckManager extends \APP_DbObject {
         return $this->cast($this->deck->getCardsInLocation("deck"));
     }
 
-    public function getCardsInLocation(string $location, ?int $locationArg = null) {
-        return $this->cast($this->deck->getCardsInLocation($location, $locationArg));
+    public function getCardsInLocation(string $location, ?int $locationArg = null, ?string $orderBy=null) {
+        return $this->cast($this->deck->getCardsInLocation($location, $locationArg, $orderBy));
     }
 
     public function getCardsOfTypeArgFromLocation(string $tableName, int $typeArg, string $location) {
