@@ -146,7 +146,7 @@ trait ActionTrait {
                 $card = $this->cardManager->getCard($cardId);
                 $this->userAssertTrue(_("this card does not exist"), $card);
                 $cards[] = $card;
-                $this->dump('*******************actInteractiveAbility on ', $card->name);
+                //$this->dump('*******************actInteractiveAbility on ', $card->name);
             }
         }
         $this->globals->set(GLB_SELECTED_CARD_ID, $cardIds);
@@ -200,7 +200,7 @@ trait ActionTrait {
                 $card = $this->cardManager->getCard($cardId);
                 $this->userAssertTrue(_("this card does not exist"), $card);
                 $cards[] = $card;
-                $this->dump('*******************actInteractiveAbilityStep2 on ', $card->name);
+                //$this->dump('*******************actInteractiveAbilityStep2 on ', $card->name);
             }
         }
         $this->globals->set(GLB_SELECTED_CARD_ID, $cardIds);

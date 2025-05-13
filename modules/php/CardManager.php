@@ -68,7 +68,7 @@ class CardManager extends DeckManager {
     }
 
     public function reorderDuels($encounter) {
-        $this->game->dump('*******************reorderDuels', $encounter);
+        //$this->game->dump('*******************reorderDuels', $encounter);
         $query = new QueryBuilder(TABLE_CARD);
         $query->where("card_location", "=", MATERIAL_LOCATION_ENCOUNTER)
             ->where("card_location_arg", ">", $encounter)

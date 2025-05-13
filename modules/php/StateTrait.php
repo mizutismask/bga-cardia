@@ -119,7 +119,7 @@ trait StateTrait {
         }
 
         if (!$eval["interrupt"]) {
-            $this->dump('*******************stDuelReveal', $stateTransition);
+            //$this->dump('*******************stDuelReveal', $stateTransition);
             $this->gamestate->nextState($stateTransition);
         }
     }
@@ -256,9 +256,9 @@ trait StateTrait {
         $players = $this->loadPlayersBasicInfos();
         $withEnoughSuccessiveWins = [];
         foreach ($players as $playerId => $player) {
-            $this->dump('*******************$playerId', $playerId);
+            //$this->dump('*******************$playerId', $playerId);
             $cards = $this->cardManager->getCardsOfTypeArgFromLocationOrderBy(TABLE_CARD, $player["player_no"], MATERIAL_LOCATION_ENCOUNTER, "card_location_arg");
-            $this->dump('*******************$cards', $cards);
+            //$this->dump('*******************$cards', $cards);
             //check if player has 3 successive cards with signets looping through cards
             if (count($cards) < $minimumWins) {
                 continue;
@@ -276,12 +276,12 @@ trait StateTrait {
                 }
                 if ($successiveWins == $minimumWins) {
                     $withEnoughSuccessiveWins[] = $playerId;
-                    $this->dump('*******************adding', $playerId);
+                    //$this->dump('*******************adding', $playerId);
                     break;  // Add this break to stop checking more cards once we've found enough successive wins
                 }
             }
         }
-        $this->dump('*******************$withEnoughSuccessiveWins', $withEnoughSuccessiveWins);
+        //$this->dump('*******************$withEnoughSuccessiveWins', $withEnoughSuccessiveWins);
         return $withEnoughSuccessiveWins;
     }
 
@@ -310,9 +310,9 @@ trait StateTrait {
     }
 
     function copyAbility(CardiaCard &$card, int $abilityToCopy) {
-        $this->dump('*******************ability copied from ', $card->name);
+        //$this->dump('*******************ability copied from ', $card->name);
         $cardInfo = $this->CARDIA_CARDS[$abilityToCopy];
-        $this->dump('*******************ability copied to ', $cardInfo->name);
+        //$this->dump('*******************ability copied to ', $cardInfo->name);
         $card->type = $abilityToCopy;
         $card->name = clienttranslate("{$card->name} copying {$cardInfo->name}");
     }
@@ -321,8 +321,8 @@ trait StateTrait {
         $card = $this->getAbilityToResolve();
 
         $possible = $this->isAbilityPossible($card, $this->getPlayerIdFromPosition($card->type_arg), null);
-        $this->dump('*******************isAbilityNeedingInteraction', $this->isAbilityNeedingInteraction($card));
-        $this->dump('*******************isAbilityPossible', $possible);
+        //$this->dump('*******************isAbilityNeedingInteraction', $this->isAbilityNeedingInteraction($card));
+        //$this->dump('*******************isAbilityPossible', $possible);
         if ($this->isAbilityNeedingInteraction($card)) {
 
             if ($possible) {
@@ -404,7 +404,7 @@ trait StateTrait {
             'cardName' => $ability->name,
             'location' => false,
         ]);
-        $this->dump('*******************applyAbility', $ability->name);
+        //$this->dump('*******************applyAbility', $ability->name);
 
         if ($ability->powerType == PowerType::ONGOING) {
             $this->tokenManager->addOngoingTokenOnCard($ability->id);
@@ -555,7 +555,7 @@ trait StateTrait {
                 unset($tied[$duelNumber]);
             }
         }
-        $this->dump('*******************getTiedDuels', $tied);
+        //$this->dump('*******************getTiedDuels', $tied);
         return $tied;
     }
 
@@ -585,7 +585,7 @@ trait StateTrait {
                 unset($tied[$duelNumber]);
             }
         }
-        $this->dump('*******************getTiedDuelsOnValues', $tied);
+        //$this->dump('*******************getTiedDuelsOnValues', $tied);
         return $tied;
     }
 
@@ -606,9 +606,9 @@ trait StateTrait {
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
             'cardName' => $interactiveAbility->name,
         ]);
-        $this->dump('*******************applyInteractiveAbility', $interactiveAbility->name);
+        //$this->dump('*******************applyInteractiveAbility', $interactiveAbility->name);
         foreach ($cards as $card) {
-            $this->dump('*******************on', $card?->name);
+           // $this->dump('*******************on', $card?->name);
         }
 
         $opponentTypeArg = $interactiveAbility->type_arg == 1 ? 2 : 1;
@@ -885,8 +885,8 @@ trait StateTrait {
             }
         }
 
-        $this->dump('*************card**', $card->name);
-        $this->dump('*************final value**', $value);
+        //$this->dump('*************card**', $card->name);
+        //$this->dump('*************final value**', $value);
         return $value;
     }
 
@@ -1011,7 +1011,7 @@ trait StateTrait {
             $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('Everyone looses, end of round'), "type" => "NEGATIVE", "temporary" => true,]);
         }
 
-        $this->dump('*******************winners', $winners);
+        //$this->dump('*******************winners', $winners);
         $nextState = $winners || $everyoneLooses ? 'nextRound' : 'chooseDuelCard';
 
         if ($winners) {
@@ -1076,7 +1076,7 @@ trait StateTrait {
 
         //filter players with at least 5 signets
         $playersWith5Signets = array_filter($signetCounts, fn($count) => $count >= 5);
-        $this->dump('*******************playersWith5Signets', $playersWith5Signets);
+        //$this->dump('*******************playersWith5Signets', $playersWith5Signets);
 
         //check if several players have the maximum signets count
         $maxSignetsCount = max($signetCounts);
@@ -1099,7 +1099,7 @@ trait StateTrait {
             }
         }
 
-        $this->dump('*******************signetCountWinner', $winner);
+        //$this->dump('*******************signetCountWinner', $winner);
         return $winner;
     }
 
