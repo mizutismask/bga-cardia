@@ -110,6 +110,12 @@ trait ActionTrait {
         $this->notifyPlayer($playerId, "materialMove",  "", $notifArgs);
         $this->notifyCounterChange();
 
+        $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId, 0);
+        if ($modifierToAdd != 0) {
+            $this->cardManager->incCardModifier($card, $modifierToAdd);
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
+        }
+
         if ($this->gamestate->state()["name"] == "chooseFortuneTellerCard") {
             $this->notifyPlayer($this->getOpponentId($playerId), "materialMove",  "", $notifArgs);
             $this->gamestate->nextState('opponentChooseCard');

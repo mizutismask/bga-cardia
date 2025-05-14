@@ -42,12 +42,6 @@ trait StateTrait {
             $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
             $cards[] = $this->cardManager->playCard($card, $playerId, $duelCount);
 
-            $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId, 0);
-            if ($modifierToAdd != 0) {
-                $this->cardManager->incCardModifier($card, $modifierToAdd);
-                $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
-            }
-
             if ($this->getScenery() == AUCTION_HOUSE) {
                 $revealedCardValue = $this->getCardValue($card, true);
                 $duels = $this->cardManager->getDuelsList();
