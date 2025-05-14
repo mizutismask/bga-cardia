@@ -38,13 +38,18 @@ class CardManager extends DeckManager {
 
     public function replenishHands() {
         if (isset($this->castParameters["location"]) && $this->castParameters["location"] == BAZAAR) {
-            $this->game->$this->notifyLocationPower();
+
             $players = $this->game->loadPlayersBasicInfos();
+            $cardsAdded = false;
             foreach ($players as $playerId => $player) {
                 $cardsCount = count($this->getCardsOfTypeArgFromLocation(TABLE_CARD, $player["player_no"], MATERIAL_LOCATION_HAND));
                 if ($cardsCount <= 1) {
                     $this->addCardsToHand(4, $playerId, $player["player_no"], true);
+                    $cardsAdded = true;
                 }
+            }
+            if ($cardsAdded) {
+                $this->game->notifyLocationPower();
             }
             $this->game->notifyCounterChange();
         }
@@ -178,10 +183,10 @@ class CardManager extends DeckManager {
         return $this->castSingle(reset($cards), true);
     }
 
-    function discardTopOfDeck(int $playerId, int $playerPosition, string $message=null, array $msgArgs=[]) {
+    function discardTopOfDeck(int $playerId, int $playerPosition, string $message = null, array $msgArgs = []) {
         $top = $this->getCastedTopOfLocationForTypeArg(MATERIAL_LOCATION_DECK, $playerPosition);
         if ($top) {
-            $this->discardCard($playerId, $top->id, $message?? clienttranslate('${player_name} discards ${cardName}'), array_merge ($msgArgs, ["cardName" => $top->name, "playerId" => $playerId]));
+            $this->discardCard($playerId, $top->id, $message ?? clienttranslate('${player_name} discards ${cardName}'), array_merge($msgArgs, ["cardName" => $top->name, "playerId" => $playerId]));
         } else {
             $this->game->notifyWithName("msg",  clienttranslate('${player_name} has no card in deck to discard'), [
                 'playerId' => $playerId,
