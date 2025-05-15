@@ -29,10 +29,10 @@ trait StateTrait {
         $card = null;
         if ($this->getScenery() == FOGGY_SWAMP) {
             $duelCount = $this->globals->get(GLB_DUEL_COUNT);
-            $this->dump('*****************getCardToReveal **duelCount', $duelCount);
+            //$this->dump('*****************getCardToReveal **duelCount', $duelCount);
             if ($duelCount > 1) {
                 $duels = $this->cardManager->getDuelsList();
-                $this->dump('*******************duels', $duels);
+                //$this->dump('*******************duels', $duels);
                 $card = $duels[$duelCount - 1][$playerId];
             }
         } else {
@@ -45,8 +45,8 @@ trait StateTrait {
         $cards = [];
         $duels = $this->cardManager->getDuelsList();
         $duelCount = $this->globals->get(GLB_DUEL_COUNT);
-        $this->dump('*****************getCardSSSSToReveal **duelCount', $duelCount);
-        $this->dump('*******************duels', $duels);
+        //$this->dump('*****************getCardSSSSToReveal **duelCount', $duelCount);
+        //$this->dump('*******************duels', $duels);
         if ($this->getScenery() == FOGGY_SWAMP) {
             if ($duelCount > 1) {
                 $cards = array_values($duels[$duelCount - 1]);
@@ -126,7 +126,9 @@ trait StateTrait {
                 $card = $this->getCardToReveal($playerId);
                 if ($card) {
                     $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, 0);
-                    if ($modifierToAdd) {
+                    if (($modifierToAdd && $this->getScenery() != FOGGY_SWAMP)
+                        || ($modifierToAdd && $this->getScenery() == FOGGY_SWAMP && $this->globals->has(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId) && $this->globals->inc(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId, -1) == 0)
+                    ) {
                         $this->gamestate->changeActivePlayer($playerId);
                         $stateTransition = "librarianAbility";
                     }
@@ -440,7 +442,7 @@ trait StateTrait {
             'cardName' => $ability->name,
             'location' => false,
         ]);
-        //$this->dump('*******************applyAbility', $ability->name);
+        $this->dump('*******************applyAbility', $ability->name);
 
         if ($ability->powerType == PowerType::ONGOING) {
             $this->tokenManager->addOngoingTokenOnCard($ability->id);
@@ -561,6 +563,11 @@ trait StateTrait {
                 break;
             case LIBRARIAN:
                 $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, true);
+                if ($this->getScenery() == FOGGY_SWAMP) {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId, 2); //one reveal to wait
+                } else {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId, 1); //on next reveal
+                }
                 break;
         }
         return $winnersIfAny;
@@ -1224,6 +1231,7 @@ trait StateTrait {
 
         foreach ($this->getPlayersIds() as $playerId) {
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
             $this->globals->delete(GLB_LAST_CHOSEN_CARD . $playerId);
         }

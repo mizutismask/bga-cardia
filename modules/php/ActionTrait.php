@@ -93,10 +93,10 @@ trait ActionTrait {
     }
 
     function chooseDuelCard(int $playerId, CardiaCard $card) {
-        //$this->globals->set(GLB_LAST_CHOSEN_CARD . "_" . $playerId, json_encode($card));
-
+        
         $duelCount = $this->globals->get(GLB_DUEL_COUNT);
         $refreshedCard = $this->cardManager->playCard($card, $playerId, $duelCount, true);
+        $this->globals->set(GLB_LAST_CHOSEN_CARD . "_" . $playerId, json_encode($refreshedCard));
 
         $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId, 0);
         if ($modifierToAdd != 0) {
@@ -249,10 +249,10 @@ trait ActionTrait {
 
     function chooseLibrarianModifier(int $modifierValue) {
         $playerId = $this->getMostlyActivePlayerId();
-        $duels = $this->cardManager->getDuelsList();
-        $card = $duels[count($duels)][$playerId];
+        $card = $this->getCardToReveal($playerId);
         $this->cardManager->incCardModifier($card, $modifierValue);
         $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
+        $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId);
         $this->gamestate->nextState("evaluateDuel");
     }
 
