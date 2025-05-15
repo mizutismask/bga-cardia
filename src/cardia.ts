@@ -1207,6 +1207,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private notif_cardMove(cards: CardiaCard[], notif: Notif<NotifMaterialMove>) {
 		const card = cards.at(0)
+		
 		switch (notif.args.to) {
 			case 'discard':
 				this.discards[notif.args.toArg].addCard(card, {
@@ -1263,7 +1264,8 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 		stock.addCard(card, {
 			fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`)
-		})
+		}).then(() => { this.cardsManager.updateCardInformations(card)})//flip the card if needed
+		
 
 		if (!removeTempModifiers) {
 			//convert to final modifier

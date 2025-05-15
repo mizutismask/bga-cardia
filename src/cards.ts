@@ -17,18 +17,18 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 				const tokensId = `${super.getId(card)}-tokens`
 				div.id = `${super.getId(card)}-front`
 
-				//add help
+				//add help and update it regarding the card side
 				const helpId = `${super.getId(card)}-front-info`
+				const tooltipContent = this.getTooltip(card)
 				if (!$(helpId)) {
 					const info: HTMLDivElement = document.createElement('div')
 					info.id = helpId
 					info.innerText = '?'
 					info.classList.add('css-icon', 'card-info')
 					div.appendChild(info)
-					const tooltipContent = this.getTooltip(card)
-					;(this.game as any).addTooltipHtml(div.id, tooltipContent)
 					this.game.addTooltipOnClickHelpButton(info.id, tooltipContent)
 				}
+				;(this.game as any).addTooltipHtml(div.id, tooltipContent)
 
 				//adds tokens locations
 				if (!$(tokensId)) {
@@ -56,12 +56,7 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 			},
 
 			setupBackDiv: (card: CardiaCard, div: HTMLElement) => {
-				this.setBackBackground(
-					div as HTMLDivElement,
-					card.type_arg,
-					`${g_gamethemeurl}img/deckBacks.jpg`,
-					2
-				)
+				this.setBackBackground(div as HTMLDivElement, card.type_arg, `${g_gamethemeurl}img/deckBacks.jpg`, 2)
 			}
 		})
 	}

@@ -146,17 +146,29 @@ class CardManager extends DeckManager {
         ));
     }
 
-    public function playCard(CardiaCard $card, int $playerId, int $duelCount): object|null {
+    public function playCard(CardiaCard $card, int $playerId, int $duelCount, bool $secretInfo = false): object|null {
         $this->deck->moveCard($card->id, MATERIAL_LOCATION_ENCOUNTER, $duelCount);
         $refreshedCard = $this->castSingle($this->deck->getCard($card->id));
-        $this->game->notifyWithName("materialMove",  clienttranslate('${player_name} plays ${cardName}'), [
+        $this->game->notify->player($playerId, "materialMove", clienttranslate('You play ${cardName}'), [
             'playerId' => $playerId,
+            'player_name' => $this->game->getPlayerName($playerId),
             'type' => $this->materialType,
             'from' => MATERIAL_LOCATION_HAND,
             'to' => MATERIAL_LOCATION_ENCOUNTER,
             'toArg' => $duelCount,
             'material' => [$refreshedCard],
-            'cardName' => $card->name,
+            'cardName' =>  $card->name,
+            'i18n' => ['cardName'],
+        ]);
+
+        $this->game->notify->player($this->game->getOpponentId($playerId), "materialMove",  $secretInfo ? "" : clienttranslate('${player_name} plays ${cardName}'), [
+            'playerId' => $playerId,
+            'type' => $this->materialType,
+            'from' => MATERIAL_LOCATION_HAND,
+            'to' => MATERIAL_LOCATION_ENCOUNTER,
+            'toArg' => $duelCount,
+            'material' => [$secretInfo ? CardiaCard::stripSecretInfo($refreshedCard) : $refreshedCard],
+            'cardName' =>  $secretInfo ? "" : $card->name,
             'i18n' => ['cardName'],
         ]);
         $this->game->notifyCounterChange();

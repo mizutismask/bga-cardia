@@ -170,6 +170,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "duelReveal" => ST_DUEL_REVEAL,
+            "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
         ]
     ],
 
