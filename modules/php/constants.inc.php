@@ -17,6 +17,7 @@ const GLB_NEXT_CARD_MODIFIER = 'nextCardModifier';
 const GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL = 'nextCardModifierAfterReveal'; //librarian
 const GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN = 'nextCardModifierAfterRevealCountdown'; //librarian with foggy swamp needs to wait for the second reveal to be applied
 const GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED = 'nextCardModifierAfterAbility';
+const GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN = 'nextCardModifierAfterAbilityRevealCountdown'; //engineer with foggy swamp needs to wait for the second reveal and ability to be applied
 const GLB_STEP_2 = 'step2';
 const GLB_NEXT_STATE_AFTER_SCRAPYARD = 'nextStateAfterScrapyard';
 const GLB_KINESIS_SOURCE_CARD = 'kinesisSourceCard';

@@ -540,6 +540,11 @@ trait StateTrait {
             case ENGINEER:
                 $value = 5;
                 $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId, $value);
+                if ($this->getScenery() == FOGGY_SWAMP) {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, 3); 
+                } else {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, 2);
+                }
                 $this->notifyWithName('nextCardModifier', "", [
                     'value' => $value,
                     'playerId' => $playerId,
@@ -959,10 +964,14 @@ trait StateTrait {
             $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId, 0);
             if ($modifierToAdd != 0) {
                 $playerCard = $this->getCardToReveal($playerId);
-                if ($playerCard->type != ENGINEER && $playerCard->type != ELEMENTAL) {
+                if (
+                    $this->globals->has(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId)
+                    && $this->globals->inc(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, -1) == 0
+                ) {
                     $anyModif = true;
                     $this->cardManager->incCardModifier($playerCard, $modifierToAdd);
                     $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
+                    $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId);
                 }
             }
 
@@ -1233,6 +1242,7 @@ trait StateTrait {
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId);
             $this->globals->delete(GLB_LAST_CHOSEN_CARD . $playerId);
         }
     }
