@@ -128,6 +128,10 @@ trait ArgsTrait {
             $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($ability) {
                 return  $card->id != $ability->id;
             }));
+            //and only cards that are revealed
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) {
+                return $this->cardManager->isCardRevealed($card->id);
+            }));
         } else if ($ability->type == MAGISTRA) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
             //filter to keep only instant power type and value >= this card’s value 
@@ -135,6 +139,11 @@ trait ArgsTrait {
             $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($abilityValue, $ability) {
                 return $card->powerType == PowerType::IMMEDIATE && $card->id != $ability->id && $this->getCardValue($card, true) >= $abilityValue;
             }));
+            //and only cards that are revealed
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) {
+                return $this->cardManager->isCardRevealed($card->id);
+            }));
+           
         } else if ($ability->type == PRODIGY) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
             $selectableCards = array_values(array_filter($selectableCards, function ($card) {
