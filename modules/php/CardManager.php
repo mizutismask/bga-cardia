@@ -86,7 +86,7 @@ class CardManager extends DeckManager {
             'from' => MATERIAL_LOCATION_ENCOUNTER,
             'to' => MATERIAL_LOCATION_ENCOUNTER,
             'material' => $this->cast($moved),
-        ]);
+        ]);//todo fix, cards become visible with foggy swamp
         $this->game->globals->inc(GLB_DUEL_COUNT, -1);
     }
 

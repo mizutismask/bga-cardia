@@ -384,7 +384,7 @@ trait StateTrait {
         } else {
             $winnersIfAny = null;
             if ($possible) {
-                $winnersIfAny = $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
+                $winnersIfAny = $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $card->location_arg);
             } else {
                 $this->notifyWithName('msg', clienttranslate('${cardName} ability impossible to resolve'), [
                     'cardName' => $card->name,
