@@ -396,10 +396,6 @@ class Cardia extends BaseGame implements CardiaGame {
 				this.updateNextCardModifier(Number(p.id), p.playerNo, p.nextCardModifier)
 			}
 		})
-
-		if (this.gamedatas.lastChosenCard) {
-			this.addCardToEncounter(this.gamedatas.lastChosenCard, Object.keys(this.gamedatas.duels).length + 1, false)
-		}
 	}
 
 	private updateModifiers(modifiers: { [cardId: number]: number }) {
