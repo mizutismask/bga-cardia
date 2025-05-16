@@ -175,7 +175,7 @@ class Game extends \Bga\GameFramework\Table {
         $result['turnOrderClockwise'] = true;
         $result['version'] = $this->getGameVersion();
         $result['counters'] = $this->argCounters();
-        $result['duels'] = $this->cardManager->getDuelsList();
+        $result['duels'] = $this->cardManager->getVisibleDuelsList(intval($currentPlayerId));
         $result['signets'] = $this->tokenManager->getSignetsOnCards();
         $result['ongoingTokens'] = $this->tokenManager->getOngoingTokensOnCards();
         $result['modifiers'] = $this->cardManager->getModifiers();

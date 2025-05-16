@@ -70,6 +70,7 @@ trait StateTrait {
 
         foreach ($players as $playerId => $player) {
             $card = $this->getCardToReveal($playerId);
+            $this->cardManager->updateCardRevealed($card->id, true);
 
             $this->notify->all("materialMove", clienttranslate('${player_name} reveals ${cardName}'), [
                 'playerId' => $playerId,

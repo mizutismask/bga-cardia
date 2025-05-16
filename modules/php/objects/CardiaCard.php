@@ -32,7 +32,7 @@ class CardiaCard extends CardiaCardInfo {
         }
     }
 
-    public static function stripSecretInfo(CardiaCard $card): CardiaCard {
+    public static function stripSecretInfo($card): CardiaCard {
         $copy = clone $card;
         $copy->type = 0;
         unset($copy->value);

@@ -85,8 +85,8 @@ class CardManager extends DeckManager {
             'type' => $this->materialType,
             'from' => MATERIAL_LOCATION_ENCOUNTER,
             'to' => MATERIAL_LOCATION_ENCOUNTER,
-            'material' => $this->cast($moved),
-        ]);//todo fix, cards become visible with foggy swamp
+            'material' => $this->stripNotRevealedCards($this->cast($moved)),
+        ]);
         $this->game->globals->inc(GLB_DUEL_COUNT, -1);
     }
 
@@ -272,5 +272,44 @@ class CardManager extends DeckManager {
         $this->deck->shuffle("deck");
         $this->dealHands(notify: true);
         $this->game->notifyCounterChange();
+    }
+
+    function updateCardRevealed(int $cardId, bool $newValue) {
+        $query = new QueryBuilder(TABLE_CARD);
+        $query->update(["card_revealed" => $newValue], $cardId);
+    }
+
+    function isCardRevealed(int $cardId): bool {
+        $query = new QueryBuilder(TABLE_CARD);
+        $revealed = $query->select(["card_revealed"])
+            ->where("card_id", "=", $cardId)
+            ->get(true)["card_revealed"];
+        return boolval($revealed);
+    }
+
+    function getVisibleDuelsList(int $playerId): array {
+        $duels = $this->getDuelsList();
+        foreach ($duels as $num => $duel) {
+            foreach ($duel as $pId => $duelCard) {
+                if ($playerId != $this->game->getPlayerIdFromPosition($duelCard->type_arg)) {
+                    if (!$this->isCardRevealed($duelCard->id)) {
+                        $duels[$num][$pId] = CardiaCard::stripSecretInfo($duelCard);
+                    }
+                }
+            }
+        }
+        return $duels;
+    }
+
+    function stripNotRevealedCards(array $cards): array {
+        $publicCards = [];
+        foreach ($cards as $duelCard) {
+            if ($this->isCardRevealed($duelCard->id)) {
+                $publicCards[] = $duelCard;
+            } else {
+                $publicCards[] = CardiaCard::stripSecretInfo($duelCard);
+            }
+        }
+        return $publicCards;
     }
 }
