@@ -93,22 +93,10 @@ trait ActionTrait {
     }
 
     function chooseDuelCard(int $playerId, CardiaCard $card) {
-        $this->globals->set(GLB_LAST_CHOSEN_CARD . "_" . $playerId, json_encode($card));
-
-        //notify the move to the player as if it was really done, so that he can see his card
-        $duelCount = $this->globals->get(GLB_DUEL_COUNT) + 1;
-        $notifArgs = [
-            'playerId' => $playerId,
-            'type' => MATERIAL_TYPE_CARD,
-            'from' => MATERIAL_LOCATION_HAND,
-            'to' => MATERIAL_LOCATION_ENCOUNTER,
-            'toArg' => $duelCount,
-            'material' => [$this->cardManager->getCard($card->id)],
-            'cardName' => $card->name,
-            'i18n' => ['cardName'],
-        ];
-        $this->notifyPlayer($playerId, "materialMove",  "", $notifArgs);
-        $this->notifyCounterChange();
+        
+        $duelCount = $this->globals->get(GLB_DUEL_COUNT);
+        $refreshedCard = $this->cardManager->playCard($card, $playerId, $duelCount, true);
+        $this->globals->set(GLB_LAST_CHOSEN_CARD . "_" . $playerId, json_encode($refreshedCard));
 
         $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId, 0);
         if ($modifierToAdd != 0) {
@@ -117,10 +105,28 @@ trait ActionTrait {
         }
 
         if ($this->gamestate->state()["name"] == "chooseFortuneTellerCard") {
-            $this->notifyPlayer($this->getOpponentId($playerId), "materialMove",  "", $notifArgs);
+            $this->notifyPlayer($this->getOpponentId($playerId), "materialMove",  "", [
+                'playerId' => $playerId,
+                'type' => MATERIAL_TYPE_CARD,
+                'from' => MATERIAL_LOCATION_HAND,
+                'to' => MATERIAL_LOCATION_ENCOUNTER,
+                'toArg' => $duelCount,
+                'material' => [$refreshedCard],
+                'cardName' => $card->name,
+                'i18n' => ['cardName'],
+            ]);
             $this->gamestate->nextState('opponentChooseCard');
         } else {
-            $this->gamestate->setPlayerNonMultiactive($playerId, '');
+            $nextState = "duelReveal";
+            $this->dump('******************duelCount*', $duelCount);
+            if ($this->getScenery() == FOGGY_SWAMP && $duelCount == 1) {
+                //$this->cardManager->playCard($card, $playerId, $duelCount, true);
+                $nextState = "chooseDuelCard";
+                if ($this->isLastPlayerActive($playerId)) {
+                    $this->globals->inc(GLB_DUEL_COUNT, 1); //no stFinishDuel so we have to increase the duel count
+                }
+            }
+            $this->gamestate->setPlayerNonMultiactive($playerId, $nextState);
         }
     }
 
@@ -243,10 +249,10 @@ trait ActionTrait {
 
     function chooseLibrarianModifier(int $modifierValue) {
         $playerId = $this->getMostlyActivePlayerId();
-        $duels = $this->cardManager->getDuelsList();
-        $card = $duels[count($duels)][$playerId];
+        $card = $this->getCardToReveal($playerId);
         $this->cardManager->incCardModifier($card, $modifierValue);
         $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
+        $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId);
         $this->gamestate->nextState("evaluateDuel");
     }
 

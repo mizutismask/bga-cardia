@@ -23,7 +23,10 @@ trait ArgsTrait {
         $private = [];
         foreach ($this->getPlayersIds() as $playerId) {
             $private[$playerId] = [];
-            $private[$playerId]["blackmailerFaction"] = $this->globals->get(GLB_BLACKMAILER_FACTION . $playerId);
+            $faction = Faction::tryFrom($this->globals->get(GLB_BLACKMAILER_FACTION . $playerId));
+            if ($faction) {
+                $private[$playerId]["blackmailerFaction"] = $this->getColorName($faction);
+            }
         }
 
         return [
@@ -128,6 +131,10 @@ trait ArgsTrait {
             $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($ability) {
                 return  $card->id != $ability->id;
             }));
+            //and only cards that are revealed
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) {
+                return $this->cardManager->isCardRevealed($card->id);
+            }));
         } else if ($ability->type == MAGISTRA) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
             //filter to keep only instant power type and value >= this card’s value 
@@ -135,6 +142,11 @@ trait ArgsTrait {
             $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($abilityValue, $ability) {
                 return $card->powerType == PowerType::IMMEDIATE && $card->id != $ability->id && $this->getCardValue($card, true) >= $abilityValue;
             }));
+            //and only cards that are revealed
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) {
+                return $this->cardManager->isCardRevealed($card->id);
+            }));
+           
         } else if ($ability->type == PRODIGY) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
             $selectableCards = array_values(array_filter($selectableCards, function ($card) {
@@ -143,7 +155,7 @@ trait ArgsTrait {
         } else if ($ability->type == ILLUSIONIST) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
             $duels = $this->cardManager->getDuelsList();
-            $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($ability,$duels) {
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($ability, $duels) {
                 $opposingCard = $this->cardManager->getOpposingCard($card, $duels);
                 return ($this->tokenManager->hasSignet($opposingCard->id)) && $card->id != $ability->id;
             }));
@@ -206,10 +218,17 @@ trait ArgsTrait {
     }
 
     function getCardSelectionQuantity(CardiaCard $card) {
-        if (in_array($card->type, [REVOLUTIONARY, SUCCESSOR])) {
-            return 2;
+        $qty = 1;
+        switch ($card->type) {
+            case REVOLUTIONARY:
+                $this->dump('*******************$this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg, MATERIAL_LOCATION_HAND)',$this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));
+                return min(2,  $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));
+                break;
+            case SUCCESSOR:
+                $qty = 2;
+                break;
         }
-        return 1;
+        return $qty;
     }
 
     function getInteractionTypeStep2(CardiaCard $card): InteractionType {

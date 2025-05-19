@@ -138,7 +138,7 @@ class Game extends \Bga\GameFramework\Table {
     function setupTable($players) {
         $this->setupSharedItems();
         $this->cardManager->dealHands();
-        $this->globals->set(GLB_DUEL_COUNT, 0);
+        $this->globals->set(GLB_DUEL_COUNT, 1);
         $this->globals->set(GLB_ROUND, 1);
         $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
         foreach ($players as $playerId => $player) {
@@ -175,13 +175,10 @@ class Game extends \Bga\GameFramework\Table {
         $result['turnOrderClockwise'] = true;
         $result['version'] = $this->getGameVersion();
         $result['counters'] = $this->argCounters();
-        $result['duels'] = $this->cardManager->getDuelsList();
+        $result['duels'] = $this->cardManager->getVisibleDuelsList(intval($currentPlayerId));
         $result['signets'] = $this->tokenManager->getSignetsOnCards();
         $result['ongoingTokens'] = $this->tokenManager->getOngoingTokensOnCards();
         $result['modifiers'] = $this->cardManager->getModifiers();
-        if ($this->getStateName() == "chooseDuelCard" && !$this->gamestate->isPlayerActive($currentPlayerId)) {
-            $result['lastChosenCard'] = json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $currentPlayerId, ""));
-        }
 
         foreach ($result['players'] as $playerId => &$player) {
             $currentPlayerOrder = intval($player['playerNo']);

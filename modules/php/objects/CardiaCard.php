@@ -22,11 +22,23 @@ class CardiaCard extends CardiaCardInfo {
         array_key_exists('location_arg', $dbCard) ? $this->location_arg = intval($dbCard['location_arg']) : null;
         array_key_exists('type', $dbCard) ? $this->type = intval($dbCard['type']) : null;
         array_key_exists('type_arg', $dbCard) ? $this->type_arg = intval($dbCard['type_arg']) : null;
-        $materialInfo = $additionalParameters["material"];
-        $cardInfo = $materialInfo[$this->type];
-        $this->value = $cardInfo->value;
-        $this->powerType = $cardInfo->powerType;
-        $this->name = $cardInfo->name;
-        $this->faction = $cardInfo->faction;
+        if ($additionalParameters) {
+            $materialInfo = $additionalParameters["material"];
+            $cardInfo = $materialInfo[$this->type];
+            $this->value = $cardInfo->value;
+            $this->powerType = $cardInfo->powerType;
+            $this->name = $cardInfo->name;
+            $this->faction = $cardInfo->faction;
+        }
+    }
+
+    public static function stripSecretInfo($card): CardiaCard {
+        $copy = clone $card;
+        $copy->type = 0;
+        unset($copy->value);
+        unset($copy->powerType);
+        unset($copy->name);
+        unset($copy->faction);
+        return $copy;
     }
 }

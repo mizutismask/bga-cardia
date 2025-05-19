@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `card` (
     `card_location` varchar(20) NOT NULL,
     `card_location_arg` int(11) NOT NULL,
     `card_modifier` TINYINT NOT NULL DEFAULT '0',
+    `card_revealed` boolean NOT NULL DEFAULT false,
     PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 

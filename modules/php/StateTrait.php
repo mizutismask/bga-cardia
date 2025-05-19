@@ -25,23 +25,66 @@ trait StateTrait {
     //////////// Game state actions
     ////////////
 
+    function getCardToReveal(int $playerId): ?CardiaCard {
+        $card = null;
+        if ($this->getScenery() == FOGGY_SWAMP) {
+            $duelCount = $this->globals->get(GLB_DUEL_COUNT);
+            //$this->dump('*****************getCardToReveal **duelCount', $duelCount);
+            if ($duelCount > 1) {
+                $duels = $this->cardManager->getDuelsList();
+                //$this->dump('*******************duels', $duels);
+                $card = $duels[$duelCount - 1][$playerId];
+            }
+        } else {
+            $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
+        }
+        return $card;
+    }
+
+    function getCardsToReveal(): array {
+        $cards = [];
+        $duels = $this->cardManager->getDuelsList();
+        $duelCount = $this->globals->get(GLB_DUEL_COUNT);
+        //$this->dump('*****************getCardSSSSToReveal **duelCount', $duelCount);
+        //$this->dump('*******************duels', $duels);
+        if ($this->getScenery() == FOGGY_SWAMP) {
+            if ($duelCount > 1) {
+                $cards = array_values($duels[$duelCount - 1]);
+            }
+        } else {
+            $cards = array_values($duels[$duelCount]);
+        }
+        return $cards;
+    }
     /*
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
     */
     function stDuelReveal() {
         $players = $this->getPlayers();
-        $duelCount = $this->globals->inc(GLB_DUEL_COUNT, 1);
+        $duelCount = $this->globals->get(GLB_DUEL_COUNT);
         $stateTransition = 'evaluateDuel';
-        $cards = [];
         $immediateLoosers = [];
         $currentRound = $this->globals->get(GLB_ROUND);
         $this->incStat(1, "game_encounters_round_$currentRound");
 
         foreach ($players as $playerId => $player) {
-            $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
-            $cards[] = $this->cardManager->playCard($card, $playerId, $duelCount);
+            $card = $this->getCardToReveal($playerId);
+            $this->cardManager->updateCardRevealed($card->id, true);
 
+            $this->notify->all("materialMove", clienttranslate('${player_name} reveals ${cardName}'), [
+                'playerId' => $playerId,
+                'player_name' => $this->getPlayerName($playerId),
+                'type' => MATERIAL_TYPE_CARD,
+                'from' => MATERIAL_LOCATION_HAND,
+                'to' => MATERIAL_LOCATION_ENCOUNTER,
+                'toArg' => $card->location_arg,
+                'material' => [$card],
+                'cardName' =>  $card->name,
+                'i18n' => ['cardName'],
+            ]);
+
+            $this->dump('******************getCardToReveal*', $card);
             if ($this->getScenery() == AUCTION_HOUSE) {
                 $revealedCardValue = $this->getCardValue($card, true);
                 $duels = $this->cardManager->getDuelsList();
@@ -81,18 +124,21 @@ trait StateTrait {
         } else {
             $players = $this->getPlayers();
             foreach ($players as $playerId => $player) {
-                $card = $this->getCardiaCardFromDb(json_decode($this->globals->get(GLB_LAST_CHOSEN_CARD . "_" . $playerId), true));
+                $card = $this->getCardToReveal($playerId);
+                if ($card) {
+                    $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, 0);
+                    if (($modifierToAdd && $this->getScenery() != FOGGY_SWAMP)
+                        || ($modifierToAdd && $this->getScenery() == FOGGY_SWAMP && $this->globals->has(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId) && $this->globals->inc(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId, -1) == 0)
+                    ) {
+                        $this->gamestate->changeActivePlayer($playerId);
+                        $stateTransition = "librarianAbility";
+                    }
 
-                $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, 0);
-                if ($modifierToAdd) {
-                    $this->gamestate->changeActivePlayer($playerId);
-                    $stateTransition = "librarianAbility";
-                }
-
-                $faction = Faction::tryFrom($this->globals->get(GLB_BLACKMAILER_FACTION . $playerId, 0));
-                if ($faction && $card->faction != $faction) {
-                    $this->gamestate->changeActivePlayer($playerId);
-                    $stateTransition = "blackmailerDiscard";
+                    $faction = Faction::tryFrom($this->globals->get(GLB_BLACKMAILER_FACTION . $playerId, 0));
+                    if ($faction && $card->faction != $faction) {
+                        $this->gamestate->changeActivePlayer($playerId);
+                        $stateTransition = "blackmailerDiscard";
+                    }
                 }
             }
         }
@@ -103,8 +149,7 @@ trait StateTrait {
 
     function stDuelEvaluation() {
         $stateTransition = 'finishDuel';
-        $duels = $this->cardManager->getDuelsList();
-        $cards = array_values($duels[count($duels)]);
+        $cards = $this->getCardsToReveal();
         $eval = $this->evaluateDuelValues($cards);
 
         if ($eval["hasWinner"]) {
@@ -156,6 +201,7 @@ trait StateTrait {
             ]);
 
             $signetOwnerChanged = $this->addSignetOnCard($maxCard->id, $minCard->id);
+            $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
             $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
 
             if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
@@ -340,7 +386,7 @@ trait StateTrait {
         } else {
             $winnersIfAny = null;
             if ($possible) {
-                $winnersIfAny = $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $this->globals->get(GLB_DUEL_COUNT));
+                $winnersIfAny = $this->applyAbility($card, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $card->location_arg);
             } else {
                 $this->notifyWithName('msg', clienttranslate('${cardName} ability impossible to resolve'), [
                     'cardName' => $card->name,
@@ -398,7 +444,7 @@ trait StateTrait {
             'cardName' => $ability->name,
             'location' => false,
         ]);
-        //$this->dump('*******************applyAbility', $ability->name);
+        $this->dump('*******************applyAbility', $ability->name);
 
         if ($ability->powerType == PowerType::ONGOING) {
             $this->tokenManager->addOngoingTokenOnCard($ability->id);
@@ -477,6 +523,7 @@ trait StateTrait {
                 $tied = $this->getTiedDuels($duels);
                 foreach ($tied as $duelNumber => $duel) {
                     $this->tokenManager->addSignetOnCard($duel[$playerId]->id, null);
+                    $this->applyTreasurerAbilityIfNeeded($duel[$playerId], $duelNumber);
                 }
                 break;
             case POISONER:
@@ -496,6 +543,11 @@ trait StateTrait {
             case ENGINEER:
                 $value = 5;
                 $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId, $value);
+                if ($this->getScenery() == FOGGY_SWAMP) {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, 3);
+                } else {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, 2);
+                }
                 $this->notifyWithName('nextCardModifier', "", [
                     'value' => $value,
                     'playerId' => $playerId,
@@ -519,9 +571,28 @@ trait StateTrait {
                 break;
             case LIBRARIAN:
                 $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId, true);
+                if ($this->getScenery() == FOGGY_SWAMP) {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId, 2); //one reveal to wait
+                } else {
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId, 1); //on next reveal
+                }
                 break;
         }
         return $winnersIfAny;
+    }
+
+    function applyTreasurerAbilityIfNeeded(CardiaCard $card, int $duelNumber, ?int $opposingCardId = null) {
+        foreach ($this->getPlayersIds() as $pId) {
+            $treasurer = $this->isActiveCardInPlay(TREASURER, $pId);
+            if ($treasurer && $treasurer->location_arg == $duelNumber + 1) {
+                $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
+                    'ability' => $treasurer,
+                    'cardName' => $treasurer->name,
+                    'location' => false,
+                ]);
+                $this->addSignetOnCard($card->id, $opposingCardId, true);
+            }
+        }
     }
 
     public function addSignetOnCard(int $cardId, ?int $opposingCardId, ?bool $severalPossible = false): bool {
@@ -602,7 +673,7 @@ trait StateTrait {
         ]);
         //$this->dump('*******************applyInteractiveAbility', $interactiveAbility->name);
         foreach ($cards as $card) {
-           // $this->dump('*******************on', $card?->name);
+            // $this->dump('*******************on', $card?->name);
         }
 
         $opponentTypeArg = $interactiveAbility->type_arg == 1 ? 2 : 1;
@@ -905,20 +976,27 @@ trait StateTrait {
 
         //add engineer influence if any
         $duels = $this->cardManager->getDuelsList();
-        $finishingDuel = array_pop($duels);
         $anyModif = false;
         foreach ($this->getPlayers() as $playerId => $players) {
             $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId, 0);
-            if ($modifierToAdd != 0 && $finishingDuel[$playerId]->type != ENGINEER && $finishingDuel[$playerId]->type != ELEMENTAL) {
-                $anyModif = true;
-                $this->cardManager->incCardModifier($finishingDuel[$playerId], $modifierToAdd);
-                $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
+            if ($modifierToAdd != 0) {
+                $playerCard = $this->getCardToReveal($playerId);
+                if (
+                    $this->globals->has(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId)
+                    && $this->globals->inc(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, -1) == 0
+                ) {
+                    $anyModif = true;
+                    $this->cardManager->incCardModifier($playerCard, $modifierToAdd);
+                    $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
+                    $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId);
+                }
             }
 
             $this->giveExtraTime($playerId);
         }
         if ($anyModif) {
-            $this->evaluateDuelValues(array_values($finishingDuel));
+            $evaluatedDuelCards = $this->getCardsToReveal();
+            $this->evaluateDuelValues($evaluatedDuelCards);
         }
 
         //handle mechanical djinn if in play
@@ -1043,6 +1121,7 @@ trait StateTrait {
                 $nextState = 'chooseScrapyardCard';
             }
         }
+        $this->globals->inc(GLB_DUEL_COUNT, 1);
         $this->gamestate->nextState($nextState);
     }
 
@@ -1168,7 +1247,7 @@ trait StateTrait {
     }
 
     function endOfRoundReset() {
-        $this->globals->set(GLB_DUEL_COUNT, 0);
+        $this->globals->set(GLB_DUEL_COUNT, 1);
         $this->globals->inc(GLB_ROUND, 1);
         $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
         $this->globals->delete(GLB_ROUND_WINNERS);
@@ -1178,7 +1257,9 @@ trait StateTrait {
 
         foreach ($this->getPlayersIds() as $playerId) {
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId);
             $this->globals->delete(GLB_LAST_CHOSEN_CARD . $playerId);
         }
     }

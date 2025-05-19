@@ -170,6 +170,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "duelReveal" => ST_DUEL_REVEAL,
+            "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
         ]
     ],
 
@@ -278,7 +279,7 @@ $playerActionsGameStates = [
         "description" . ENVOY => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
         "descriptionmyturn" . ENVOY => clienttranslate('${ability} ability: choose a card to add -3 influence to it, or none to add it to your next card'),
         "description" . REVOLUTIONARY => clienttranslate('${ability} ability: ${actplayer} is choosing a card'),
-        "descriptionmyturn" . REVOLUTIONARY => clienttranslate('${ability} ability: choose 2 cards to discard from your hand'),
+        "descriptionmyturn" . REVOLUTIONARY => clienttranslate('${ability} ability: choose ${qty} card(s) to discard from your hand'),
         "description" . SUCCESSOR => clienttranslate('${ability} ability: ${actplayer} is choosing cards'),
         "descriptionmyturn" . SUCCESSOR => clienttranslate('${ability} ability: choose 2 cards from your hand to keep'),
         "description" . WITCH_KING => clienttranslate('${ability} ability: ${actplayer} is choosing a faction'),

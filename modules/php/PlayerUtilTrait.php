@@ -102,6 +102,10 @@ trait PlayerUtilTrait {
         return $this->getLastPlayer() == $playerId;
     }
 
+    function isLastPlayerActive(int $playerId) {
+        return count($this->gamestate->getActivePlayerList()) == 1 && $this->gamestate->getActivePlayerList()[0] == $playerId;
+    }
+
     function getWinners() {
         $sql = "SELECT player_id FROM player WHERE player_score = (SELECT max(player_score) from player)";
         return $this->getObjectListFromDB($sql, true);
