@@ -43,7 +43,6 @@ interface CardiaCard extends Card {
 interface CardiaPlayer extends Player {
 	playerNo: number
 	cardsCount: number
-	hand: CardiaCard[]
 	discard: CardiaCard[]
 	nextCardModifier: number
 }
@@ -74,6 +73,7 @@ interface CardiaGamedatas {
 	signets: Token[]
 	ongoingTokens: Token[]
 	modifiers: { [cardId: number]: number }
+	hand: CardiaCard[]
 	// Add here variables you set up in getAllDatas
 }
 

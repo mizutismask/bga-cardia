@@ -99,7 +99,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 
 		Object.values(this.gamedatas.playerOrderWorkingWithSpectators).forEach((p) => {
-			this.setupPlayer(this.gamedatas.players[p])
+			this.setupPlayer(this.gamedatas.players[p], p==this.getPlayerId() ? this.gamedatas.hand : [])
 		})
 		this.safeUpdateCounters(this.gamedatas.counters)
 
@@ -175,13 +175,13 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setTooltipToClass('player-turn-order', _('First player'))
 	}
 
-	private setupPlayer(player: CardiaPlayer) {
+	private setupPlayer(player: CardiaPlayer, handCards: CardiaCard[] = []) {
 		document.getElementById(`overall_player_board_${player.id}`).dataset.playerColor = player.color
 		if (this.gameFeatures.showPlayerOrderHints) {
 			this.setupPlayerOrderHints(player)
 		}
 		this.setupMiniPlayerBoard(player)
-		this.playerTables[player.id] = new PlayerTable(this, player)
+		this.playerTables[player.id] = new PlayerTable(this, player, handCards)
 	}
 
 	private setupMiniPlayerBoard(player: CardiaPlayer) {

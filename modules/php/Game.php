@@ -180,12 +180,14 @@ class Game extends \Bga\GameFramework\Table {
         $result['ongoingTokens'] = $this->tokenManager->getOngoingTokensOnCards();
         $result['modifiers'] = $this->cardManager->getModifiers();
 
+        $currentPlayerOrder = intval($result['players'][$currentPlayerId]['playerNo']);
+        $result['hand'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_HAND);
+
         foreach ($result['players'] as $playerId => &$player) {
-            $currentPlayerOrder = intval($player['playerNo']);
-            $player['playerNo'] = $currentPlayerOrder;
-            $player['discard'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_DISCARD);
-            $player['hand'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $currentPlayerOrder, MATERIAL_LOCATION_HAND);
-            $player['signetCount'] = $this->tokenManager->getSignetCount($currentPlayerOrder);
+            $playerOrder = intval($player['playerNo']);
+            $player['playerNo'] = $playerOrder;
+            $player['discard'] = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerOrder, MATERIAL_LOCATION_DISCARD);
+            $player['signetCount'] = $this->tokenManager->getSignetCount($playerOrder);
             $player['nextCardModifier'] = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId);
         }
 

@@ -5,7 +5,7 @@ class PlayerTable {
 	
 	public handStock: LineStock<CardiaCard>
 
-	constructor(private game: CardiaGame, player: CardiaPlayer) {
+	constructor(private game: CardiaGame, player: CardiaPlayer, cards: CardiaCard[]) {
 		const isMyTable = player.id === game.getPlayerId().toString()
 		const ownClass = isMyTable ? 'own' : ''
 		let html = `
@@ -20,13 +20,15 @@ class PlayerTable {
 			<div id="hand-${player.id}" class="nml-player-hand"></div>
         `
 			dojo.place(handHtml, `player-table-${player.id}`, 'first')
-			this.initHand(player)
+			this.initHand(player, cards)
 		}
 	}
 
-	private initHand(player: CardiaPlayer) {
+	private initHand(player: CardiaPlayer, cards: CardiaCard[] = []) {
 		this.handStock = new LineStock<CardiaCard>(this.game.cardsManager, $('hand-' + player.id), {})
 		this.handStock.setSelectionMode('single')
-		this.handStock.addCards(player.hand) //, { originalSide: "back" }, {visible:false}
+		if (cards) {
+			this.handStock.addCards(cards) //, { originalSide: "back" }, {visible:false}
+		}
 	}
 }
