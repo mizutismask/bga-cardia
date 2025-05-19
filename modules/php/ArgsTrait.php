@@ -23,7 +23,10 @@ trait ArgsTrait {
         $private = [];
         foreach ($this->getPlayersIds() as $playerId) {
             $private[$playerId] = [];
-            $private[$playerId]["blackmailerFaction"] = $this->globals->get(GLB_BLACKMAILER_FACTION . $playerId);
+            $faction = Faction::tryFrom($this->globals->get(GLB_BLACKMAILER_FACTION . $playerId));
+            if ($faction) {
+                $private[$playerId]["blackmailerFaction"] = $this->getColorName($faction);
+            }
         }
 
         return [
