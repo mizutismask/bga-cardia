@@ -201,6 +201,7 @@ trait StateTrait {
             ]);
 
             $signetOwnerChanged = $this->addSignetOnCard($maxCard->id, $minCard->id);
+            $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
             $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
 
             if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
@@ -522,6 +523,7 @@ trait StateTrait {
                 $tied = $this->getTiedDuels($duels);
                 foreach ($tied as $duelNumber => $duel) {
                     $this->tokenManager->addSignetOnCard($duel[$playerId]->id, null);
+                    $this->applyTreasurerAbilityIfNeeded($duel[$playerId], $duelNumber);
                 }
                 break;
             case POISONER:
@@ -542,7 +544,7 @@ trait StateTrait {
                 $value = 5;
                 $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId, $value);
                 if ($this->getScenery() == FOGGY_SWAMP) {
-                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, 3); 
+                    $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, 3);
                 } else {
                     $this->globals->set(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, 2);
                 }
@@ -577,6 +579,20 @@ trait StateTrait {
                 break;
         }
         return $winnersIfAny;
+    }
+
+    function applyTreasurerAbilityIfNeeded(CardiaCard $card, int $duelNumber, ?int $opposingCardId = null) {
+        foreach ($this->getPlayersIds() as $pId) {
+            $treasurer = $this->isActiveCardInPlay(TREASURER, $pId);
+            if ($treasurer && $treasurer->location_arg == $duelNumber + 1) {
+                $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
+                    'ability' => $treasurer,
+                    'cardName' => $treasurer->name,
+                    'location' => false,
+                ]);
+                $this->addSignetOnCard($card->id, $opposingCardId, true);
+            }
+        }
     }
 
     public function addSignetOnCard(int $cardId, ?int $opposingCardId, ?bool $severalPossible = false): bool {
