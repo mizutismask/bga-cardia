@@ -229,13 +229,15 @@ trait StateTrait {
                 $judge = $this->isActiveCardInPlay(JUDGE, $playerId);
                 if ($judge) {
                     //$this->dump('*******************judge active for ', $playerId);
-                    $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
-                    $this->addSignetOnCard($myCard->id, null);
-                    $this->notifyWithName('msg', clienttranslate('${ability} ability: ${playerName} wins the encounter'), [
-                        "ability" => $judge->name,
+                    $this->notifyWithName('power', clienttranslate('${abilityName} ability: ${playerName} wins the encounter'), [
+                        "ability" => $judge,
+                        "abilityName" => $judge->name,
                         "playerName" => $this->getPlayerName($playerId),
+                        'location' => false,
                         'i18n' => ['ability']
                     ]);
+                    $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
+                    $this->addSignetOnCard($myCard->id, null);
                 }
             }
         }
