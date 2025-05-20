@@ -904,6 +904,10 @@ trait StateTrait {
                         $signetToRemoveCard = $duel[$this->getPlayerIdFromPosition($card->type_arg)];
                         $this->tokenManager->discardTokenOfTypeOnCard($signetToRemoveCard, TokenType::SIGIL);
                     }
+                    $mediator = $this->isActiveCardInPlay(MEDIATOR, $this->getPlayerIdFromPosition($opposingCard->type_arg));
+                    if ($mediator) {
+                        $this->tokenManager->discardTokenOfTypeOnCard($this->cardManager->getOpposingCard($mediator, $duels), TokenType::SIGIL);
+                    }
                 }
                 break;
             case TREASURER:
