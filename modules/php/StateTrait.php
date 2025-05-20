@@ -524,6 +524,7 @@ trait StateTrait {
                 foreach ($tied as $duelNumber => $duel) {
                     $this->tokenManager->addSignetOnCard($duel[$playerId]->id, null);
                     $this->applyTreasurerAbilityIfNeeded($duel[$playerId], $duelNumber);
+                    $this->addSerpentTempleDiscarder($duel[$playerId]->location_arg, $this->getOpponentId($playerId));
                 }
                 break;
             case POISONER:
@@ -1024,39 +1025,21 @@ trait StateTrait {
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
 
         //apply serpent temple discard
-        $serpentWinners = null;
         if (!$winners) {
             if ($this->getScenery() == SERPENT_TEMPLE) {
                 $discarders = $this->globals->get(GLB_SERPENT_TEMPLE_DISCARDERS);
                 if ($discarders) {
                     $discarderPlayer = array_shift($discarders);
                     if ($discarderPlayer) {
-                        $this->notifyLocationPower();
                         if ($this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($discarderPlayer), MATERIAL_LOCATION_HAND) > 0) {
                             $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, $discarders);
                             $this->gamestate->changeActivePlayer($discarderPlayer);
                             $this->gamestate->nextState("serpentTempleDiscard");
                             return;
                         }
-                        $this->notifyAllPlayers(
-                            'importantMessage',
-                            "",
-                            [
-                                "message" => clienttranslate('Serpent temple: ${player_name} has no card in hand to discard, thus looses the round'),
-                                "type" => "POSITIVE",
-                                "temporary" => true,
-                                "player_name" => $this->getPlayerName($discarderPlayer),
-                            ]
-                        );
-                        //$this->globals->set(GLB_ROUND_WINNERS, [$this->getOpponentId($discarderPlayer)]);
-                        $serpentWinners = [$this->getOpponentId($discarderPlayer)];
                     }
                 }
             }
-        }
-
-        if (!$winners) {
-            $winners = $serpentWinners;
         }
 
         if (!$winners) {
