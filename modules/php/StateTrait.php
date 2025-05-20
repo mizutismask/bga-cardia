@@ -200,9 +200,13 @@ trait StateTrait {
                 //'loosingCard' => $minCard,
             ]);
 
+
+            $wasWinning = count($this->tokenManager->getSignetsOnCard($maxCard->id))>0;
             $signetOwnerChanged = $this->addSignetOnCard($maxCard->id, $minCard->id);
             $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
-            $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
+            if(!$wasWinning){
+                $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
+            }
 
             if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
                 $this->addSignetOnCard($maxCard->id, null, true);
