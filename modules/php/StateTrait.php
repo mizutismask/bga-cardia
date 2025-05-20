@@ -1256,6 +1256,7 @@ trait StateTrait {
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
 
         foreach ($this->getPlayersIds() as $playerId) {
+            $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
