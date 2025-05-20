@@ -201,10 +201,10 @@ trait StateTrait {
             ]);
 
 
-            $wasWinning = count($this->tokenManager->getSignetsOnCard($maxCard->id))>0;
+            $wasWinning = count($this->tokenManager->getSignetsOnCard($maxCard->id)) > 0;
             $signetOwnerChanged = $this->addSignetOnCard($maxCard->id, $minCard->id);
             $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
-            if(!$wasWinning){
+            if (!$wasWinning) {
                 $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
             }
 
@@ -367,6 +367,7 @@ trait StateTrait {
         $card = $this->getAbilityToResolve();
 
         $possible = $this->isAbilityPossible($card, $this->getPlayerIdFromPosition($card->type_arg), null);
+        //$this->dump('*******************stLooserAbility', $card->name);
         //$this->dump('*******************isAbilityNeedingInteraction', $this->isAbilityNeedingInteraction($card));
         //$this->dump('*******************isAbilityPossible', $possible);
         if ($this->isAbilityNeedingInteraction($card)) {
@@ -746,6 +747,7 @@ trait StateTrait {
             case MAGISTRA:
                 $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
                 $this->stLooserAbility();
+                break;
             case ILLUSIONIST:
                 $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
                 $this->stLooserAbility();
