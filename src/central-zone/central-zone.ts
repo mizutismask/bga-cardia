@@ -19,12 +19,14 @@ class CentralZone {
 			this.createDuelStock(parseInt(duelNumber), duel)
 			this.duelCounter++
 		})
-		//creates additional stock in case there are tokens on future cards
-		//this.createDuelStock(null, null)
+		//creates stock to show where the first card is gonna go (helps new players)
+		if (Object.keys(duels).length == 0) {
+			this.createDuelStock(null, null)
+		}
 	}
 
 	private updateCssVariables() {
-		document.documentElement.style.setProperty('--duels-count', this.duelCounter.toString())// Math.max(8,this.duelCounter).toString())
+		document.documentElement.style.setProperty('--duels-count', this.duelCounter.toString()) // Math.max(8,this.duelCounter).toString())
 	}
 
 	public createDuelStock(duelNumber: number, duel: { [playerId: string]: CardiaCard }): string {
@@ -39,10 +41,12 @@ class CentralZone {
 			mapCardToSlot: (card) => `${card.type_arg}`
 		})
 		this.duelStocks[duelId].setSelectionMode('none')
-		this.duelStocks[duelId].onSelectionChange= (selection: Array<CardiaCard>, lastChange: CardiaCard) => {
+		this.duelStocks[duelId].onSelectionChange = (selection: Array<CardiaCard>, lastChange: CardiaCard) => {
 			if (selection) {
 				//deselect all other stocks
-				this.duelStocks.forEach(stock => { if(stock != this.duelStocks[duelId]) stock.unselectAll(true) })
+				this.duelStocks.forEach((stock) => {
+					if (stock != this.duelStocks[duelId]) stock.unselectAll(true)
+				})
 			}
 		}
 		this.updateCssVariables()
