@@ -99,7 +99,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 
 		Object.values(this.gamedatas.playerOrderWorkingWithSpectators).forEach((p) => {
-			this.setupPlayer(this.gamedatas.players[p], p==this.getPlayerId() ? this.gamedatas.hand : [])
+			this.setupPlayer(this.gamedatas.players[p], p == this.getPlayerId() ? this.gamedatas.hand : [])
 		})
 		this.safeUpdateCounters(this.gamedatas.counters)
 
@@ -378,7 +378,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private updateModifierOnElement(element: HTMLElement, modifier: number) {
 		if (element) {
-			element.innerHTML = `${modifier}`
+			element.innerHTML = `${modifier > 0 ? ("+" + modifier) : modifier}`
 			element.dataset.value = `${modifier}`
 			element.classList.remove('positive-modifier', 'negative-modifier')
 			element.classList.add('modifier')
@@ -1203,7 +1203,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private notif_cardMove(cards: CardiaCard[], notif: Notif<NotifMaterialMove>) {
 		const card = cards.at(0)
-		
+
 		switch (notif.args.to) {
 			case 'discard':
 				this.discards[notif.args.toArg].addCard(card, {
@@ -1258,10 +1258,13 @@ class Cardia extends BaseGame implements CardiaGame {
 			//this.centralZone.createDuelStock(null, null) //one to prepare the next
 			stock = this.centralZone.duelStocks[encounterNumber]
 		}
-		stock.addCard(card, {
-			fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`)
-		}).then(() => { this.cardsManager.updateCardInformations(card)})//flip the card if needed
-		
+		stock
+			.addCard(card, {
+				fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`)
+			})
+			.then(() => {
+				this.cardsManager.updateCardInformations(card)
+			}) //flip the card if needed
 
 		if (!removeTempModifiers) {
 			//convert to final modifier

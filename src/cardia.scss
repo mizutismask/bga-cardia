@@ -301,6 +301,13 @@ svg {
 		font-size: 21pt;
 		letter-spacing: -4px;
 	}
+
+	//reduce letter spacing for positive values with 2 digits
+	&[data-value^='1']:not([data-value='1']):not([data-value='2']):not([data-value='3']):not([data-value='4']):not([data-value='5']):not([data-value='6']):not([data-value='7']):not([data-value='8']):not([data-value='9']) {
+		font-size: 21pt;
+		letter-spacing: -4px;
+	}
+	
 }
 .ongoing-icon {
 	background-position: 0 100%;
