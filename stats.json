@@ -36,6 +36,11 @@
         "id": 53,
         "name": "Stolen signets",
         "type": "int"
+      },
+      "game_highest_modifier": {
+        "id": 54,
+        "name": "Highest modifier",
+        "type": "int"
       }
     }
   }

@@ -133,9 +133,15 @@ class CardManager extends DeckManager {
     public function incCardModifier(CardiaCard $card, int $modifier): void {
         $query = new QueryBuilder(TABLE_CARD);
         $query->inc(["card_modifier" => $modifier], $card->id);
+        $updatedModifiers = $this->getModifiers();
         $this->game->notifyAllPlayers("updateModifiers", "", array(
-            'modifiers' => $this->getModifiers(),
+            'modifiers' => $updatedModifiers,
         ));
+        $playerId = $this->game->getPlayerIdFromPosition($card->type_arg);
+        $previousValue = $this->game->getStat("game_highest_modifier", $playerId);
+        if ($previousValue < $modifier) {
+            $this->game->setStat($updatedModifiers[$card->id], "game_highest_modifier", $playerId);
+        }
     }
 
     public function updateCardModifier(CardiaCard $card, int $modifier): void {
@@ -144,6 +150,11 @@ class CardManager extends DeckManager {
         $this->game->notifyAllPlayers("updateModifiers", "", array(
             'modifiers' => $this->getModifiers(),
         ));
+        $playerId = $this->game->getPlayerIdFromPosition($card->type_arg);
+        $previousValue = $this->game->getStat("game_highest_modifier", $playerId);
+        if ($previousValue < $modifier) {
+            $this->game->setStat($modifier, "game_highest_modifier", $playerId);
+        }
     }
 
     public function playCard(CardiaCard $card, int $playerId, int $duelCount, bool $secretInfo = false): object|null {
