@@ -35,7 +35,7 @@ class CentralZone {
 		}
 		dojo.place(`<div id='duel-${duelId}' class="duel-wrapper"></div>`, 'central-zone')
 		this.duelStocks[duelId] = new SlotStock<CardiaCard>(this.game.cardsManager, $('duel-' + duelId), {
-			slotsIds: this.getSlotsWithCurrentPlayerFirst(),
+			slotsIds: this.getSlotsWithCurrentPlayerSecond(),
 			mapCardToSlot: (card) => `${card.type_arg}`
 		})
 		this.duelStocks[duelId].setSelectionMode('none')
@@ -55,10 +55,10 @@ class CentralZone {
 		return 'duel-' + duelId
 	}
 
-	private getSlotsWithCurrentPlayerFirst() {
+	private getSlotsWithCurrentPlayerSecond() {
 		if (this.game.isNotSpectator()) {
 			const myOrder = this.game.getCurrentPlayer().playerNo
-			return [myOrder, myOrder == 1 ? 2 : 1]
+			return [myOrder == 1 ? 2 : 1, myOrder]
 		} else {
 			return [1, 2]
 		}
