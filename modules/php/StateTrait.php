@@ -898,16 +898,21 @@ trait StateTrait {
                 $this->evaluateDuelValues([$card, $opposingCard]);
                 break;
             case JUDGE:
+                //normal ties on numbers 
                 $ties = $this->getTiedDuelsOnValues($duels);
                 if ($ties) {
                     foreach ($ties as $duelNumber => $duel) {
                         $signetToRemoveCard = $duel[$this->getPlayerIdFromPosition($card->type_arg)];
                         $this->tokenManager->discardTokenOfTypeOnCard($signetToRemoveCard, TokenType::SIGIL);
                     }
-                    $mediator = $this->isActiveCardInPlay(MEDIATOR, $this->getPlayerIdFromPosition($opposingCard->type_arg));
-                    if ($mediator) {
-                        $this->tokenManager->discardTokenOfTypeOnCard($this->cardManager->getOpposingCard($mediator, $duels), TokenType::SIGIL);
-                    }
+                }
+                $myMediator = $this->isActiveCardInPlay(MEDIATOR, $this->getPlayerIdFromPosition($card->type_arg));
+                if ($myMediator) {
+                    $this->tokenManager->discardTokenOfTypeOnCard($myMediator, TokenType::SIGIL);
+                }
+                $opponentMediator = $this->isActiveCardInPlay(MEDIATOR, $this->getPlayerIdFromPosition($opposingCard->type_arg));
+                if ($opponentMediator) {
+                    $this->tokenManager->discardTokenOfTypeOnCard($this->cardManager->getOpposingCard($opponentMediator, $duels), TokenType::SIGIL);
                 }
                 break;
             case TREASURER:
