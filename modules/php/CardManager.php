@@ -274,7 +274,7 @@ class CardManager extends DeckManager {
         $this->deck->moveAllCardsInLocation(MATERIAL_LOCATION_ENCOUNTER, MATERIAL_LOCATION_DECK);
 
         $query = new QueryBuilder(TABLE_CARD);
-        $query->update(["card_modifier" => 0]);
+        $query->update(["card_modifier" => 0, "card_revealed" => intval(false)]);
         $query->run();
         $this->game->notifyAllPlayers("updateModifiers", "", array(
             'modifiers' => $this->getModifiers(),
