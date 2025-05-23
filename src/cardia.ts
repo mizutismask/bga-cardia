@@ -378,7 +378,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private updateModifierOnElement(element: HTMLElement, modifier: number) {
 		if (element) {
-			element.innerHTML = `${modifier > 0 ? ("+" + modifier) : modifier}`
+			element.innerHTML = `${modifier > 0 ? '+' + modifier : modifier}`
 			element.dataset.value = `${modifier}`
 			element.classList.remove('positive-modifier', 'negative-modifier')
 			element.classList.add('modifier')
@@ -564,25 +564,27 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private onEnteringInteractiveAbility(args: EnteringInteractiveAbilityArgs) {
 		this.setGamestateDescription(args.abilityCard.type.toString())
-		if (args.interactionType === 'selectCardFromDuels') {
-			/*if (args.prompt) {
+		if ((this as any).isCurrentPlayerActive()) {
+			if (args.interactionType === 'selectCardFromDuels') {
+				/*if (args.prompt) {
 				this.statusBar.setTitle(args.prompt, args)
 			}*/
-			//selection on central zone instead of hand
-			this.centralZone.duelStocks.forEach((stock) => {
-				stock.setSelectionMode('single')
-			})
-			this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode('none')
-			if (args.selectableCards) {
-				this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args['selectableCards'])
-			}
-		} else if (args.interactionType === 'selectCardFromHand') {
-			this.centralZone.duelStocks.forEach((stock) => {
-				stock.setSelectionMode('none')
-			})
-			this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode(args.qty > 1 ? 'multiple' : 'single')
-			if (args.selectableCards) {
-				this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args.selectableCards)
+				//selection on central zone instead of hand
+				this.centralZone.duelStocks.forEach((stock) => {
+					stock.setSelectionMode('single')
+				})
+				this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode('none')
+				if (args.selectableCards) {
+					this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args['selectableCards'])
+				}
+			} else if (args.interactionType === 'selectCardFromHand') {
+				this.centralZone.duelStocks.forEach((stock) => {
+					stock.setSelectionMode('none')
+				})
+				this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode(args.qty > 1 ? 'multiple' : 'single')
+				if (args.selectableCards) {
+					this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args.selectableCards)
+				}
 			}
 		}
 	}
