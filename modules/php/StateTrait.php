@@ -690,17 +690,10 @@ trait StateTrait {
         $card = reset($cards) ?? null;
         switch ($interactiveAbility->type) {
             case PALACE_GUARD:
-                if ($this->isAbilityPossible($interactiveAbility, $opponentId, $faction)) {
-                    //faction has been chosen but the opponent still needs to choose a card
-                    $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $opponentId);
-                    $this->globals->set(GLB_STEP_2, true);
-                    $this->gamestate->nextState('interactiveAbilityStep2');
-                } else {
-                    //add +7 influence
-                    $this->cardManager->incCardModifier($interactiveAbility, 7);
-                    $this->evaluateDuelValues([$interactiveAbility, $this->cardManager->getOpposingCard($interactiveAbility, $this->cardManager->getDuelsList())]);
-                    $this->gamestate->nextState('finishDuel');
-                }
+                //faction has been chosen but the opponent still needs to choose a card
+                $this->globals->set(GLB_PLAYER_TO_ACTIVATE, $opponentId);
+                $this->globals->set(GLB_STEP_2, true);
+                $this->gamestate->nextState('interactiveAbilityStep2');
                 break;
             case INVENTOR:
                 //first selected card gets a +3
@@ -885,7 +878,8 @@ trait StateTrait {
         $cardOwner = $this->getPlayerIdFromPosition($card->type_arg);
         switch ($card->type) {
             case PALACE_GUARD:
-                return !$faction || count($this->cardManager->getFactionCardsInHand($playerToApply, $faction)) > 0;
+                //don’t pass when there are no cards of the required faction, since it’s giving information to the opponent
+                return !$faction;
             case MAGISTRA:
             case SWAMP_GUARDIAN:
             case ILLUSIONIST:
