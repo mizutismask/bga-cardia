@@ -1029,6 +1029,8 @@ trait StateTrait {
             }
         }
 
+        $this->updateMaxSignetsInARow();
+
         //reset data
         $this->globals->delete(GLB_SELECTED_CARD_ID);
         $this->globals->delete(GLB_SELECTED_FACTION);
@@ -1117,6 +1119,35 @@ trait StateTrait {
         }
         $this->globals->inc(GLB_DUEL_COUNT, 1);
         $this->gamestate->nextState($nextState);
+    }
+
+    function updateMaxSignetsInARow() {
+        $playersIds = $this->getPlayers();
+        foreach ($playersIds as $playerId=>$player) {
+            //map signets to their card ids to get encounter number
+            $signets = $this->tokenManager->getSignetsOnPlayerCards($player["player_no"]);
+            $cardIds = array_map(fn($s) => $s->location_arg, $signets);
+            $cards = $this->cardManager->getCards($cardIds);
+            
+            $maxSignetCount = 0;
+            $currentCount = 0;
+            $previousSignet = null;
+            foreach ($signets as $signet) {
+                $signetLocation = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->id == $signet->location_arg))->location_arg;
+                $previousSignetLocation = $previousSignet ? $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->id == $previousSignet->location_arg))->location_arg : -1;
+
+                if ($previousSignet !== null && $signetLocation == $previousSignetLocation + 1) {
+                    $currentCount++;
+                } else {
+                    $currentCount = 1; // restart count on gap
+                }
+                $previousSignet = $signet;
+                $maxSignetCount = max($maxSignetCount, $currentCount);
+            }
+            if ($maxSignetCount > 0) {
+                $this->setStat(max($this->getStat("game_max_signets_in_a_row", $playerId), $maxSignetCount), "game_max_signets_in_a_row", $playerId);
+            }
+        }
     }
 
     function notifyLocationPower() {
@@ -1246,7 +1277,6 @@ trait StateTrait {
         $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
         $this->globals->delete(GLB_ROUND_WINNERS);
         $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
-        $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
 
         foreach ($this->getPlayersIds() as $playerId) {

@@ -387,6 +387,10 @@ class DeckManager extends \APP_DbObject {
         return $this->castSingle($this->deck->getCard($cardId), $optional);
     }
 
+    public function getCards(array $cardIds) {
+        return $this->cast($this->deck->getCards($cardIds), false);
+    }
+
     public function getCardOnLocation(string $location, bool $optional = false) {
         return $this->castSingle($this->getFirstCardInLocation($location), $optional);
     }

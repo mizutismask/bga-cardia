@@ -41,6 +41,11 @@
         "id": 54,
         "name": "Highest modifier",
         "type": "int"
+      },
+      "game_max_signets_in_a_row": {
+        "id": 55,
+        "name": "Max signets in a row",
+        "type": "int"
       }
     }
   }

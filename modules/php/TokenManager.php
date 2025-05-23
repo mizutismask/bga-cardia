@@ -28,7 +28,19 @@ class TokenManager extends DeckManager {
         $tokenType = TokenType::SIGIL->value;
         $tokenTable = TABLE_TOKEN;
         $cardTable = TABLE_CARD;
-        $fields = $this->game->getTypicalTableFields();
+        $fields = [];
+
+        $typicalFields = [
+            'id' => 'token.card_id',
+            'type' => 'token.card_type',
+            'type_arg' => 'token.card_type_arg',
+            'location' => 'token.card_location',
+            'location_arg' => 'token.card_location_arg'
+        ];
+        foreach ($typicalFields as $alias => $col) {
+            $fields[] = "$col AS `$alias`";
+        }
+        $fields = implode(' , ', $fields);
 
         $sql = str_replace(array("\r", "\n"), ' ', "SELECT $fields 
                     FROM $tokenTable as token 
@@ -37,7 +49,7 @@ class TokenManager extends DeckManager {
                     AND token.card_location = 'card' 
                     AND card.card_type_arg = '$playerOrder'
                 ");
-        return $this->deck->getObjectListFromDB($sql);
+        return $this->cast($this->game->getObjectListFromDB($sql));
     }
 
     public function getSignetsOnCards() {
