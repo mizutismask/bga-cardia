@@ -1091,7 +1091,7 @@ class Cardia extends BaseGame implements CardiaGame {
 						animations: [
 							new BgaPauseAnimation({
 								animationClass: 'bounce-top',
-								duration: 1500,
+								duration: 1000,
 								classes: ['cardia-card'],
 								element: this.cardsManager
 									.getCardStock(notif.args.winningCard)
@@ -1112,8 +1112,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				.play(
 					new BgaPauseAnimation({
 						animationClass: 'shake-bottom',
-						delay: 2500,
-						duration: 1500,
+						duration: 800,
 						element: this.cardsManager.getCardStock(notif.args.ability).getCardElement(notif.args.ability)
 					})
 				)
@@ -1125,7 +1124,6 @@ class Cardia extends BaseGame implements CardiaGame {
 				.play(
 					new BgaPauseAnimation({
 						animationClass: 'heartbeat',
-						delay: 2500,
 						duration: 1500,
 						element: location
 					})
