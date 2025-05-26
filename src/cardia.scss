@@ -20,7 +20,7 @@ $CARD_RATIO: list.slash(220, 342);
 //(classic BGA colors) :
 $player-colors: (
 	'blue': '336fb5',
-	'violet': '722889',
+	'violet': '722889'
 );
 
 $main-color: white;
@@ -72,7 +72,7 @@ svg {
 	height: 100%;
 	width: auto;
 }
-#void-area{
+#void-area {
 	display: none;
 }
 
@@ -119,22 +119,22 @@ svg {
 	background-color: $main-color;
 }
 
-#location-hand{
+#location-hand {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	gap: 10px;
 }
 
-#player-tables{
-	margin: auto;/*to center hand*/
+#player-tables {
+	margin: auto; /*to center hand*/
 }
 
 .player_board_location {
 	aspect-ratio: 342/220;
 	@include card-border;
 }
-.location-desktop{
+.location-desktop {
 	@include card-border;
 	max-height: $CARD_HEIGHT;
 	height: 200px;
@@ -314,17 +314,20 @@ svg {
 	}
 
 	/** Reduce space for values under -9 */
-	&[data-value^='-']:not([data-value='-1']):not([data-value='-2']):not([data-value='-3']):not([data-value='-4']):not([data-value='-5']):not([data-value='-6']):not([data-value='-7']):not([data-value='-8']):not([data-value='-9']) {
+	&[data-value^='-']:not([data-value='-1']):not([data-value='-2']):not([data-value='-3']):not([data-value='-4']):not(
+			[data-value='-5']
+		):not([data-value='-6']):not([data-value='-7']):not([data-value='-8']):not([data-value='-9']) {
 		font-size: 21pt;
 		letter-spacing: -4px;
 	}
 
 	//reduce letter spacing for positive values with 2 digits
-	&[data-value^='1']:not([data-value='1']):not([data-value='2']):not([data-value='3']):not([data-value='4']):not([data-value='5']):not([data-value='6']):not([data-value='7']):not([data-value='8']):not([data-value='9']) {
+	&[data-value^='1']:not([data-value='1']):not([data-value='2']):not([data-value='3']):not([data-value='4']):not(
+			[data-value='5']
+		):not([data-value='6']):not([data-value='7']):not([data-value='8']):not([data-value='9']) {
 		font-size: 21pt;
 		letter-spacing: -4px;
 	}
-	
 }
 .ongoing-icon {
 	background-position: 0 100%;
@@ -342,13 +345,14 @@ svg {
 .tokens-location-wrapper {
 	display: grid;
 	grid-template-rows: 20% 34% 40%;
-	gap: 3%;//total of 100%
-    grid-template-columns: 1fr;
+	gap: 3%; //total of 100%
+	grid-template-columns: 1fr;
 	height: 100%;
 	width: 100%;
 	justify-content: center;
 
-	.card-signets, .card-ongoings {
+	.card-signets,
+	.card-ongoings {
 		align-self: center;
 		justify-self: center;
 		width: 100%;
@@ -361,29 +365,30 @@ svg {
 
 	.card-modifiers {
 		align-self: center;
-		justify-self: self-start;
 		width: 100%;
+		display: flex;
+		justify-content: center;
 	}
 }
 
 .faction {
 	background: url('img/factions.png') no-repeat;
-	width: 21px;//28px;
-    height: 21px;//31px;
+	width: 21px; //28px;
+	height: 21px; //31px;
 
-	&.faction-G{
+	&.faction-G {
 		background-size: 400%;
 		background-position: 0 0%;
 	}
-	&.faction-R{
+	&.faction-R {
 		background-size: 400%;
 		background-position: 33% 0%;
 	}
-	&.faction-Y{
+	&.faction-Y {
 		background-size: 400%;
 		background-position: 66% 0%;
 	}
-	&.faction-B{
+	&.faction-B {
 		background-size: 400%;
 		background-position: 100% 0%;
 	}
@@ -394,7 +399,7 @@ svg {
 }
 
 .card .card-sides .card-side {
-	overflow: visible;//fix to allow complete animation of tokens coming into the card
+	overflow: visible; //fix to allow complete animation of tokens coming into the card
 }
 
 .log {
