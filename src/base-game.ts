@@ -50,7 +50,10 @@ abstract class BaseGame {
 		dojo.place(
 			`
 		<div id="custom-game-area">
-			<div id="player-tables"></div>
+			<div id="location-hand">
+				<div id="location-area"></div>
+				<div id="player-tables"></div>
+			</div>
 			<div id="void-area"></div>
 		</div>`,
 			'game_play_area_background',

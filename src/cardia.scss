@@ -119,9 +119,26 @@ svg {
 	background-color: $main-color;
 }
 
+#location-hand{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 10px;
+}
+
+#player-tables{
+	margin: auto;/*to center hand*/
+}
+
 .player_board_location {
 	aspect-ratio: 342/220;
 	@include card-border;
+}
+.location-desktop{
+	@include card-border;
+	max-height: $CARD_HEIGHT;
+	height: 200px;
+	margin-right: auto;
 }
 
 .bga-cards_selected-card {

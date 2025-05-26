@@ -139,26 +139,18 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	public setupLocation() {
-		if (this.gamedatas.location != 0) {
+		if (!this.isTouch && this.gamedatas.location != 0) {
 			dojo.place(
-				`<div class='player_board_location location-${
+				`<div class='player_board_location location-desktop location-${
 					this.gamedatas.location
 				}' id="player_board_location" style="${getBackgroundInlineStyleForLocation(this.gamedatas.location)}">`,
-				'player_boards',
+				`location-area`,
 				'first'
 			)
 			this.setTooltip(
 				'player_board_location',
 				this.gamedatas.locationOptions[this.gamedatas.location].description
 			)
-		}
-	}
-
-	/* @Override */
-	public updatePlayerOrdering() {
-		;(this as any).inherited(arguments)
-		if (this.gamedatas.location != 0) {
-			dojo.place('player_board_location', 'player_boards', 'first')
 		}
 	}
 
@@ -321,16 +313,34 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private setupHelpPopin() {
-		new HelpManager(this, {
-			buttons: [
-				new BgaHelpPopinButton({
-					title: '',
-					html: this.getHelpHtml(),
-					buttonBackground: 'white',
-					buttonColor: '#266059'
+		const buttons: BgaHelpButton[] = [
+			new BgaHelpPopinButton({
+				title: '',
+				html: this.getHelpHtml(),
+				buttonBackground: 'white',
+				buttonColor: '#266059'
+			})
+		]
+
+		if (this.gamedatas.location != 0 && this.isTouch) {
+			buttons.push(
+				new BgaHelpExpandableButton({
+					unfoldedHtml: `<div id="player-help-location-wrapper" class="player_board_location" style="${getBackgroundInlineStyleForLocation(
+						this.gamedatas.location
+					)}">
+											</div>
+											<div style="min-width:240px">${this.gamedatas.locationOptions[this.gamedatas.location].description}</div>
+									`,
+					expandedWidth: '240px',
+					expandedRadius: '3%',
+					foldedContentExtraClasses: 'bga-help_popin-button',
+					foldedHtml: '💀',
+					buttonExtraClasses: 'location-help-button'
 				})
-			]
-		})
+			)
+		}
+
+		new HelpManager(this, { buttons: buttons })
 	}
 
 	private getHelpHtml() {
@@ -1110,13 +1120,14 @@ class Cardia extends BaseGame implements CardiaGame {
 				.then(() => {})
 		}
 		if (notif.args.location) {
+			const location = document.querySelector('.location-help-button') ?? $('player_board_location')
 			return this.animationManager
 				.play(
 					new BgaPauseAnimation({
 						animationClass: 'heartbeat',
 						delay: 2500,
 						duration: 1500,
-						element: $('player_board_location')
+						element: location
 					})
 				)
 				.then(() => {})
