@@ -220,7 +220,7 @@ class DeckManager extends \APP_DbObject {
             'toArg' => $playerId,
             'material' => $this->cast([($this->deck->getCard($cardId))]),
             'i18n' => ['cardName', "ability"],
-            ...$msgParameters,
+            ...$msgParameters, $playerId
         ]);
         $this->game->notifyCounterChange();
     }

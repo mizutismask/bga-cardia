@@ -720,7 +720,7 @@ trait StateTrait {
                 $involvedCards = $this->cardManager->getFactionCardsInHand($opponentId, $faction);
                 if ($involvedCards) {
                     foreach ($involvedCards as $c) {
-                        $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "player_name" => $this->getPlayerName($opponentId)]);
+                        $this->cardManager->discardCard($opponentId, $c->id, clienttranslate('${player_name} discards ${cardName}'), ["cardName" => $c->name, "playerId" => $opponentId]);
                         $this->cardManager->replenishHands();
                     }
                     $this->onCardInHandChange();
