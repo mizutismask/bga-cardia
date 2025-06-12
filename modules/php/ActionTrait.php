@@ -105,6 +105,7 @@ trait ActionTrait {
         }
 
         if ($this->gamestate->state()["name"] == "chooseFortuneTellerCard") {
+            $this->cardManager->updateCardRevealed($card->id, true);
             $this->notifyPlayer($this->getOpponentId($playerId), "materialMove",  "", [
                 'playerId' => $playerId,
                 'type' => MATERIAL_TYPE_CARD,
