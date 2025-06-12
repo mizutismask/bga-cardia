@@ -230,23 +230,7 @@ trait StateTrait {
                 'winnerValue' => $maxCard->modifiedValue,
             ]);
 
-            //check if any or both players have played judge
-            $players = $this->getPlayersIds();
-            foreach ($players as $playerId) {
-                $judge = $this->isActiveCardInPlay(JUDGE, $playerId);
-                if ($judge) {
-                    //$this->dump('*******************judge active for ', $playerId);
-                    $this->notifyWithName('power', clienttranslate('${abilityName} ability: ${playerName} wins the encounter'), [
-                        "ability" => $judge,
-                        "abilityName" => $judge->name,
-                        "playerName" => $this->getPlayerName($playerId),
-                        'location' => false,
-                        'i18n' => ['ability']
-                    ]);
-                    $myCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
-                    $this->addSignetOnCard($myCard->id, null);
-                }
-            }
+            $this->applyJudgeAbilityIfNeeded($cards);
         }
 
         if ($this->array_every($cards, fn($c) => $c->type == COUNSELOR) && $this->hasEveryoneActiveCardInPlay(COUNSELOR)) {
@@ -287,6 +271,26 @@ trait StateTrait {
         $result = ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard, "interrupt" => $interrupt];
 
         return $result;
+    }
+
+    function applyJudgeAbilityIfNeeded($duelCards) {
+        //check if any or both players have played judge
+        $players = $this->getPlayersIds();
+        foreach ($players as $playerId) {
+            $judge = $this->isActiveCardInPlay(JUDGE, $playerId);
+            if ($judge) {
+                //$this->dump('*******************judge active for ', $playerId);
+                $this->notifyWithName('power', clienttranslate('${abilityName} ability: ${playerName} wins the encounter'), [
+                    "ability" => $judge,
+                    "abilityName" => $judge->name,
+                    "playerName" => $this->getPlayerName($playerId),
+                    'location' => false,
+                    'i18n' => ['ability']
+                ]);
+                $myCard = $this->getFirstElementInArray(array_filter($duelCards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
+                $this->addSignetOnCard($myCard->id, null);
+            }
+        }
     }
 
     function addSerpentTempleDiscarder(int $encounterNumber, int $opponentPlayerId) {
@@ -474,6 +478,7 @@ trait StateTrait {
             case MEDIATOR:
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
                 $this->tokenManager->discardTokenOfTypeOnCard($opposing, TokenType::SIGIL);
+                $this->applyJudgeAbilityIfNeeded([$ability, $opposing]);
                 break;
             case SABOTEUR:
                 for ($i = 0; $i < 2; $i++) {
@@ -1131,7 +1136,7 @@ trait StateTrait {
         foreach ($playersIds as $playerId => $player) {
             //map signets to their card ids to get encounter number
             $signets = $this->tokenManager->getSignetsOnPlayerCards($player["player_no"]);
-            $cardIds = array_unique(array_map(fn($s) => $s->location_arg, $signets));//a card can have multiple signets
+            $cardIds = array_unique(array_map(fn($s) => $s->location_arg, $signets)); //a card can have multiple signets
             $cards = $this->cardManager->getCards($cardIds);
 
             $maxSignetCount = 0;
