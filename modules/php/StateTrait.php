@@ -1131,7 +1131,7 @@ trait StateTrait {
         foreach ($playersIds as $playerId => $player) {
             //map signets to their card ids to get encounter number
             $signets = $this->tokenManager->getSignetsOnPlayerCards($player["player_no"]);
-            $cardIds = array_map(fn($s) => $s->location_arg, $signets);
+            $cardIds = array_unique(array_map(fn($s) => $s->location_arg, $signets));//a card can have multiple signets
             $cards = $this->cardManager->getCards($cardIds);
 
             $maxSignetCount = 0;
