@@ -68,6 +68,9 @@ trait StateTrait {
         $currentRound = $this->globals->get(GLB_ROUND);
         $this->incStat(1, "game_encounters_round_$currentRound");
 
+        //pause to let time for the playCard notif to be processed and card to be displayed on the back before revealing it
+        $this->notify->all('simplePause', '', ['time' => 300]);
+
         foreach ($players as $playerId => $player) {
             $card = $this->getCardToReveal($playerId);
             $this->cardManager->updateCardRevealed($card->id, true);
@@ -484,6 +487,7 @@ trait StateTrait {
                     $replacement = $this->getRandomValue($opponentHand);
                     $this->discardDuelCard($opposing,  clienttranslate('${cardName} is replaced by ${cardName2}'), ["cardName" => $opposing->name, "cardName2" => $replacement->name]);
                     $this->cardManager->moveCardToLocation($replacement, $opposing->location, $opposing->location_arg, true, $opponentId);
+                    $this->cardManager->updateCardRevealed($replacement->id, true);
                     $this->evaluateDuelValues([$ability, $replacement]);
                     $this->cardManager->replenishHands();
                 } else {
@@ -1070,6 +1074,7 @@ trait StateTrait {
             } else {
                 if ($withCard && $withCard == -1) {
                     self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
+                    $everyoneLooses = true;
                 }
             }
         }
@@ -1123,12 +1128,12 @@ trait StateTrait {
 
     function updateMaxSignetsInARow() {
         $playersIds = $this->getPlayers();
-        foreach ($playersIds as $playerId=>$player) {
+        foreach ($playersIds as $playerId => $player) {
             //map signets to their card ids to get encounter number
             $signets = $this->tokenManager->getSignetsOnPlayerCards($player["player_no"]);
             $cardIds = array_map(fn($s) => $s->location_arg, $signets);
             $cards = $this->cardManager->getCards($cardIds);
-            
+
             $maxSignetCount = 0;
             $currentCount = 0;
             $previousSignet = null;

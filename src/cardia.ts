@@ -1237,6 +1237,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				}
 				break
 			case 'encounter':
+				log('revealed', card.name, card.type_arg, card.id)
 				if (notif.args.toArg) {
 					//only one encounter is considered
 					this.addCardToEncounter(card, notif.args.toArg)
@@ -1269,23 +1270,26 @@ class Cardia extends BaseGame implements CardiaGame {
 			//this.centralZone.createDuelStock(null, null) //one to prepare the next
 			stock = this.centralZone.duelStocks[encounterNumber]
 		}
-		//log('addCardToEncounter', card.name, encounterNumber, card)
-		stock
-			.addCard(
-				card,
-				{ fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`) },
-				{ updateInformations: false }
-			)
-			.then(
-				(success) => {
-					//log('updateCardInformations success', card.name, success)
-					this.cardsManager.updateCardInformations(card) //flip the card if needed,
-				},
-				(error) => {
-					//log('updateCardInformations error', card.name, error)
-					this.cardsManager.updateCardInformations(card) //flip the card if needed
-				}
-			)
+
+			log('addCardToEncounter', card.name, encounterNumber, card.id)
+			stock
+				.addCard(
+					card,
+					{ fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`) },
+					{ updateInformations: false }
+				)
+				.then(
+					(success) => {
+						log('updateCardInformations success', card.name, card.id, "animation", success)
+						//debugger
+						this.cardsManager.updateCardInformations(card) //flip the card if needed,
+					},
+					(error) => {
+						log('updateCardInformations error', card.name, card.id, "animation", error)
+						//debugger
+						this.cardsManager.updateCardInformations(card) //flip the card if needed
+					}
+				)
 
 		if (!removeTempModifiers) {
 			//convert to final modifier
