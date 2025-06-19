@@ -1223,7 +1223,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				this.updateModifierOnElement($(`cardia-card-${card.id}-modifier-value`), 0)
 				break
 			case 'hand':
-				log('toArg', notif.args.toArg, this.getPlayerId())
+				//log('toArg', notif.args.toArg, this.getPlayerId())
 				if (notif.args.toArg == this.getPlayerId()) {
 					this.playerTables[notif.args.toArg]?.handStock.addCards(cards, {
 						fromElement:
@@ -1237,7 +1237,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				}
 				break
 			case 'encounter':
-				log('revealed', card.name, card.type_arg, card.id)
+				//log('revealed', card.name, card.type_arg, card.id)
 				if (notif.args.toArg) {
 					//only one encounter is considered
 					this.addCardToEncounter(card, notif.args.toArg)
@@ -1271,7 +1271,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			stock = this.centralZone.duelStocks[encounterNumber]
 		}
 
-			log('addCardToEncounter', card.name, encounterNumber, card.id)
+			//log('addCardToEncounter', card.name, encounterNumber, card.id)
 			stock
 				.addCard(
 					card,
@@ -1280,12 +1280,12 @@ class Cardia extends BaseGame implements CardiaGame {
 				)
 				.then(
 					(success) => {
-						log('updateCardInformations success', card.name, card.id, "animation", success)
+						//log('updateCardInformations success', card.name, card.id, "animation", success)
 						//debugger
 						this.cardsManager.updateCardInformations(card) //flip the card if needed,
 					},
 					(error) => {
-						log('updateCardInformations error', card.name, card.id, "animation", error)
+						//log('updateCardInformations error', card.name, card.id, "animation", error)
 						//debugger
 						this.cardsManager.updateCardInformations(card) //flip the card if needed
 					}
