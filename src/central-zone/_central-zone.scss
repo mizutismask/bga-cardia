@@ -29,7 +29,7 @@
 			font-size: xx-large;
 			font-weight: bolder;
 			position: absolute;
-			z-index: 51;//above card z-index during animations
+			z-index: 51; //above card z-index during animations
 			//center horizontally and vertically taking its size into account
 			top: 50%;
 			left: 50%;
@@ -40,6 +40,13 @@
 			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 			box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.3);
 		}
+	}
+}
+
+//no oblique for firefox since it does not center the VS inside the round background properly
+@supports (-moz-appearance: none) {
+	.central-zone .duel-wrapper .vs-icon {
+		font-style: unset;
 	}
 }
 
