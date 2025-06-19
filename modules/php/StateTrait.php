@@ -742,6 +742,7 @@ trait StateTrait {
                 $encounter = $card->location_arg;
                 $opposingCard = $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList());
                 $this->discardDuelCard($opposingCard);
+                $this->tokenManager->discardTokensOnDuelCard($card);
                 $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId);
                 $this->cardManager->reorderDuels($encounter);
                 $this->gamestate->nextState('finishDuel');
