@@ -46,8 +46,9 @@ trait DebugUtilTrait {
     }
 
     function debug_addCardInHand(int $cardType) {
-        $card = $this->cardManager->getCardOfTypeAndTypeArg(TABLE_CARD, $cardType, $this->getMostlyActivePlayerOrder());
-        $this->cardManager->moveCardToPlayerHand($card->id, $this->getMostlyActivePlayerId());
+        $playerId = $this->getCurrentPlayerId();
+        $card = $this->cardManager->getCardOfTypeAndTypeArg(TABLE_CARD, $cardType, $this->getPlayerPosition($playerId));
+        $this->cardManager->moveCardToPlayerHand($card->id, $playerId);
     }
 
 

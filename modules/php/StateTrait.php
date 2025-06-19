@@ -158,6 +158,8 @@ trait StateTrait {
         if ($eval["hasWinner"]) {
             $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
             $stateTransition = 'looserAbility';
+        }else{
+            $this->globals->set(GLB_ABILITY_TO_RESOLVE, null);
         }
 
         if (!$eval["interrupt"]) {
