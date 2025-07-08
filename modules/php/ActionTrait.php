@@ -151,7 +151,7 @@ trait ActionTrait {
         $this->checkVersion($version);
         $this->checkAction('actInteractiveAbility');
         $playerId = $this->getMostlyActivePlayerId();
-        $interactiveAbility = $this->getAbilityToResolve();;
+        $interactiveAbility = $this->getAbilityToResolve();
         $cards = [];
         $this->checkSelectionIsCorrect(Faction::tryFrom($faction), $cardIds);
         if ($cardIds) {
