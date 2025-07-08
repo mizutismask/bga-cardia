@@ -10,27 +10,9 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 				div.classList.add('cardia-card')
 				div.dataset.cardId = '' + card.id
 				div.dataset.cardType = '' + card.type
-			},
-			setupFrontDiv: (card: CardiaCard, div: HTMLElement) => {
-				this.setFrontBackground(div as HTMLDivElement, card.type)
-
-				const tokensId = `${super.getId(card)}-tokens`
-				div.id = `${super.getId(card)}-front`
-
-				//add help and update it regarding the card side
-				const helpId = `${super.getId(card)}-front-info`
-				const tooltipContent = this.getTooltip(card)
-				if (!$(helpId)) {
-					const info: HTMLDivElement = document.createElement('div')
-					info.id = helpId
-					info.innerText = '?'
-					info.classList.add('css-icon', 'card-info')
-					div.appendChild(info)
-					this.game.addTooltipOnClickHelpButton(info.id, tooltipContent)
-				}
-				;(this.game as any).addTooltipHtml(div.id, tooltipContent)
 
 				//adds tokens locations
+				const tokensId = `${super.getId(card)}-tokens`
 				if (!$(tokensId)) {
 					const container: HTMLDivElement = document.createElement('div')
 					container.id = tokensId
@@ -53,6 +35,23 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 					signets.classList.add('card-signets')
 					container.appendChild(signets)
 				}
+			},
+			setupFrontDiv: (card: CardiaCard, div: HTMLElement) => {
+				this.setFrontBackground(div as HTMLDivElement, card.type)
+				div.id = `${super.getId(card)}-front`
+
+				//add help and update it regarding the card side
+				const helpId = `${super.getId(card)}-front-info`
+				const tooltipContent = this.getTooltip(card)
+				if (!$(helpId)) {
+					const info: HTMLDivElement = document.createElement('div')
+					info.id = helpId
+					info.innerText = '?'
+					info.classList.add('css-icon', 'card-info')
+					div.appendChild(info)
+					this.game.addTooltipOnClickHelpButton(info.id, tooltipContent)
+				}
+				;(this.game as any).addTooltipHtml(div.id, tooltipContent)
 			},
 
 			setupBackDiv: (card: CardiaCard, div: HTMLElement) => {

@@ -1260,10 +1260,9 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 	}
 
-	private addCardToEncounter(card: CardiaCard, encounterNumber: number, removeTempModifiers: boolean = true) {
-		if (removeTempModifiers) {
-			dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
-		}
+	private addCardToEncounter(card: CardiaCard, encounterNumber: number) {
+		dojo.query('.temp-modifier').forEach((el) => dojo.destroy(el))
+
 		let stock = this.centralZone.duelStocks[encounterNumber]
 		if (!stock) {
 			this.centralZone.createDuelStock(null, null) //one for the current duel
@@ -1271,35 +1270,24 @@ class Cardia extends BaseGame implements CardiaGame {
 			stock = this.centralZone.duelStocks[encounterNumber]
 		}
 
-			//log('addCardToEncounter', card.name, encounterNumber, card.id)
-			stock
-				.addCard(
-					card,
-					{ fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`) },
-					{ updateInformations: false }
-				)
-				.then(
-					(success) => {
-						//log('updateCardInformations success', card.name, card.id, "animation", success)
-						//debugger
-						this.cardsManager.updateCardInformations(card) //flip the card if needed,
-					},
-					(error) => {
-						//log('updateCardInformations error', card.name, card.id, "animation", error)
-						//debugger
-						this.cardsManager.updateCardInformations(card) //flip the card if needed
-					}
-				)
-
-		if (!removeTempModifiers) {
-			//convert to final modifier
-			const modifierQuery = `#duel-${encounterNumber} .slot[data-slot-id="${card.type_arg}"] .temp-modifier`
-			dojo.query(modifierQuery).forEach((el) => {
-				const modifier = el.dataset.value
-				log(el.dataset)
-				this.updateModifierOnCard(card.id, modifier)
-				dojo.destroy(el)
-			})
-		}
+		//log('addCardToEncounter', card.name, encounterNumber, card.id)
+		stock
+			.addCard(
+				card,
+				{ fromElement: $(`hand-cards-counter-${this.getPlayerIdFromPosition(card.type_arg)}-wrapper`) },
+				{ updateInformations: false }
+			)
+			.then(
+				(success) => {
+					//log('updateCardInformations success', card.name, card.id, "animation", success)
+					//debugger
+					this.cardsManager.updateCardInformations(card) //flip the card if needed,
+				},
+				(error) => {
+					//log('updateCardInformations error', card.name, card.id, "animation", error)
+					//debugger
+					this.cardsManager.updateCardInformations(card) //flip the card if needed
+				}
+			)
 	}
 }
