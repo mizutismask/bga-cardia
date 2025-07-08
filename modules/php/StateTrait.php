@@ -158,7 +158,7 @@ trait StateTrait {
         if ($eval["hasWinner"]) {
             $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
             $stateTransition = 'looserAbility';
-        }else{
+        } else {
             $this->globals->set(GLB_ABILITY_TO_RESOLVE, null);
         }
 
@@ -750,7 +750,8 @@ trait StateTrait {
                 $this->gamestate->nextState('finishDuel');
                 break;
             case MAGISTRA:
-                $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
+                $this->globals->set(GLB_ABILITY_TO_RESOLVE, $interactiveAbility->id);
+                $this->globals->set(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE, $card->type);
                 $this->stLooserAbility();
                 break;
             case ILLUSIONIST:
