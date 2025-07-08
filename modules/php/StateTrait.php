@@ -1290,6 +1290,7 @@ trait StateTrait {
         $this->globals->set(GLB_SERPENT_TEMPLE_DISCARDERS, []);
         $this->globals->delete(GLB_ROUND_WINNERS);
         $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
+        $this->globals->delete(GLB_ABILITY_TO_RESOLVE);
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
 
         foreach ($this->getPlayersIds() as $playerId) {
