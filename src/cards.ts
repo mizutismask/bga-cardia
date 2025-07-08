@@ -62,7 +62,7 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 	}
 
 	public getCardName(card: CardiaCard) {
-		return `<div class="cstm-card-name">${card.name}</div>`
+		return `<div class="cstm-card-name">${_(card.name)}</div>`
 	}
 
 	public getTooltipContent(): TooltipElement[] {
