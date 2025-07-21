@@ -12,6 +12,7 @@
 				"nobeginner ": true
 			}
 		},
+		"level": "major",
 		"default": 1
 	},
 	"102": {
