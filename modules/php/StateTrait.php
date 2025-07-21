@@ -69,7 +69,7 @@ trait StateTrait {
         $this->incStat(1, "game_encounters_round_$currentRound");
 
         //pause to let time for the playCard notif to be processed and card to be displayed on the back before revealing it
-        $this->notify->all('simplePause', '', ['time' => 500]);
+        $this->notify->all('simplePause', '', ['time' => 800]);
 
         foreach ($players as $playerId => $player) {
             $card = $this->getCardToReveal($playerId);
