@@ -53,7 +53,7 @@
 			},
 			"7": {
 				"name": "HAUNTED CATACOMBS 💀💀💀",
-				"description": "If you reveal a card of the same faction as your card in the previous encounter: You immediately lose the game.",
+				"description": "If you reveal a card of the same faction as your card in the previous encounter: You immediately lose the round.",
 				"nobeginner ": true
 			},
 			"8": {
