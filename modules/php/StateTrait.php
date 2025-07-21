@@ -547,7 +547,7 @@ trait StateTrait {
                 break;
             case POISONER:
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
-                $opposingValue = $this->getCardValue($opposing);
+                $opposingValue = $this->getCardValue($opposing, false);
                 $cardValue = $this->getCardValue($ability);
                 //opposingValue - newOpposingModifier = cardValue
                 $newOpposingModifier = $opposingValue - $cardValue;
