@@ -14,7 +14,7 @@ $gameinfos = [
     'game_name' => "Cardia",
 
     // Game publisher (use empty string if there is no publisher)
-    'publisher' => 'Hans in Luck',
+    'publisher' => 'Hans im Glück',
 
     // Url of game publisher website
     'publisher_website' => 'https://www.hans-im-glueck.de/',
