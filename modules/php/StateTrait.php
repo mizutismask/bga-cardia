@@ -153,7 +153,7 @@ trait StateTrait {
     function stDuelEvaluation() {
         $stateTransition = 'finishDuel';
         $cards = $this->getCardsToReveal();
-        $eval = $this->evaluateDuelValues($cards);
+        $eval = $this->evaluateDuelValues($cards, false);
 
         if ($eval["hasWinner"]) {
             $this->globals->set(GLB_ABILITY_TO_RESOLVE, $eval["looser"]->id);
@@ -168,7 +168,7 @@ trait StateTrait {
         }
     }
 
-    function evaluateDuelValues(array $cards) {
+    function evaluateDuelValues(array $cards, $reevaluate = true) {
         $hasWinner = false;
         $maxCard = null;
         $minCard = null;
@@ -188,8 +188,13 @@ trait StateTrait {
                 $minCard = $card;
             }
         }
+        
+        $mediatorTie = false;
+        if ($reevaluate && ($this->isCardGivenRoleActive(MEDIATOR, reset($cards)) || $this->isCardGivenRoleActive(MEDIATOR, end($cards)))) {
+            $mediatorTie = true;
+        }
 
-        if ($minCard->id != $maxCard->id) {
+        if (!$mediatorTie && $minCard->id != $maxCard->id) {
             $hasWinner = true;
             $winningPlayerId = $this->getPlayerIdFromPosition($maxCard->type_arg);
             $loosingPlayerId = $this->getPlayerIdFromPosition($minCard->type_arg);
@@ -228,9 +233,14 @@ trait StateTrait {
                 $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::SIGIL);
             }
 
-            $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
-                'winnerValue' => $maxCard->modifiedValue,
-            ]);
+            if ($mediatorTie) {
+                $this->notifyWithName('msg', clienttranslate('Mediator tie'), []);
+            } else {
+                $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
+                    'winnerValue' => $maxCard->modifiedValue,
+                ]);
+            }
+
 
             $this->applyJudgeAbilityIfNeeded($cards);
         }
@@ -349,6 +359,14 @@ trait StateTrait {
             }
         }
         return $card;
+    }
+
+    function isCardGivenRoleActive(int $cardType, CardiaCard $card): bool {
+        $ret = $card->type == $cardType;
+        if ($ret && $card->powerType == PowerType::ONGOING) {
+            $ret = $this->tokenManager->hasOngoingToken($card->id);
+        }
+        return $ret;
     }
 
     function hasEveryoneActiveCardInPlay(int $cardType): bool {
