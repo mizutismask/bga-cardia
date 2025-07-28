@@ -271,7 +271,6 @@ trait StateTrait {
                 $this->notifyLocationPower();
                 $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
                 $this->globals->set(GLB_ROUND_WINNERS, $finalWinners);
-                $this->stFinishDuel();
                 $interrupt = true;
             }
         }
