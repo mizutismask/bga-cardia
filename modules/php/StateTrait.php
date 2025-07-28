@@ -213,7 +213,9 @@ trait StateTrait {
 
             $wasWinning = count($this->tokenManager->getSignetsOnCard($maxCard->id)) > 0;
             $signetOwnerChanged = $this->addSignetOnCard($maxCard, $minCard);
-            $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
+            if ($signetOwnerChanged) {
+                $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
+            }
             if (!$wasWinning) {
                 $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
             }
