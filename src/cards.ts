@@ -49,8 +49,8 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 					info.innerText = '?'
 					info.classList.add('css-icon', 'card-info')
 					div.appendChild(info)
-					this.game.addTooltipOnClickHelpButton(info.id, tooltipContent)
 				}
+				this.game.addTooltipOnClickHelpButton(helpId, tooltipContent)
 				;(this.game as any).addTooltipHtml(div.id, tooltipContent)
 			},
 
