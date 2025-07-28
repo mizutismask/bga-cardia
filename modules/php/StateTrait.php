@@ -746,8 +746,11 @@ trait StateTrait {
                     $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
                 } else {
                     $tokenCount = $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
-                    //todo reevaluate everything
                     if ($tokenCount > 0) {
+                        $this->notifyWithName('msg', clienttranslate('${player_name} removes an ongoing token from ${cardName}'), [
+                            'cardName' => $card->name,
+                            'i18n' => ['cardName']
+                        ], $playerId);
                         $this->onRemovingOngoingTokenOnCard($card);
                     }
                 }
@@ -982,7 +985,7 @@ trait StateTrait {
 
     function discardDuelCard(CardiaCard $card, $msg = "", $msgArgs = []) {
         $ongoingDiscardedTokens = $this->tokenManager->discardTokensOnDuelCard($card);
-        if($ongoingDiscardedTokens > 0) {
+        if ($ongoingDiscardedTokens > 0) {
             $this->onRemovingOngoingTokenOnCard($card);
         }
         $this->cardManager->discardDuelCard($card);
@@ -1324,7 +1327,7 @@ trait StateTrait {
         $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE);
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
-        
+
         foreach ($this->getPlayersIds() as $playerId) {
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
