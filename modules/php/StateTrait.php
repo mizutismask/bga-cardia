@@ -1314,7 +1314,7 @@ trait StateTrait {
         $this->globals->delete(GLB_ROUND_EVERYONE_LOOSES);
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE);
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
-
+        
         foreach ($this->getPlayersIds() as $playerId) {
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
@@ -1322,6 +1322,7 @@ trait StateTrait {
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId);
             $this->globals->delete(GLB_LAST_CHOSEN_CARD . $playerId);
+            $this->globals->delete(GLB_BLACKMAILER_FACTION . $playerId);
         }
     }
 
