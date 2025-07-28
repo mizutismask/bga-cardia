@@ -188,7 +188,7 @@ trait StateTrait {
                 $minCard = $card;
             }
         }
-        
+
         $mediatorTie = false;
         if ($reevaluate && ($this->isCardGivenRoleActive(MEDIATOR, reset($cards)) || $this->isCardGivenRoleActive(MEDIATOR, end($cards)))) {
             $mediatorTie = true;
@@ -212,19 +212,10 @@ trait StateTrait {
 
 
             $wasWinning = count($this->tokenManager->getSignetsOnCard($maxCard->id)) > 0;
-            $signetOwnerChanged = $this->addSignetOnCard($maxCard->id, $minCard->id);
+            $signetOwnerChanged = $this->addSignetOnCard($maxCard, $minCard);
             $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
             if (!$wasWinning) {
                 $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
-            }
-
-            if ($maxCard->type == ARISTOCRAT && $this->isActiveCardInPlay(ARISTOCRAT, $winningPlayerId)) {
-                $this->addSignetOnCard($maxCard->id, null, true);
-                $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
-                    'ability' => $maxCard,
-                    'cardName' => $maxCard->name,
-                    'location' => false,
-                ]);
             }
         } else {
 
@@ -257,7 +248,7 @@ trait StateTrait {
                     $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg == ($myCard->type_arg == 1 ? 2 : 1)));
                     if ($counselor && $counselor->location_arg == $myCard->location_arg + 1) {
                         $opponentCard = $this->getFirstElementInArray(array_filter($cards, fn($c) => $c->type_arg != $this->getPlayerPosition($playerId)));
-                        $signetOwnerChanged = $this->addSignetOnCard($myCard->id, $opponentCard->id);
+                        $signetOwnerChanged = $this->addSignetOnCard($myCard, $opponentCard);
                         $this->addSerpentTempleDiscarder($myCard->location_arg, $this->getOpponentId($playerId));
                         if ($signetOwnerChanged) {
                             $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
@@ -300,7 +291,7 @@ trait StateTrait {
                     'i18n' => ['ability']
                 ]);
                 $myCard = $this->getFirstElementInArray(array_filter($duelCards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
-                $this->addSignetOnCard($myCard->id, null);
+                $this->addSignetOnCard($myCard, null);
             }
         }
     }
@@ -524,7 +515,7 @@ trait StateTrait {
                 if ($duelNumber > 1) {
                     $winningCard = $this->getWinningCard($duelNumber - 1);
                     if ($winningCard) {
-                        $this->addSignetOnCard($winningCard->id, null, true);
+                        $this->addSignetOnCard($winningCard, null, true);
                     }
                 }
                 break;
@@ -558,7 +549,7 @@ trait StateTrait {
                 $duels = $this->cardManager->getDuelsList();
                 $tied = $this->getTiedDuels($duels);
                 foreach ($tied as $duelNumber => $duel) {
-                    $this->tokenManager->addSignetOnCard($duel[$playerId]->id, null);
+                    $this->tokenManager->addSignetOnCard($duel[$playerId], null);
                     $this->applyTreasurerAbilityIfNeeded($duel[$playerId], $duelNumber);
                     $this->addSerpentTempleDiscarder($duel[$playerId]->location_arg, $this->getOpponentId($playerId));
                 }
@@ -595,7 +586,7 @@ trait StateTrait {
             case COUNSELOR:
                 if ($duelNumber > 1) {
                     $previousDuelCards = $duels[$duelNumber - 1];
-                    $signetOwnerChanged = $this->addSignetOnCard($previousDuelCards[$playerId]->id, $previousDuelCards[$opponentId]->id);
+                    $signetOwnerChanged = $this->addSignetOnCard($previousDuelCards[$playerId], $previousDuelCards[$opponentId]);
                     $this->addSerpentTempleDiscarder($previousDuelCards[$playerId]->location_arg, $opponentId);
                     if ($signetOwnerChanged) {
                         $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
@@ -627,17 +618,26 @@ trait StateTrait {
                     'cardName' => $treasurer->name,
                     'location' => false,
                 ]);
-                $this->addSignetOnCard($card->id, $opposingCardId, true);
+                $this->addSignetOnCard($card, $this->cardManager->getCard($opposingCardId), true);
             }
         }
     }
 
-    public function addSignetOnCard(int $cardId, ?int $opposingCardId, ?bool $severalPossible = false): bool {
-        $signetOwnerChanged = $this->tokenManager->addSignetOnCard($cardId, $opposingCardId, $severalPossible);
+    public function addSignetOnCard(CardiaCard $card, ?CardiaCard $opposingCard, ?bool $severalPossible = false): bool {
+        $signetOwnerChanged = $this->tokenManager->addSignetOnCard($card, $opposingCard, $severalPossible);
         if ($signetOwnerChanged) {
-            $card = $this->cardManager->getCard($cardId);
+            $card = $this->cardManager->getCard($card->id);
             $playerId = $this->getPlayerIdFromPosition($card->type_arg);
             $this->incStat(1, "game_stolen_signets", $playerId);
+        }
+
+        if ($this->isCardGivenRoleActive(ARISTOCRAT, $card)) {
+            $this->tokenManager->addSignetOnCard($card, null, true);
+            $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
+                'ability' => $card,
+                'cardName' => $card->name,
+                'location' => false,
+            ]);
         }
         return $signetOwnerChanged;
     }
