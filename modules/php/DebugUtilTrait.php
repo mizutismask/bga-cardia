@@ -51,6 +51,14 @@ trait DebugUtilTrait {
         $this->cardManager->moveCardToPlayerHand($card->id, $playerId);
     }
 
+    function debug_moveHandToDeck() {
+        $playerId = $this->getCurrentPlayerId();
+        $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($playerId), "hand");
+        foreach ($cards as $card) {
+            $this->cardManager->moveCardToBottomOfDeck($card, $playerId);
+        }
+    }
+
 
     /*function debug_clear() {
         static::DbQuery("DELETE FROM `claimed_routes`");
@@ -63,8 +71,8 @@ trait DebugUtilTrait {
     function endGame() {
         $this->gamestate->nextState("endGame");
     }
-    
-/* Not Needed by default anymore, unless special customization is needed
+
+    /* Not Needed by default anymore, unless special customization is needed
     public function loadBugReportSQL(int $reportId, array $studioPlayers): void {
         $prodPlayers = $this->getObjectListFromDb("SELECT `player_id` FROM `player`", true);
         $prodCount = count($prodPlayers);

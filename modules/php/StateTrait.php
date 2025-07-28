@@ -929,6 +929,8 @@ trait StateTrait {
             case ILLUSIONIST:
             case ELEMENTAL:
                 return !empty($this->getSelectableCards($card, $cardOwner));
+            case REVOLUTIONARY:
+                return !empty($this->getSelectableCards($card, $this->getOpponentId($cardOwner)));
             default:
                 return true;
         }
