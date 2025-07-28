@@ -622,6 +622,7 @@ trait StateTrait {
                     'ability' => $treasurer,
                     'cardName' => $treasurer->name,
                     'location' => false,
+                    'i18n' => ['cardName']
                 ]);
                 $this->addSignetOnCard($card, $this->cardManager->getCard($opposingCardId), true);
             }
@@ -642,6 +643,7 @@ trait StateTrait {
                 'ability' => $card,
                 'cardName' => $card->name,
                 'location' => false,
+                'i18n' => ['cardName']
             ]);
         }
         return $signetOwnerChanged;
@@ -712,6 +714,7 @@ trait StateTrait {
 
         $this->notifyWithName('msg', clienttranslate('${cardName} ability'), [
             'cardName' => $interactiveAbility->name,
+            'i18n' => ["cardName"]
         ]);
         //$this->dump('*******************applyInteractiveAbility', $interactiveAbility->name);
         foreach ($cards as $card) {
@@ -1060,6 +1063,7 @@ trait StateTrait {
                         'ability' => $djinn,
                         'cardName' => $djinn->name,
                         'location' => false,
+                        'i18n' => ['cardName']
                     ]);
                     break;
                 }
