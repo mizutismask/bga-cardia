@@ -14,6 +14,16 @@
         "id": 13,
         "name": "Encounters in round 3",
         "type": "int"
+      },
+      "game_encounters_round_4": {
+        "id": 14,
+        "name": "Encounters in round 4",
+        "type": "int"
+      },
+      "game_encounters_round_5": {
+        "id": 15,
+        "name": "Encounters in round 5",
+        "type": "int"
       }
     },
     "player": {
