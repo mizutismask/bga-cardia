@@ -4,10 +4,12 @@
 		"values": {
 			"1": {
 				"name": "Deck I",
+				"tmdisplay": "Deck I",
 				"description": "Recommended for beginners"
 			},
 			"2": {
 				"name": "Deck II 💀",
+				"tmdisplay": "Deck II 💀",
 				"description": "Advanced deck",
 				"nobeginner ": true
 			}
@@ -20,45 +22,54 @@
 		"values": {
 			"0": {
 				"name": "None",
+				"tmdisplay": "None",
 				"description": "None"
 			},
 			"1": {
 				"name": "SERPENT TEMPLE 💀",
+				"tmdisplay": "SERPENT TEMPLE 💀",
 				"description": "Whenever you win a past encounter: Draw 1 card and your opponent discards 1 card from their hand.",
 				"nobeginner ": true
 			},
 			"2": {
 				"name": "BAZAAR 💀",
+				"tmdisplay": "BAZAAR 💀",
 				"description": "At the end of each round, do not draw cards. Whenever you have 1 card or fewer in hand, immediately draw 4 cards.",
 				"nobeginner ": true
 			},
 			"3": {
 				"name": "FOUNDER'S DAY 💀",
+				"tmdisplay": "FOUNDER'S DAY 💀",
 				"description": "If you ever win 3 successive encounters: You immediately win the game",
 				"nobeginner ": true
 			},
 			"4": {
 				"name": "GRAND LIBRARY 💀💀",
+				"tmdisplay": "GRAND LIBRARY 💀💀",
 				"description": "At the beginning of the game, draw 2 cards from your deck instead of 5. At the end of each round, draw 2 cards instead of 1.",
 				"nobeginner ": true
 			},
 			"5": {
 				"name": "SCRAPYARD 💀💀",
+				"tmdisplay": "SCRAPYARD 💀💀",
 				"description": "At the end of each round, draw 2 cards instead of 1. Then place 1 card from your hand under your deck.",
 				"nobeginner ": true
 			},
 			"6": {
 				"name": "AUCTION HOUSE 💀💀",
+				"tmdisplay": "AUCTION HOUSE 💀💀",
 				"description": "Whenever you reveal a card that has less influence than your card in the previous encounter: Discard the top card of your deck.",
 				"nobeginner ": true
 			},
 			"7": {
 				"name": "HAUNTED CATACOMBS 💀💀💀",
+				"tmdisplay": "HAUNTED CATACOMBS 💀💀💀",
 				"description": "If you reveal a card of the same faction as your card in the previous encounter: You immediately lose the round.",
 				"nobeginner ": true
 			},
 			"8": {
 				"name": "FOGGY SWAMP 💀💀💀",
+				"tmdisplay": "FOGGY SWAMP 💀💀💀",
 				"description": "Do not reveal your cards in the current encounter after placing them. Instead, reveal and resolve the previous encounter. ",
 				"nobeginner ": true
 			}
