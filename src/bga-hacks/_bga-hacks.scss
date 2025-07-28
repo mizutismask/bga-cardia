@@ -83,3 +83,30 @@ $playerQuickNavColor: #cdcec9;
 	}
 }
 */
+
+//to change background color of spectator box before player panels
+.roundedbox.player-board.spectator-mode {
+	.roundedbox_top,
+	.roundedbox_main,
+	.roundedbox_bottom {
+		background-color: rgb(21, 104, 134);
+		.roundedbox_topleft {
+			background-color: inherit;
+		}
+		.roundedbox_topmain {
+			background-color: inherit;
+		}
+		.roundedbox_topright {
+			background-color: inherit;
+		}
+		.roundedbox_bottomleft {
+			background-color: inherit;
+		}
+		.roundedbox_bottommain {
+			background-color: inherit;
+		}
+		.roundedbox_bottomright {
+			background-color: inherit;
+		}
+	}
+}
