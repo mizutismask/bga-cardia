@@ -981,7 +981,10 @@ trait StateTrait {
     }
 
     function discardDuelCard(CardiaCard $card, $msg = "", $msgArgs = []) {
-        $this->tokenManager->discardTokensOnDuelCard($card);
+        $ongoingDiscardedTokens = $this->tokenManager->discardTokensOnDuelCard($card);
+        if($ongoingDiscardedTokens > 0) {
+            $this->onRemovingOngoingTokenOnCard($card);
+        }
         $this->cardManager->discardDuelCard($card);
         $this->notifyWithName('msg', $msg ? $msg : clienttranslate('${cardName} is discarded'), [
             'cardName' => $card->name,

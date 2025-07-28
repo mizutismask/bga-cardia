@@ -152,9 +152,12 @@ class TokenManager extends DeckManager {
         return $count;
     }
 
-    public function discardTokensOnDuelCard(CardiaCard $card) {
+    /**
+     * Returns the number of ongoing tokens discarded from the card.
+     */
+    public function discardTokensOnDuelCard(CardiaCard $card):int {
         $this->discardTokenOfTypeOnCard($card, TokenType::SIGIL);
-        $this->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
+        return $this->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
     }
 
     public function pickInitialActionCards() {
