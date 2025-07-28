@@ -159,7 +159,7 @@ $playerActionsGameStates = [
 
     ST_PLAYER_CHOOSE_DUEL_CARD => [
         "name" => "chooseDuelCard",
-        "description" => clienttranslate('${actplayer} must choose a card for the next encounter'),
+        "description" => clienttranslate('All players must choose a card for the next encounter'),
         "descriptionmyturn" => clienttranslate('${you} must choose a card for the next encounter'),
         "descriptionmyturnBlackmailerAbility" => clienttranslate('${you} must play a ${_private.blackmailerFaction} card or face Blackmailer consequences'),
         "type" => "multipleactiveplayer",
