@@ -154,6 +154,7 @@ trait ActionTrait {
         $interactiveAbility = $this->getAbilityToResolve();
         $cards = [];
         $this->checkSelectionIsCorrect(Faction::tryFrom($faction), $cardIds);
+        //$this->dump('*******************actInteractiveAbility: ', $interactiveAbility);
         if ($cardIds) {
             foreach ($cardIds as $cardId) {
                 $card = $this->cardManager->getCard($cardId);

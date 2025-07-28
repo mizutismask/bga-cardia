@@ -786,6 +786,7 @@ trait StateTrait {
                 break;
             case ILLUSIONIST:
                 $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
+                $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);//fix 177828
                 $this->stLooserAbility();
                 break;
             case PRODIGY:
