@@ -208,6 +208,7 @@ trait StateTrait {
                 'cardName2' => $minCard->name,
                 'winningCard' => $maxCard,
                 //'loosingCard' => $minCard,
+                'i18n' => ["cardName1", "cardName2"],
             ]);
 
 
@@ -256,6 +257,7 @@ trait StateTrait {
                             $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
                                 'cardName1' => $myCard->name,
                                 'cardName2' => $opponentCard->name,
+                                'i18n' => ["cardName1", "cardName2"],
                             ]);
                         }
                     }
@@ -594,6 +596,7 @@ trait StateTrait {
                         $this->notifyWithName('msg', clienttranslate('${cardName1} beats ${cardName2}'), [
                             'cardName1' => $previousDuelCards[$playerId]->name,
                             'cardName2' => $previousDuelCards[$opponentId]->name,
+                            'i18n' => ["cardName1", "cardName2"],
                         ]);
                     }
                     //todo check if other ongoin power
