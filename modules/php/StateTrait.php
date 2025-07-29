@@ -471,6 +471,7 @@ trait StateTrait {
             'ability' => $ability,
             'cardName' => $ability->name,
             'location' => false,
+            'i18n' => ['cardName'],
         ]);
         $this->dump('*******************applyAbility', $ability->name);
 
@@ -1204,6 +1205,7 @@ trait StateTrait {
         $this->notifyWithName('power', clienttranslate('${cardName} effect triggered'), [
             'cardName' => $this->LOCATIONS[$this->getScenery()],
             'location' => true,
+            'i18n' => ['cardName'],
         ]);
     }
 
