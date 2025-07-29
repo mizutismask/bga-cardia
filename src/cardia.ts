@@ -116,6 +116,14 @@ class Cardia extends BaseGame implements CardiaGame {
 		log('Ending game setup')
 	}
 
+	/** @Override to make the current player second instead of first, to match his side of the duel.*/
+	public updatePlayerOrdering() {
+		;(this as any).inherited(arguments)
+		if (this.isNotSpectator()) {
+			dojo.place(`overall_player_board_${this.getPlayerId()}`, 'player_boards', 'last')
+		}
+	}
+
 	public setupDiscards() {
 		dojo.place(`<div id="discards-wrapper"></div>`, `custom-game-area`)
 
