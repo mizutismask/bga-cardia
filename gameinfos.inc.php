@@ -11,7 +11,7 @@
 
 $gameinfos = [
     // Name of the game in English (will serve as the basis for translation)
-    'game_name' => "Cardia",
+    'game_name' => "Duel for Cardia",
 
     // Game publisher (use empty string if there is no publisher)
     'publisher' => 'Hans im Glück',
@@ -76,8 +76,6 @@ $gameinfos = [
 
     // Colors attributed to players
     'player_colors' => ["722889", "336fb5"],
-
-    'db_undo_support' => false,
 
     // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
     // NB: this parameter is used only to flag games supporting this feature; you must use (or not use) reattributeColorsBasedOnPreferences PHP method to actually enable or disable the feature.
