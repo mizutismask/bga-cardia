@@ -89,6 +89,7 @@ trait ArgsTrait {
         $args = [
             'abilityCard' => $ability,
             'interactionType' => $this->getInteractionType($ability),
+            'forDiscardPurpose' => $this->isSelectionForDiscardPurpose($ability),
             ...$promptArgs,
         ];
         if (in_array($args["interactionType"], [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
@@ -215,6 +216,10 @@ trait ArgsTrait {
 
     function isCardSelectionOptional(CardiaCard $card) {
         return in_array($card->type, [PALACE_GUARD, ENVOY]);
+    }
+
+    function isSelectionForDiscardPurpose(CardiaCard $card) {
+        return in_array($card->type, [PALACE_GUARD, REVOLUTIONARY, BLACKMAILER]);
     }
 
     function getCardSelectionQuantity(CardiaCard $card) {

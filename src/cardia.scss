@@ -149,6 +149,23 @@ svg {
 	.card-side {
 		@include card-border;
 	}
+
+	&.discard-purpose {
+		//add a pseudo element with a big red cross almost all over the card
+		position: relative;
+		&:hover::after {
+			content: '';
+			position: absolute;
+			top: 20px;
+			left: 20px;
+			width: calc(100% - 40px);
+			height: calc(100% - 40px);
+			background: linear-gradient(45deg, transparent 47%, #ff6347 48%, #ff0000 50%, #800020 52%, transparent 53%),
+				linear-gradient(-45deg, transparent 47%, #ff6347 48%, #ff0000 50%, #800020 52%, transparent 53%);
+			border-radius: 3%;
+			pointer-events: none;
+		}
+	}
 }
 
 .deck {

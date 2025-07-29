@@ -124,6 +124,7 @@ interface EnteringInteractiveAbilityArgs {
 	optionalSelection?: boolean //cards only
 	qty?: number //cards only
 	selectableCards?: CardiaCard[]
+	forDiscardPurpose?: boolean //cards only
 }
 
 interface NotifPointsArgs {

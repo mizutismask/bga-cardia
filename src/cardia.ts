@@ -147,6 +147,12 @@ class Cardia extends BaseGame implements CardiaGame {
 				`location-area`,
 				'first'
 			)
+			/*
+				if (this.isTouch) { 
+								dojo.place($(`player_board_location`), `discards-wrapper`, 'first')
+							}
+
+			*/
 			this.setTooltip(
 				'player_board_location',
 				this.gamedatas.locationOptions[this.gamedatas.location].description
@@ -502,6 +508,7 @@ class Cardia extends BaseGame implements CardiaGame {
 	//
 	public onEnteringState(stateName: string, args: any) {
 		log('Entering state: ' + stateName, args)
+		removeClass('discard-purpose')
 
 		switch (stateName) {
 			case 'chooseAction':
@@ -558,11 +565,17 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	private onEnteringScrapyardChooseCard() {
 		this.setHandAsSelectableArea()
+		this.playerTables[this.getPlayerId()]?.handStock.getCards().forEach((card: CardiaCard) => {
+			this.cardsManager.getCardElement(card).classList.add('discard-purpose')
+		})
 	}
 
 	private onEnteringBlackmailerDiscard() {
 		this.setHandAsSelectableArea()
 		this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode('multiple')
+		this.playerTables[this.getPlayerId()]?.handStock.getCards().forEach((card: CardiaCard) => {
+			this.cardsManager.getCardElement(card).classList.add('discard-purpose')
+		})
 	}
 
 	private setHandAsSelectableArea() {
@@ -594,6 +607,9 @@ class Cardia extends BaseGame implements CardiaGame {
 				this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode(args.qty > 1 ? 'multiple' : 'single')
 				if (args.selectableCards) {
 					this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args.selectableCards)
+					args.selectableCards.forEach((card: CardiaCard) => {
+						this.cardsManager.getCardElement(card).classList.add('discard-purpose')
+					})
 				}
 			}
 		}
