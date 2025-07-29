@@ -93,7 +93,7 @@ trait ActionTrait {
     }
 
     function chooseDuelCard(int $playerId, CardiaCard $card) {
-        
+
         $duelCount = $this->globals->get(GLB_DUEL_COUNT);
         $refreshedCard = $this->cardManager->playCard($card, $playerId, $duelCount, true);
         $this->globals->set(GLB_LAST_CHOSEN_CARD . "_" . $playerId, json_encode($refreshedCard));
@@ -194,6 +194,17 @@ trait ActionTrait {
                 case KINESIS_MAGE:
                     $selectableCards = $this->getSelectableCards($interactiveAbility);
                     $this->userAssertTrue(_("This card is not one of yours"), $this->array_contains_card($selectableCards, $cardId));
+                    break;
+                case VOID_MAGE:
+                    $selectableCards = $this->getSelectableCards($interactiveAbility);
+                    if ($selectableCards) {
+                        $this->userAssertTrue(_("The card must have on ongoing token or modifiers according to your choice"), $this->array_contains_card($selectableCards, $cardId));
+                        if ($option == "removeModifiers") {
+                            $this->userAssertTrue(_("You must choose a card with modifiers"), $card && $this->cardManager->getModifierValueOnCard($card->id) > 0);
+                        } else {
+                            $this->userAssertTrue(_("You must choose a card with an ongoing token"), $card && $this->tokenManager->hasOngoingToken($card->id));
+                        }
+                    }
                     break;
             }
         }

@@ -169,6 +169,10 @@ trait ArgsTrait {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_HAND);
         } else if ($ability->type == VOID_MAGE) {
             $selectableCards = $this->cardManager->getCardsInLocation(MATERIAL_LOCATION_ENCOUNTER);
+            //keep only cards with ongoing token or modifiers
+            $selectableCards = array_values(array_filter($selectableCards, function ($card) {
+                return $this->tokenManager->hasOngoingToken($card->id) || $this->cardManager->getModifierValueOnCard($card->id) > 0;
+            }));
         } else if ($ability->type == KINESIS_MAGE) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
         }
