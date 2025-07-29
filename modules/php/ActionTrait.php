@@ -275,12 +275,6 @@ trait ActionTrait {
     function actPass(int $version) {
         $this->checkVersion($version);
         $this->checkAction('actPass');
-
-        $args = $this->argChooseAction();
-
-        if (!$args['canPass']) {
-            throw new \BgaUserException($this->_("You cannot pass"));
-        }
         $this->gamestate->setPlayerNonMultiactive($this->getMostlyActivePlayerId(), 'nextRound');
     }
 

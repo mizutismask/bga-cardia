@@ -169,16 +169,12 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	private setupTooltips() {
-		//todo change counter names
-		this.setTooltipToClass('revealed-tokens-back-counter', _('counter1 tooltip'))
-		this.setTooltipToClass('tickets-counter', _('counter2 tooltip'))
 		this.setTooltipToClass('hand-cards-counter', _('Cards in hand'))
 		this.setTooltipToClass('deck-cards-counter', _('Cards in deck'))
 		this.setTooltipToClass('signets-counter', _('Won signets'))
 
 		this.setTooltipToClass('cstm-help-icon', `<div class="help-card recto"></div>`)
 		this.setTooltipToClass('cstm-help-icon-mini', `<div class="help-card verso"></div>`)
-		this.setTooltipToClass('player-turn-order', _('First player'))
 	}
 
 	private setupPlayer(player: CardiaPlayer, handCards: CardiaCard[] = []) {
@@ -666,7 +662,6 @@ class Cardia extends BaseGame implements CardiaGame {
 						() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),
 						{}
 					)
-					//this.setActionBarChooseAction(false)
 					break
 				case 'scrapyardChooseCard':
 					this.statusBar.addActionButton(
@@ -674,7 +669,6 @@ class Cardia extends BaseGame implements CardiaGame {
 						() => this.chooseScrapyardCardAction(this.playerTables[this.getPlayerId()].handStock),
 						{}
 					)
-					//this.setActionBarChooseAction(false)
 					break
 				case 'serpentTempleDiscard':
 					this.statusBar.addActionButton(
@@ -748,7 +742,6 @@ class Cardia extends BaseGame implements CardiaGame {
 							{}
 						)
 					} else {
-						//this.setActionBarChooseAction(false)
 						this.statusBar.addActionButton(
 							_('Validate'),
 							() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),
@@ -989,45 +982,6 @@ class Cardia extends BaseGame implements CardiaGame {
 		}
 
 		document.getElementById('pagemaintitletext').innerHTML = newText ?? this.originalTextChooseAction
-	}
-
-	/**
-	 * Sets the action bar (title and buttons) for Choose action.
-	 */
-	private setActionBarChooseAction(fromCancel: boolean) {
-		document.getElementById(`generalactions`).innerHTML = ''
-		if (fromCancel) {
-			this.setChooseActionGamestateDescription()
-		}
-		if (this.actionTimerId) {
-			window.clearInterval(this.actionTimerId)
-		}
-
-		const chooseActionArgs = this.gamedatas.gamestate.args as EnteringChooseActionArgs
-
-		this.addImageActionButton(
-			'useTicket_button',
-			createDiv('expTicket', 'expTicket-button'),
-			'primary',
-			_('Use a ticket to place another arrow, remove the last one of any expedition or exchange a card'),
-			() => {
-				// this.useTicket();
-			}
-		)
-		$('expTicket-button').parentElement.style.padding = '0'
-
-		//dojo.toggleClass('useTicket_button', 'disabled', !chooseActionArgs.canUseTicket);
-
-		if (chooseActionArgs.canPass) {
-			this.statusBar.addActionButton(_('End my turn'), () => this.pass(), {})
-		}
-
-		if (chooseActionArgs.canResetTurn) {
-			this.statusBar.addActionButton(_('Reset my turn'), () => this.takeAction('actResetPlayerTurn'), {
-				color: 'alert',
-				title: _('Reset your entire round')
-			})
-		}
 	}
 
 	///////////////////////////////////////////////////
