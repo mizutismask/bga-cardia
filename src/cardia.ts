@@ -657,7 +657,7 @@ class Cardia extends BaseGame implements CardiaGame {
 		if ((this as any).isCurrentPlayerActive()) {
 			switch (stateName) {
 				case 'seeEndOfRound':
-					;(this as any).addActionButton('pass-button', _('Pass'), () => this.pass())
+					;(this as any).addActionButton('pass-button', _('Proceed'), () => this.pass())
 					break
 				case 'chooseDuelCard':
 				case 'chooseFortuneTellerCard':
