@@ -550,7 +550,7 @@ trait StateTrait {
                 break;
             case JUDGE:
                 $duels = $this->cardManager->getDuelsList();
-                $tied = $this->getTiedDuels($duels);
+                $tied = $this->getTiedDuelsOnValues($duels);
                 foreach ($tied as $duelNumber => $duel) {
                     $this->tokenManager->addSignetOnCard($duel[$playerId], null);
                     $this->applyTreasurerAbilityIfNeeded($duel[$playerId], $duelNumber);
