@@ -165,6 +165,10 @@ trait StateTrait {
         if (!$eval["interrupt"]) {
             //$this->dump('*******************stDuelReveal', $stateTransition);
             $this->gamestate->nextState($stateTransition);
+        } else {
+            if ($eval["shortcutState"]) {
+                $this->gamestate->nextState($eval["shortcutState"]);
+            }
         }
     }
 
@@ -265,19 +269,19 @@ trait StateTrait {
             }
         }
 
+        $shortcutState = null;
         if ($this->getScenery() == FOUNDERS_DAY) {
             $finalWinners = $this->getPlayersHavingSuccessiveWins(3);
             if (count($finalWinners) > 0) {
                 $this->notifyLocationPower();
                 $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
                 $this->globals->set(GLB_ROUND_WINNERS, $finalWinners);
-                $interrupt = true;
+                $interrupt = true; //to not resolve looser ability
                 $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('3 successive wins, end of round'), "type" => "POSITIVE", "temporary" => true,]);
-                $this->notifyWinnersOrLoosers($finalWinners, false);
-                $this->gamestate->nextState("nextRound");
+                $shortcutState = 'finishDuel';
             }
         }
-        $result = ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard, "interrupt" => $interrupt];
+        $result = ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard, "interrupt" => $interrupt, "shortcutState" => $shortcutState];
 
         return $result;
     }
