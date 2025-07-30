@@ -106,6 +106,10 @@ class CardManager extends DeckManager {
                     'toArg' => $playerId,
                     'material' => $this->cast([($this->deck->getCard($c->id))]),
                 ]);
+            } else {
+                $this->game->notifyWithName("msg",  clienttranslate('Deck empty for ${player_name}'), [
+                    'playerId' => $playerId
+                ]);
             }
         }
         $this->game->notifyCounterChange();
