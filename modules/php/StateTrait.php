@@ -272,6 +272,9 @@ trait StateTrait {
                 $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
                 $this->globals->set(GLB_ROUND_WINNERS, $finalWinners);
                 $interrupt = true;
+                $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('3 successive wins, end of round'), "type" => "POSITIVE", "temporary" => true,]);
+                $this->notifyWinnersOrLoosers($finalWinners, false);
+                $this->gamestate->nextState("nextRound");
             }
         }
         $result = ["hasWinner" => $hasWinner, "winner" => $maxCard, "looser" => $minCard, "interrupt" => $interrupt];
