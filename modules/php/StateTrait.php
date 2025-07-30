@@ -624,7 +624,7 @@ trait StateTrait {
                     'location' => false,
                     'i18n' => ['cardName']
                 ]);
-                $this->addSignetOnCard($card, $this->cardManager->getCard($opposingCardId), true);
+                $this->addSignetOnCard($card, $opposingCardId ? $this->cardManager->getCard($opposingCardId) : null, true);
             }
         }
     }
@@ -786,7 +786,7 @@ trait StateTrait {
                 break;
             case ILLUSIONIST:
                 $this->globals->set(GLB_ABILITY_TO_RESOLVE, $card->id);
-                $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);//fix 177828
+                $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE); //fix 177828
                 $this->stLooserAbility();
                 break;
             case PRODIGY:
