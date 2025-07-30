@@ -138,6 +138,7 @@ trait ActionTrait {
                 //$this->cardManager->playCard($card, $playerId, $duelCount, true);
                 $nextState = "chooseDuelCard";
                 if ($this->isLastPlayerActive($playerId)) {
+                    $this->cardManager->pickAdditionalCard(); //no stFinishDuel so we have to draw
                     $this->globals->inc(GLB_DUEL_COUNT, 1); //no stFinishDuel so we have to increase the duel count
                 }
             }
