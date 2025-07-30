@@ -30,12 +30,12 @@ class DeckManager extends \APP_DbObject {
 
     public function shuffleLocationByTypeArg(string $location, int $typeArg): void {
         $cards = $this->getCardsOfTypeArgFromLocation(TABLE_CARD, $typeArg, $location);
-
-        $shuffled = $this->game->getRandomSlice($cards, count($cards));
-        foreach ($shuffled as $i => $card) {
-            $this->deck->moveCard($card->id, $location, $i);
+        if (count($cards) > 0) {
+            $shuffled = $this->game->getRandomSlice($cards, count($cards));
+            foreach ($shuffled as $i => $card) {
+                $this->deck->moveCard($card->id, $location, $i);
+            }
         }
-        $cards = $this->getCardsOfTypeArgFromLocation(TABLE_CARD, $typeArg, $location);
     }
 
     /**
@@ -90,7 +90,7 @@ class DeckManager extends \APP_DbObject {
         return $this->cast($this->deck->getCardsInLocation("deck"));
     }
 
-    public function getCardsInLocation(string $location, ?int $locationArg = null, ?string $orderBy=null) {
+    public function getCardsInLocation(string $location, ?int $locationArg = null, ?string $orderBy = null) {
         return $this->cast($this->deck->getCardsInLocation($location, $locationArg, $orderBy));
     }
 
@@ -220,7 +220,8 @@ class DeckManager extends \APP_DbObject {
             'toArg' => $playerId,
             'material' => $this->cast([($this->deck->getCard($cardId))]),
             'i18n' => ['cardName', "ability"],
-            ...$msgParameters, $playerId
+            ...$msgParameters,
+            $playerId
         ]);
         $this->game->notifyCounterChange();
     }
