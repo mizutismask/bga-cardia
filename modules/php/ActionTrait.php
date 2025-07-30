@@ -200,7 +200,7 @@ trait ActionTrait {
                     if ($selectableCards) {
                         $this->userAssertTrue(_("The card must have on ongoing token or modifiers according to your choice"), $this->array_contains_card($selectableCards, $cardId));
                         if ($option == "removeModifiers") {
-                            $this->userAssertTrue(_("You must choose a card with modifiers"), $card && $this->cardManager->getModifierValueOnCard($card->id) > 0);
+                            $this->userAssertTrue(_("You must choose a card with modifiers"), $card && $this->cardManager->getModifierValueOnCard($card->id) != 0);
                         } else {
                             $this->userAssertTrue(_("You must choose a card with an ongoing token"), $card && $this->tokenManager->hasOngoingToken($card->id));
                         }
