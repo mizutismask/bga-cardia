@@ -59,6 +59,14 @@ trait DebugUtilTrait {
         }
     }
 
+    function debug_moveDeckToDiscard() {
+        $playerId = $this->getCurrentPlayerId();
+        $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($playerId), "deck");
+        foreach ($cards as $card) {
+            $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_DISCARD, $playerId, true, $playerId);
+        }
+    }
+
 
     /*function debug_clear() {
         static::DbQuery("DELETE FROM `claimed_routes`");

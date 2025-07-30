@@ -1032,7 +1032,7 @@ trait StateTrait {
      * @return void 
      */
     function stFinishDuel() {
-        $everyoneLooses = $this->globals->get(GLB_ROUND_EVERYONE_LOOSES);
+        $everyoneLooses = $this->globals->get(GLB_ROUND_EVERYONE_LOOSES, false);
         $winners = $this->globals->get(GLB_ROUND_WINNERS);
 
         //add engineer influence if any
@@ -1113,33 +1113,21 @@ trait StateTrait {
         }
 
         if (!$winners && !$everyoneLooses) {
-            $winners = [];
-            $withCard = $this->getNoPlayableCardWinner();
-            if ($withCard && $withCard > -1) {
-                $winners = [$withCard];
-            } else {
-                if ($withCard && $withCard == -1) {
-                    self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
-                    $everyoneLooses = true;
-                }
-            }
+            $noMoreCardsResult = $this->getNoMoreCardsToPlayWinnersAndLoosers($everyoneLooses);
+            $winners = $noMoreCardsResult['winners'];
+            $everyoneLooses = $noMoreCardsResult['everyoneLooses'];
         }
 
         if ($everyoneLooses) {
             $winners = [];
-            $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('Everyone looses, end of round'), "type" => "NEGATIVE", "temporary" => true,]);
         }
+        $this->notifyWinnersOrLoosers($winners, $everyoneLooses);
 
         //$this->dump('*******************winners', $winners);
         $nextState = $winners || $everyoneLooses ? 'nextRound' : 'chooseDuelCard';
 
-        if ($winners) {
-            foreach ($winners as $winner) {
-                if ($winner) {
-                    $this->setRoundWinner($winner);
-                }
-            }
-        } else {
+        if (!$winners) {
+            //we continue to play
             $ability =  $this->getAbilityToResolve();
             if ($ability && $ability->type == FORTUNE_TELLER) {
                 $this->gamestate->changeActivePlayer($this->getOpponentId($this->getPlayerIdFromPosition($ability->type_arg)));
@@ -1170,6 +1158,36 @@ trait StateTrait {
         }
         $this->globals->inc(GLB_DUEL_COUNT, 1);
         $this->gamestate->nextState($nextState);
+    }
+
+    function notifyWinnersOrLoosers(array $winners, bool $everyoneLooses) {
+        if ($everyoneLooses) {
+            $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('Everyone looses, end of round'), "type" => "NEGATIVE", "temporary" => true,]);
+        }
+        if ($winners) {
+            foreach ($winners as $winner) {
+                if ($winner) {
+                    $this->setRoundWinner($winner);
+                }
+            }
+        }
+    }
+
+    function getNoMoreCardsToPlayWinnersAndLoosers(bool $everyoneLooses, bool $checkOnlyHand = false) {
+        $winners = [];
+        $withCard = $this->getNoPlayableCardWinner($checkOnlyHand);
+        if ($withCard && $withCard > -1) {
+            $winners = [$withCard];
+        } else {
+            if ($withCard && $withCard == -1) {
+                self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
+                $everyoneLooses = true;
+            }
+        }
+        return [
+            'winners' => $winners,
+            'everyoneLooses' => $everyoneLooses,
+        ];
     }
 
     function updateMaxSignetsInARow() {
@@ -1257,18 +1275,26 @@ trait StateTrait {
      * Returns id of the only one player who has cards or who has most signets in case of tie
      * return -1 if tie on no card and signets count
      * return null if everyone has cards
+     * @param bool $checkOnlyHand if true (mostly for scrapyard), only checks cards in hand for immediate check if playing is possible. Can’t check deck too because a card just got back to the deck. Otherwise checks cards in deck and hand
      * @return int|null 
      */
-    function getNoPlayableCardWinner(): int|null {
+    function getNoPlayableCardWinner(bool $checkOnlyHand = false): int|null {
         $winner = null;
         $playersIds = $this->getPlayersIds();
 
         //if no card in hand and no card in deck, won’t be able to play
-        $cardsCount = array_combine($playersIds, array_map(
-            fn($id) => $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($id), MATERIAL_LOCATION_DECK)
-                + $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($id), MATERIAL_LOCATION_HAND),
-            $playersIds
-        ));
+        if ($checkOnlyHand) {
+            $cardsCount = array_combine($playersIds, array_map(
+                fn($id) => $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($id), MATERIAL_LOCATION_HAND),
+                $playersIds
+            ));
+        } else {
+            $cardsCount = array_combine($playersIds, array_map(
+                fn($id) => $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($id), MATERIAL_LOCATION_DECK)
+                    + $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($id), MATERIAL_LOCATION_HAND),
+                $playersIds
+            ));
+        }
 
         //if only one player has cards, he wins
         $playersWithCards = array_filter($cardsCount, fn($count) => $count > 0);
@@ -1280,6 +1306,7 @@ trait StateTrait {
             $signetCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSignetCount($id), $playersIds));
             $maxSignets = max($signetCounts);
             $winners = array_keys(array_filter($signetCounts, fn($count) => $count == $maxSignets));
+            $this->dump('*******************check on signets, winners', $winners);
             if (count($winners) == 1) {
                 $winner = $winners[0];
             } else {

@@ -79,6 +79,20 @@ trait ActionTrait {
 
     function chooseScrapyardCard(int $playerId, CardiaCard $card) {
         $this->cardManager->moveCardToBottomOfDeck($card, $playerId);
+        if ($this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($playerId), MATERIAL_LOCATION_HAND) == 0) {
+            $this->globals->set(GLB_NEXT_STATE_AFTER_SCRAPYARD, 'nextRound');
+            $this->notifyWithName("msg",  clienttranslate('${player_name} has no more card to play'), [], $playerId);
+        }
+
+        if ($this->isLastPlayerActive($playerId)) {
+            $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('Both players don’t have a card to play, end of round'), "type" => "NEGATIVE", "temporary" => true,]);
+
+            $noMoreCardsResult = $this->getNoMoreCardsToPlayWinnersAndLoosers(false, true);
+            $winners = $noMoreCardsResult['winners'];
+            $everyoneLooses = $noMoreCardsResult['everyoneLooses'];
+            $this->notifyWinnersOrLoosers($winners, $everyoneLooses);
+        }
+
         $this->gamestate->setPlayerNonMultiactive($playerId, $this->globals->get(GLB_NEXT_STATE_AFTER_SCRAPYARD));
     }
 
