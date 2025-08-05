@@ -412,6 +412,7 @@ trait StateTrait {
             } else {
                 $this->notifyWithName('msg', clienttranslate('${cardName} ability impossible to resolve'), [
                     'cardName' => $card->name,
+                    'i18n' => ['cardName'],
                 ]);
 
                 if ($card->type != DJINN) {
@@ -425,6 +426,7 @@ trait StateTrait {
             } else {
                 $this->notifyWithName('msg', clienttranslate('${cardName} ability impossible to resolve'), [
                     'cardName' => $card->name,
+                    'i18n' => ['cardName'],
                 ]);
             }
             if ($winnersIfAny) {
@@ -558,7 +560,7 @@ trait StateTrait {
                 break;
             case JUDGE:
                 $duels = $this->cardManager->getDuelsList();
-                $tied = $this->getTiedDuelsOnValues($duels);
+                $tied = $this->getTiedDuels($duels);
                 foreach ($tied as $duelNumber => $duel) {
                     $this->tokenManager->addSignetOnCard($duel[$playerId], null);
                     $this->applyTreasurerAbilityIfNeeded($duel[$playerId], $duelNumber);
@@ -659,7 +661,7 @@ trait StateTrait {
      * @param array<mixed, array<mixed, object|null>> $duels 
      * @return void 
      */
-    function getTiedDuels($duels) {
+    function getTiedDuelsOnSignets($duels) {
         $tied = $duels;
         $cardsWithSignet = array_map(fn($s) => $s->location_arg, $this->tokenManager->getSignetsOnCards());
         foreach ($duels as $duelNumber => $duel) {
@@ -673,6 +675,16 @@ trait StateTrait {
         }
         //$this->dump('*******************getTiedDuels', $tied);
         return $tied;
+    }
+
+    /**
+     * 
+     * @param mixed $duels 
+     * @return getTiedDuelsOnSignets + getTiedDuelsOnValues 
+     */
+    function getTiedDuels($duels){
+       //$this->dump('*******************getTiedDuels', array_merge($this->getTiedDuelsOnSignets($duels), $this->getTiedDuelsOnValues($duels)));
+        return array_merge($this->getTiedDuelsOnSignets($duels), $this->getTiedDuelsOnValues($duels));
     }
 
     public function getWinningCard(int $duelNumber) {
@@ -952,7 +964,7 @@ trait StateTrait {
                 break;
             case JUDGE:
                 //normal ties on numbers 
-                $ties = $this->getTiedDuelsOnValues($duels);
+                $ties = $this->getTiedDuels($duels);
                 if ($ties) {
                     foreach ($ties as $duelNumber => $duel) {
                         $signetToRemoveCard = $duel[$this->getPlayerIdFromPosition($card->type_arg)];
