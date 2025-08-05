@@ -100,6 +100,7 @@ interface CardiaGame extends Game {
 	resetClientActionData(): void
 	slide(mobileElt, targetElt, options)
 	addTooltipOnClickHelpButton(idButton: string, tooltipContent: string, delay?: number): void
+	handSelectionChange(selection: CardiaCard[], lastChange: CardiaCard): void
 }
 interface DuelsList {
 	[duelNumber: number]: {

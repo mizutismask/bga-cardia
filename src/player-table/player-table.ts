@@ -30,5 +30,8 @@ class PlayerTable {
 		if (cards) {
 			this.handStock.addCards(cards) //, { originalSide: "back" }, {visible:false}
 		}
+		this.handStock.onSelectionChange = (selection: CardiaCard[], lastChange: CardiaCard) => {
+			this.game.handSelectionChange(selection, lastChange)
+		}
 	}
 }

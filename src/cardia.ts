@@ -278,16 +278,6 @@ class Cardia extends BaseGame implements CardiaGame {
 			`player_board_${player.id}`
 		)
 
-		/* const revealedTokensBackCounter = new ebg.counter();
-            revealedTokensBackCounter.create(`revealed-tokens-back-counter-${player.id}`);
-            revealedTokensBackCounter.setValue(player.revealedTokensBackCount);
-            this.revealedTokensBackCounters[playerId] = revealedTokensBackCounter;
-
-            const ticketsCounter = new ebg.counter();
-            ticketsCounter.create(`tickets-counter-${player.id}`);
-            ticketsCounter.setValue(player.ticketsCount);
-            this.ticketsCounters[playerId] = ticketsCounter;*/
-
 		const cardsCounter = new ebg.counter()
 		cardsCounter.create(`hand-cards-counter-${player.id}`)
 		cardsCounter.setValue(player.cardsCount)
@@ -385,6 +375,12 @@ class Cardia extends BaseGame implements CardiaGame {
 				}
 			}
 		})
+	}
+
+	public handSelectionChange(selection: CardiaCard[], lastChange: CardiaCard): void {
+		if ((this as any).isCurrentPlayerActive()) {
+			this.toggleActionButtonVisibility('btn-validate-choose-card', selection.length > 0)
+		}
 	}
 
 	private updateModifierOnCard(cardId: number, modifier: number) {
@@ -599,11 +595,11 @@ class Cardia extends BaseGame implements CardiaGame {
 				//selection on central zone instead of hand
 				this.centralZone.duelStocks.forEach((stock) => {
 					stock.setSelectionMode('single')
+					if (args.selectableCards) {
+						stock.setSelectableCards(args['selectableCards'])
+					}
 				})
 				this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode('none')
-				if (args.selectableCards) {
-					this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args['selectableCards'])
-				}
 			} else if (args.interactionType === 'selectCardFromHand') {
 				this.centralZone.duelStocks.forEach((stock) => {
 					stock.setSelectionMode('none')
@@ -660,8 +656,9 @@ class Cardia extends BaseGame implements CardiaGame {
 					this.statusBar.addActionButton(
 						_('Validate'),
 						() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),
-						{}
+						{ id: 'btn-validate-choose-card' }
 					)
+					this.toggleActionButtonVisibility('btn-validate-choose-card', false)
 					break
 				case 'scrapyardChooseCard':
 					this.statusBar.addActionButton(

@@ -365,6 +365,13 @@ abstract class BaseGame {
 	public setTooltipToClass(className: string, html: string) {
 		;(this as any).addTooltipHtmlToClass(className, html, this.TOOLTIP_DELAY)
 	}
+
+	public toggleActionButtonVisibility(buttonId: string, visible: boolean) {
+		if ($(buttonId)) {
+			dojo.toggleClass(buttonId, 'hidden-important', !visible)
+		}
+	}
+	
 	/**
 	 * Add an animation to the animation queue, and start it if there is no current animations.
 	 */
