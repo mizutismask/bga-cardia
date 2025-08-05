@@ -147,7 +147,6 @@ trait ArgsTrait {
             $selectableCards = array_values(array_filter($selectableCards, function ($card) {
                 return $this->cardManager->isCardRevealed($card->id);
             }));
-           
         } else if ($ability->type == PRODIGY) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
             $selectableCards = array_values(array_filter($selectableCards, function ($card) {
@@ -175,6 +174,12 @@ trait ArgsTrait {
             }));
         } else if ($ability->type == KINESIS_MAGE) {
             $selectableCards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $playerPosition, MATERIAL_LOCATION_ENCOUNTER);
+            $sourceId = $this->globals->get(GLB_KINESIS_SOURCE_CARD);
+            if ($sourceId) {
+                $selectableCards = array_values(array_filter($selectableCards, function ($card) use ($sourceId) {
+                    return $card->id != $sourceId;
+                }));
+            }
         }
         //$this->dump('*******************argSelectableCards', $selectableCards);
         return $selectableCards;
@@ -230,7 +235,7 @@ trait ArgsTrait {
         $qty = 1;
         switch ($card->type) {
             case REVOLUTIONARY:
-                $this->dump('*******************$this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg, MATERIAL_LOCATION_HAND)',$this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));
+                $this->dump('*******************$this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg, MATERIAL_LOCATION_HAND)', $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));
                 return min(2,  $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));
                 break;
             case SUCCESSOR:

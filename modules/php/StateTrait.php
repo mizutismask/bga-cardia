@@ -950,6 +950,8 @@ trait StateTrait {
                 return !empty($this->getSelectableCards($card, $cardOwner));
             case REVOLUTIONARY:
                 return !empty($this->getSelectableCards($card, $this->getOpponentId($cardOwner)));
+            case KINESIS_MAGE:
+                return count($this->getSelectableCards($card, $cardOwner)) >= 2;
             default:
                 return true;
         }

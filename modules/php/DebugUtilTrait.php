@@ -51,6 +51,14 @@ trait DebugUtilTrait {
         $this->cardManager->moveCardToPlayerHand($card->id, $playerId);
     }
 
+    function debug_addAllCardsInHand() {
+        $playerId = $this->getCurrentPlayerId();
+        $cards = $this->cardManager->getCardsOfTypeArg(TABLE_CARD, $this->getPlayerPosition($playerId));
+        foreach ($cards as $card) {
+            $this->cardManager->moveCardToPlayerHand($card->id, $playerId);
+        }
+    }
+
     function debug_moveHandToDeck() {
         $playerId = $this->getCurrentPlayerId();
         $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($playerId), "hand");

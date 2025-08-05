@@ -99,6 +99,11 @@ class DeckManager extends \APP_DbObject {
         return $this->cast($this->game->getCollectionFromDb($sql));
     }
 
+    public function getCardsOfTypeArg(string $tableName, int $typeArg, ) {
+        $sql = "SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg FROM $tableName where card_type_arg = '$typeArg'";
+        return $this->cast($this->game->getCollectionFromDb($sql));
+    }
+
     public function getCardOfTypeAndTypeArg(string $tableName, string|int $type, int $typeArg): CardiaCard|null {
         $sql = "SELECT card_id id, card_type type, card_type_arg type_arg, card_location location, card_location_arg location_arg FROM $tableName where card_type_arg = '$typeArg' and card_type = '$type'";
         return $this->castSingle($this->game->getObjectFromDB($sql), true);
