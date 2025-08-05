@@ -58,6 +58,7 @@ html {
 	align-content: center;
 	flex-wrap: wrap;
 	gap: 20px;
+	padding: 5px;
 }
 
 @mixin selected-element {
@@ -74,6 +75,10 @@ svg {
 }
 #void-area {
 	display: none;
+}
+
+.hidden-important {
+	display: none !important;
 }
 
 .zone-title {
