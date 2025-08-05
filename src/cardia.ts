@@ -595,7 +595,7 @@ class Cardia extends BaseGame implements CardiaGame {
 				//selection on central zone instead of hand
 				this.centralZone.duelStocks.forEach((stock) => {
 					stock.setSelectionMode('single')
-					if (args.selectableCards) {
+					if (args.selectableCards.length > 0) {
 						stock.setSelectableCards(args['selectableCards'])
 					}
 				})
