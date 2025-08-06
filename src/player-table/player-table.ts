@@ -25,7 +25,7 @@ class PlayerTable {
 	}
 
 	private initHand(player: CardiaPlayer, cards: CardiaCard[] = []) {
-		this.handStock = new LineStock<CardiaCard>(this.game.cardsManager, $('hand-' + player.id), {})
+		this.handStock = new LineStock<CardiaCard>(this.game.cardsManager, $('hand-' + player.id), {sort: sortFunction('value'),})
 		this.handStock.setSelectionMode('single')
 		if (cards) {
 			this.handStock.addCards(cards) //, { originalSide: "back" }, {visible:false}
