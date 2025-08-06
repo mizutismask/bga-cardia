@@ -42,6 +42,16 @@
         "name": "Signets in round 3",
         "type": "int"
       },
+      "game_signets_round_4": {
+        "id": 56,
+        "name": "Signets in round 4",
+        "type": "int"
+      },
+      "game_signets_round_5": {
+        "id": 57,
+        "name": "Signets in round 5",
+        "type": "int"
+      },
       "game_stolen_signets": {
         "id": 53,
         "name": "Stolen signets",
