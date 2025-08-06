@@ -13,6 +13,7 @@ const GLB_ABILITY_TO_RESOLVE_COPIED_TYPE = 'abilityToResolveCopiedType';
 const GLB_PLAYER_TO_ACTIVATE = 'playerToActivate';
 const GLB_INVENTOR_PLUS_CARD = 'inventorPlusCard';
 const GLB_BLACKMAILER_FACTION = 'blackMailerFaction';
+const GLB_BLACKMAILER_COUNTDOWN = 'blackMailerFactionCounter'; //blackmailer with foggy swamp needs to wait for the second reveal and ability to be applied
 const GLB_NEXT_CARD_MODIFIER = 'nextCardModifier';
 const GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL = 'nextCardModifierAfterReveal'; //librarian
 const GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN = 'nextCardModifierAfterRevealCounter'; //librarian with foggy swamp needs to wait for the second reveal to be applied

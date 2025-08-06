@@ -24,7 +24,10 @@ trait ArgsTrait {
         foreach ($this->getPlayersIds() as $playerId) {
             $private[$playerId] = [];
             $faction = Faction::tryFrom($this->globals->get(GLB_BLACKMAILER_FACTION . $playerId));
-            if ($faction) {
+            $isFoggySwamp = $this->getScenery() == FOGGY_SWAMP;
+            $factionRequiredTrigger = $isFoggySwamp ? 2 : 1;
+            $factionRequired = $faction && $this->globals->has(GLB_BLACKMAILER_COUNTDOWN . $playerId) && $this->globals->get(GLB_BLACKMAILER_COUNTDOWN . $playerId, -1) == $factionRequiredTrigger;
+            if ($faction && $factionRequired) {
                 $private[$playerId]["blackmailerFaction"] = $this->getColorName($faction);
             }
         }

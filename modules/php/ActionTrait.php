@@ -64,6 +64,8 @@ trait ActionTrait {
             $this->cardManager->discardCard($playerId,  $card->id, clienttranslate('${ability}: ${player_name} discards ${cardName}'), ["cardName" => $card->name, "ability" => clienttranslate("Blackmailer")]);
         }
         $this->globals->delete(GLB_BLACKMAILER_FACTION . $playerId);
+        $this->globals->delete(GLB_BLACKMAILER_COUNTDOWN . $playerId);
+
         $this->gamestate->nextState('evaluateDuel');
     }
 

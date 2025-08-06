@@ -138,9 +138,16 @@ trait StateTrait {
                     }
 
                     $faction = Faction::tryFrom($this->globals->get(GLB_BLACKMAILER_FACTION . $playerId, 0));
-                    if ($faction && $card->faction != $faction) {
-                        $this->gamestate->changeActivePlayer($playerId);
-                        $stateTransition = "blackmailerDiscard";
+                    if (($faction && $this->getScenery() != FOGGY_SWAMP)
+                        || ($faction && $this->getScenery() == FOGGY_SWAMP && $this->globals->has(GLB_BLACKMAILER_COUNTDOWN . $playerId) && $this->globals->inc(GLB_BLACKMAILER_COUNTDOWN . $playerId, -1) == 0)
+                    ) {
+                        if ($card->faction != $faction) {
+                            $this->gamestate->changeActivePlayer($playerId);
+                            $stateTransition = "blackmailerDiscard";
+                        } else {
+                            $this->globals->delete(GLB_BLACKMAILER_FACTION . $playerId);
+                            $this->globals->delete(GLB_BLACKMAILER_COUNTDOWN . $playerId);
+                        }
                     }
                 }
             }
@@ -683,8 +690,8 @@ trait StateTrait {
      * @param mixed $duels 
      * @return getTiedDuelsOnSignets + getTiedDuelsOnValues 
      */
-    function getTiedDuels($duels){
-       //$this->dump('*******************getTiedDuels', array_merge($this->getTiedDuelsOnSignets($duels), $this->getTiedDuelsOnValues($duels)));
+    function getTiedDuels($duels) {
+        //$this->dump('*******************getTiedDuels', array_merge($this->getTiedDuelsOnSignets($duels), $this->getTiedDuelsOnValues($duels)));
         return array_merge($this->getTiedDuelsOnSignets($duels), $this->getTiedDuelsOnValues($duels));
     }
 
@@ -875,6 +882,12 @@ trait StateTrait {
                     'playerId' => $playerId,
                     'i18n' => ['factionName'],
                 ]);
+                if ($this->getScenery() == FOGGY_SWAMP) {
+                    $this->globals->set(GLB_BLACKMAILER_COUNTDOWN . $opponentId, 2); //one reveal to wait
+                } else {
+                    $this->globals->set(GLB_BLACKMAILER_COUNTDOWN . $opponentId, 1); //on next reveal
+                }
+
                 $this->gamestate->nextState('finishDuel');
                 break;
             case ELEMENTAL:
@@ -1390,6 +1403,7 @@ trait StateTrait {
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId);
             $this->globals->delete(GLB_LAST_CHOSEN_CARD . $playerId);
             $this->globals->delete(GLB_BLACKMAILER_FACTION . $playerId);
+            $this->globals->delete(GLB_BLACKMAILER_COUNTDOWN . $playerId);
         }
     }
 
