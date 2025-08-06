@@ -605,7 +605,7 @@ class Cardia extends BaseGame implements CardiaGame {
 					stock.setSelectionMode('none')
 				})
 				this.playerTables[this.getPlayerId()]?.handStock.setSelectionMode(args.qty > 1 ? 'multiple' : 'single')
-				if (args.selectableCards) {
+				if (args.selectableCards.length > 0) {
 					this.playerTables[this.getPlayerId()]?.handStock.setSelectableCards(args.selectableCards)
 					args.selectableCards.forEach((card: CardiaCard) => {
 						this.cardsManager.getCardElement(card).classList.add('discard-purpose')
