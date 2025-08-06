@@ -871,8 +871,9 @@ trait StateTrait {
             case BLACKMAILER:
                 $this->globals->set(GLB_BLACKMAILER_FACTION . $opponentId, $faction->value);
                 $this->notifyWithName('msg', clienttranslate('${player_name} chooses ${factionName} faction'), [
-                    'factionName' => $faction,
+                    'factionName' => $this->getColorName($faction),
                     'playerId' => $playerId,
+                    'i18n' => ['factionName'],
                 ]);
                 $this->gamestate->nextState('finishDuel');
                 break;
