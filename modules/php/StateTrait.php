@@ -278,13 +278,11 @@ trait StateTrait {
 
         $shortcutState = null;
         if ($this->getScenery() == FOUNDERS_DAY) {
-            $finalWinners = $this->getPlayersHavingSuccessiveWins(3);
+            $finalWinners = $this->checkForFoundersDayWinners();
             if (count($finalWinners) > 0) {
-                $this->notifyLocationPower();
                 $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
                 $this->globals->set(GLB_ROUND_WINNERS, $finalWinners);
                 $interrupt = true; //to not resolve looser ability
-                $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('3 successive wins, end of round'), "type" => "POSITIVE", "temporary" => true,]);
                 $shortcutState = 'finishDuel';
             }
         }
@@ -293,13 +291,22 @@ trait StateTrait {
         return $result;
     }
 
+    function checkForFoundersDayWinners() {
+        $finalWinners = $this->getPlayersHavingSuccessiveWins(3);
+        if (count($finalWinners) > 0) {
+            $this->notifyLocationPower();
+            $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('3 successive wins, end of round'), "type" => "POSITIVE", "temporary" => true,]);
+        }
+        return $finalWinners;
+    }
+
     function applyJudgeAbilityIfNeeded($duelCards) {
         //check if any or both players have played judge
         $players = $this->getPlayersIds();
         foreach ($players as $playerId) {
             $judge = $this->isActiveCardInPlay(JUDGE, $playerId);
             if ($judge) {
-                //$this->dump('*******************judge active for ', $playerId);
+                $this->dump('*******************judge active for ', $playerId);
                 $this->notifyWithName('power', clienttranslate('${abilityName} ability: ${playerName} wins the encounter'), [
                     "ability" => $judge,
                     "abilityName" => $judge->name,
@@ -1069,7 +1076,7 @@ trait StateTrait {
      */
     function stFinishDuel() {
         $everyoneLooses = $this->globals->get(GLB_ROUND_EVERYONE_LOOSES, false);
-        $winners = $this->globals->get(GLB_ROUND_WINNERS);
+        $roundWinners = $this->globals->get(GLB_ROUND_WINNERS);
 
         //add engineer influence if any
         $duels = $this->cardManager->getDuelsList();
@@ -1103,7 +1110,7 @@ trait StateTrait {
                 //check if this card is immediately following the djinn
                 if ($djinn && $djinn->location_arg == $duelNumber - 1 && $this->tokenManager->hasSignet($duels[$duelNumber][$playerId]->id)) {
                     //win the game
-                    $winners = [$playerId];
+                    $roundWinners = [$playerId];
                     $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
                         'ability' => $djinn,
                         'cardName' => $djinn->name,
@@ -1123,9 +1130,12 @@ trait StateTrait {
         $this->globals->delete(GLB_STEP_2);
         $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
 
-        //apply serpent temple discard
-        if (!$winners) {
-            if ($this->getScenery() == SERPENT_TEMPLE) {
+        if (!$roundWinners) {
+            if ($this->getScenery() == FOUNDERS_DAY) {
+                //check is there is winners with founders day at this moment (could be that judge has been applied)
+                $roundWinners = $this->checkForFoundersDayWinners();
+            } else if ($this->getScenery() == SERPENT_TEMPLE) {
+                //apply serpent temple discard
                 $discarders = $this->globals->get(GLB_SERPENT_TEMPLE_DISCARDERS);
                 if ($discarders) {
                     $discarderPlayer = array_shift($discarders);
@@ -1141,28 +1151,28 @@ trait StateTrait {
             }
         }
 
-        if (!$winners) {
+        if (!$roundWinners) {
             $signetWinner = $this->getSignetCountWinner();
             if ($signetWinner) {
-                $winners = [$signetWinner];
+                $roundWinners = [$signetWinner];
             }
         }
 
-        if (!$winners && !$everyoneLooses) {
+        if (!$roundWinners && !$everyoneLooses) {
             $noMoreCardsResult = $this->getNoMoreCardsToPlayWinnersAndLoosers($everyoneLooses);
-            $winners = $noMoreCardsResult['winners'];
+            $roundWinners = $noMoreCardsResult['winners'];
             $everyoneLooses = $noMoreCardsResult['everyoneLooses'];
         }
 
         if ($everyoneLooses) {
-            $winners = [];
+            $roundWinners = [];
         }
-        $this->notifyWinnersOrLoosers($winners, $everyoneLooses);
+        $this->notifyWinnersOrLoosers($roundWinners, $everyoneLooses);
 
         //$this->dump('*******************winners', $winners);
-        $nextState = $winners || $everyoneLooses ? 'nextRound' : 'chooseDuelCard';
+        $nextState = $roundWinners || $everyoneLooses ? 'nextRound' : 'chooseDuelCard';
 
-        if (!$winners) {
+        if (!$roundWinners) {
             //we continue to play
             $ability =  $this->getAbilityToResolve();
             if ($ability && $ability->type == FORTUNE_TELLER) {
