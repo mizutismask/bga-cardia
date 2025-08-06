@@ -521,7 +521,8 @@ trait StateTrait {
                     $this->cardManager->replenishHands();
                 } else {
                     $winnersIfAny = [$playerId];
-                    $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('${player_name} has no card in hand to apply puppeteer ability, end of round'), "type" => "NEGATIVE", "temporary" => true, 'playerId' => $opponentId, "player_name" => $this->getPlayerName($opponentId)]);
+                    $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('${player_name} has no card in hand to apply puppeteer ability and loses the round'), "type" => "NEGATIVE", "temporary" => true, 'playerId' => $opponentId, "player_name" => $this->getPlayerName($opponentId)]);
+                    $this->notifyAllPlayers('msg', clienttranslate('${player_name} has no card in hand to apply puppeteer ability and loses the round'), ["playerId" => $opponentId, "player_name" => $this->getPlayerName($opponentId)]);
                 }
                 break;
             case TREASURER:
