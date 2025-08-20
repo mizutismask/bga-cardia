@@ -224,8 +224,9 @@ trait StateTrait {
 
 
             $wasWinning = count($this->tokenManager->getSignetsOnCard($maxCard->id)) > 0;
+            $hadSignet = $this->tokenManager->hasSignet($maxCard->id);
             $signetOwnerChanged = $this->addSignetOnCard($maxCard, $minCard);
-            if ($signetOwnerChanged) {
+            if ($signetOwnerChanged || !$hadSignet) {
                 $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
             }
             if (!$wasWinning) {
