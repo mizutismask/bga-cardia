@@ -122,6 +122,8 @@ trait ActionTrait {
 
         if ($this->gamestate->state()["name"] == "chooseFortuneTellerCard") {
             $this->cardManager->updateCardRevealed($card->id, true);
+            //pause to let time for the playCard notif to be processed and card to be displayed on the back before revealing it
+            $this->notify->all('simplePause', '', ['time' => 800]);
             $this->notifyPlayer($this->getOpponentId($playerId), "materialMove",  "", [
                 'playerId' => $playerId,
                 'type' => MATERIAL_TYPE_CARD,
