@@ -87,8 +87,9 @@ trait ActionTrait {
         }
 
         if ($this->isLastPlayerActive($playerId)) {
-            $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('Both players don’t have a card to play, end of round'), "type" => "NEGATIVE", "temporary" => true,]);
-
+            if ($this->globals->get(GLB_NEXT_STATE_AFTER_SCRAPYARD) == 'nextRound') {
+                $this->notifyAllPlayers('importantMessage', "", ["message" => clienttranslate('Both players don’t have a card to play, end of round'), "type" => "NEGATIVE", "temporary" => true,]);
+            }
             $noMoreCardsResult = $this->getNoMoreCardsToPlayWinnersAndLoosers(false, true);
             $winners = $noMoreCardsResult['winners'];
             $everyoneLooses = $noMoreCardsResult['everyoneLooses'];
