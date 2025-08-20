@@ -658,7 +658,7 @@ class Cardia extends BaseGame implements CardiaGame {
 						() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),
 						{ id: 'btn-validate-choose-card' }
 					)
-					this.toggleActionButtonVisibility('btn-validate-choose-card', false)
+					this.toggleActionButtonVisibility('btn-validate-choose-card', this.playerTables[this.getPlayerId()].handStock.getSelection().length > 0)
 					break
 				case 'scrapyardChooseCard':
 					this.statusBar.addActionButton(
