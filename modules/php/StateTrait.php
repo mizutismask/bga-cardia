@@ -1122,11 +1122,10 @@ trait StateTrait {
         }
 
         //handle mechanical djinn if in play
-        $duelNumber = $this->globals->get(GLB_DUEL_COUNT);
         foreach ($this->getPlayers() as $playerId => $players) {
             if ($djinn = $this->isActiveCardInPlay(MECHANICAL_DJINN, $playerId)) {
                 //check if this card is immediately following the djinn
-                if ($djinn && $djinn->location_arg == $duelNumber - 1 && $this->tokenManager->hasSignet($duels[$duelNumber][$playerId]->id)) {
+                if ($djinn && isset($duels[$djinn->location_arg + 1]) && $this->tokenManager->hasSignet($duels[$djinn->location_arg + 1][$playerId]->id)) {
                     //win the game
                     $roundWinners = [$playerId];
                     $this->notifyWithName('power', clienttranslate('${cardName} ability triggered'), [
