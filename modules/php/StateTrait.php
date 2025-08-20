@@ -697,9 +697,20 @@ trait StateTrait {
      * @param mixed $duels 
      * @return getTiedDuelsOnSignets + getTiedDuelsOnValues 
      */
-    function getTiedDuels($duels) {
-        //$this->dump('*******************getTiedDuels', $this->getTiedDuelsOnSignets($duels)+$this->getTiedDuelsOnValues($duels));
-        return $this->getTiedDuelsOnSignets($duels) + $this->getTiedDuelsOnValues($duels);
+    function getTiedDuels($duels): array {
+        return $this->getTiedDuelsOnSignets($duels) + $this->getTiedDuelsOnValues($duels) + $this->getMediatorTies();
+    }
+
+    function getMediatorTies(): array {
+        $ties = [];
+        foreach ($this->getPlayers() as $playerId => $player) {
+            $mediator = $this->isActiveCardInPlay(MEDIATOR, $playerId);
+            if ($mediator) {
+                $ties[$mediator->location_arg] = [$playerId => $mediator, $this->getOpponentId($playerId) => $this->cardManager->getOpposingCard($mediator, $this->cardManager->getDuelsList())];
+            }
+        }
+        //$this->dump('*******************getMediatorTies', $ties);
+        return $ties;
     }
 
     public function getWinningCard(int $duelNumber) {
