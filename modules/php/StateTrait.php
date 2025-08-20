@@ -806,9 +806,15 @@ trait StateTrait {
             case SWAMP_GUARDIAN:
                 $encounter = $card->location_arg;
                 $opposingCard = $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList());
-                $this->discardDuelCard($opposingCard);
-                $this->tokenManager->discardTokensOnDuelCard($card);
+                
+                //cards goes back to hand and not discard, but the effect are still applied like a discard: lose ongoing tokens and modifiers
+                $ongoingDiscardedTokens = $this->tokenManager->discardTokensOnDuelCard($card);
+                if ($ongoingDiscardedTokens > 0) {
+                    $this->onRemovingOngoingTokenOnCard($card);
+                }
                 $this->cardManager->updateCardModifier($card, 0);
+                //order is critical here, do discard action before moving any card and mess with the duels
+                $this->discardDuelCard($opposingCard);
                 $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId);
                 $this->cardManager->reorderDuels($encounter);
                 $this->gamestate->nextState('finishDuel');
