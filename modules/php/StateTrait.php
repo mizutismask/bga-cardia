@@ -1188,9 +1188,10 @@ trait StateTrait {
         $this->notifyWinnersOrLoosers($roundWinners, $everyoneLooses);
 
         //$this->dump('*******************winners', $winners);
-        $nextState = $roundWinners || $everyoneLooses ? 'nextRound' : 'chooseDuelCard';
+        $endOfRound = $roundWinners || $everyoneLooses;
+        $nextState = $endOfRound ? 'nextRound' : 'chooseDuelCard';
 
-        if (!$roundWinners) {
+        if (!$endOfRound) {
             //we continue to play
             $ability =  $this->getAbilityToResolve();
             if ($ability && $ability->type == FORTUNE_TELLER) {
@@ -1370,7 +1371,7 @@ trait StateTrait {
             $signetCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSignetCount($id), $playersIds));
             $maxSignets = max($signetCounts);
             $winners = array_keys(array_filter($signetCounts, fn($count) => $count == $maxSignets));
-            $this->dump('*******************check on signets, winners', $winners);
+            //$this->dump('*******************check on signets, winners', $winners);
             if (count($winners) == 1) {
                 $winner = $winners[0];
             } else {
