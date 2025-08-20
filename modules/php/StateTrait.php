@@ -688,7 +688,7 @@ trait StateTrait {
                 unset($tied[$duelNumber]);
             }
         }
-        //$this->dump('*******************getTiedDuels', $tied);
+        //$this->dump('*******************getTiedDuelsOnSignets', $tied);
         return $tied;
     }
 
@@ -698,8 +698,8 @@ trait StateTrait {
      * @return getTiedDuelsOnSignets + getTiedDuelsOnValues 
      */
     function getTiedDuels($duels) {
-        //$this->dump('*******************getTiedDuels', array_merge($this->getTiedDuelsOnSignets($duels), $this->getTiedDuelsOnValues($duels)));
-        return array_merge($this->getTiedDuelsOnSignets($duels), $this->getTiedDuelsOnValues($duels));
+        //$this->dump('*******************getTiedDuels', $this->getTiedDuelsOnSignets($duels)+$this->getTiedDuelsOnValues($duels));
+        return $this->getTiedDuelsOnSignets($duels) + $this->getTiedDuelsOnValues($duels);
     }
 
     public function getWinningCard(int $duelNumber) {
@@ -806,7 +806,7 @@ trait StateTrait {
             case SWAMP_GUARDIAN:
                 $encounter = $card->location_arg;
                 $opposingCard = $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList());
-                
+
                 //cards goes back to hand and not discard, but the effect are still applied like a discard: lose ongoing tokens and modifiers
                 $ongoingDiscardedTokens = $this->tokenManager->discardTokensOnDuelCard($card);
                 if ($ongoingDiscardedTokens > 0) {
