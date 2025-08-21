@@ -293,7 +293,7 @@ class Game extends \Bga\GameFramework\Table {
             switch ($statename) {
                 case 'librarianAbility':
                     $possibleValues = [2, -2];
-                    $this->chooseLibrarianModifier($active_player, $this->getRandomValue($possibleValues));
+                    $this->chooseLibrarianModifier($this->getRandomValue($possibleValues));
                     break;
                 case 'blackmailerDiscard':
                     $cards = $this->cardManager->getCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($active_player), MATERIAL_LOCATION_HAND);
