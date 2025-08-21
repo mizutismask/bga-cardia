@@ -658,7 +658,10 @@ class Cardia extends BaseGame implements CardiaGame {
 						() => this.chooseDuelCardAction(this.playerTables[this.getPlayerId()].handStock),
 						{ id: 'btn-validate-choose-card' }
 					)
-					this.toggleActionButtonVisibility('btn-validate-choose-card', this.playerTables[this.getPlayerId()].handStock.getSelection().length > 0)
+					this.toggleActionButtonVisibility(
+						'btn-validate-choose-card',
+						this.playerTables[this.getPlayerId()].handStock.getSelection().length > 0
+					)
 					break
 				case 'scrapyardChooseCard':
 					this.statusBar.addActionButton(
@@ -738,6 +741,21 @@ class Cardia extends BaseGame implements CardiaGame {
 								),
 							{}
 						)
+						if (typedArgs.optionalSelection) {
+							this.statusBar.addActionButton(
+								_('Decline'),
+								() => {
+									const actionName =
+										stateName == 'interactiveAbility'
+											? 'actInteractiveAbility'
+											: 'actInteractiveAbilityStep2'
+									this.takeAction(actionName, {
+										cardIds: []
+									})
+								},
+								{}
+							)
+						}
 					} else {
 						this.statusBar.addActionButton(
 							_('Validate'),
