@@ -131,6 +131,7 @@ class Game extends \Bga\GameFramework\Table {
 
         // TODO: setup the initial game situation here
         $this->setupTable($players);
+        $this->debugSetup();
 
         /************ End of the game initialization *****/
     }

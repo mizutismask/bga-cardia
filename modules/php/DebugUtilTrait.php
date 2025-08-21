@@ -16,11 +16,15 @@ trait DebugUtilTrait {
     ////////////
 
     function debugSetup() {
-        if (!$this->isStudio()) {
+        if ($this->isStudio()) {
+            foreach ($this->getPlayers() as $playerId => $player) {
+                $cards = $this->cardManager->getCardsOfTypeArg(TABLE_CARD, $this->getPlayerPosition($playerId));
+                foreach ($cards as $card) {
+                    $this->cardManager->moveCardToPlayerHand($card->id, $playerId, false, "");
+                }
+            }
             return;
         }
-
-        //$this->debugSetDestinationInHand(7, 2343492);
         //$this->gamestate->changeActivePlayer(2343492);
     }
 
