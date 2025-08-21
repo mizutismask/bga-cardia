@@ -55,19 +55,20 @@ class CardManager extends DeckManager {
         }
     }
 
-    public function moveCardToLocation(CardiaCard $card, string $location, int $locationArg, $notify = true, $playerId = null) {
+    public function moveCardToLocation(CardiaCard $card, string $location, int $locationArg, bool $notify = true, $playerId = null, string $msg = "", array $msgArgs = []) {
         $this->deck->moveCard($card->id, $location, $locationArg);
 
         if ($notify && $playerId) {
-            $this->game->notifyAllPlayers("materialMove",  "", [
+            $this->game->notifyWithName("materialMove",  $msg, array_merge($msgArgs, [
                 'playerId' => $playerId,
                 'type' => $this->materialType,
                 'from' => $card->location,
                 'fromArg' => $card->location_arg,
                 'to' => $location,
                 'toArg' => $locationArg,
+                'i18n' => ['cardName'],
                 'material' => [$this->castSingle($this->deck->getCard($card->id))],
-            ]);
+            ]));
         }
         $this->game->notifyCounterChange();
     }

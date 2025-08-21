@@ -789,6 +789,10 @@ trait StateTrait {
             case VOID_MAGE:
                 if ($option == "removeModifiers") {
                     $this->cardManager->updateCardModifier($card, 0);
+                    $this->notifyWithName('msg', clienttranslate('${player_name} removes modifiers from ${cardName}'), [
+                        'cardName' => $card->name,
+                        'i18n' => ['cardName']
+                    ], $playerId);
                     $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
                 } else {
                     $tokenCount = $this->tokenManager->discardTokenOfTypeOnCard($card, TokenType::ONGOING);
@@ -827,7 +831,7 @@ trait StateTrait {
                 $this->cardManager->updateCardModifier($card, 0);
                 //order is critical here, do discard action before moving any card and mess with the duels
                 $this->discardDuelCard($opposingCard);
-                $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId);
+                $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId, clienttranslate('${player_name} takes ${cardName} back in hand'), ["cardName" => $card->name]);
                 $this->cardManager->reorderDuels($encounter);
                 $this->gamestate->nextState('finishDuel');
                 break;
@@ -967,6 +971,12 @@ trait StateTrait {
                         $this->tokenManager->addOngoingTokenOnCard($destination->id);
                     }
                 }
+
+                $this->notifyWithName('message', clienttranslate('${player_name} moves modifiers and ongoing tokens from ${cardName} to ${cardName2}'), [
+                    'cardName' => $source->name,
+                    'cardName2' => $destination->name,
+                    'i18n' => ['cardName', "cardName2"],
+                ]);
 
                 if ($reevaluate) {
                     $this->evaluateDuelValues([$destination, $this->cardManager->getOpposingCard($destination, $duels)]);
