@@ -70,7 +70,8 @@ class TokenManager extends DeckManager {
 
     public function addSignetOnCard(CardiaCard $card, ?CardiaCard $opposingCard, ?bool $severalPossible = false): bool {
         $winnerChanged = false;
-        //$this->game->dump('*******************$this->alreadyHasSignet($cardId)', $this->alreadyHasSignet($cardId));
+        //$this->game->dump('*******************$this->hasSignet($cardId)', $this->hasSignet($card->id));
+        //$this->game->dump('*******************$severalPossible', $severalPossible);
         if ($severalPossible || !$this->hasSignet($card->id)) {
             $signet = $this->getSignetToUse($opposingCard->id ?? null);
             $winnerChanged = $signet->location == MATERIAL_LOCATION_CARD;

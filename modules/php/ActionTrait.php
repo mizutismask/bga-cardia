@@ -117,7 +117,7 @@ trait ActionTrait {
 
         $modifierToAdd = $this->globals->get(GLB_NEXT_CARD_MODIFIER . $playerId, 0);
         if ($modifierToAdd != 0) {
-            $this->cardManager->incCardModifier($card, $modifierToAdd);
+            $this->incCardModifier($card, $modifierToAdd);
             $this->globals->delete(GLB_NEXT_CARD_MODIFIER . $playerId);
         }
 
@@ -283,7 +283,7 @@ trait ActionTrait {
     function chooseLibrarianModifier(int $modifierValue) {
         $playerId = $this->getMostlyActivePlayerId();
         $card = $this->getCardToReveal($playerId);
-        $this->cardManager->incCardModifier($card, $modifierValue);
+        $this->incCardModifier($card, $modifierValue);
         $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL . $playerId);
         $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_REVEAL_COUNTDOWN . $playerId);
         $this->gamestate->nextState("evaluateDuel");

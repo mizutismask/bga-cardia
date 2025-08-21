@@ -200,16 +200,20 @@ trait StateTrait {
             }
         }
 
+        //$this->dump('********************evaluateDuelValues', join(' vs ', array_map(fn($c) => $c->name, $cards)));
+        //$this->dump('*******************hasWinner', $minCard->id != $maxCard->id);
+        //$this->dump('*******************Winner', $maxCard->name);
+
         $mediatorTie = false;
         if ($reevaluate && ($this->isCardGivenRoleActive(MEDIATOR, reset($cards)) || $this->isCardGivenRoleActive(MEDIATOR, end($cards)))) {
             $mediatorTie = true;
         }
+        //$this->dump('*******************mediatorTie', $mediatorTie);
 
         if (!$mediatorTie && $minCard->id != $maxCard->id) {
             $hasWinner = true;
             $winningPlayerId = $this->getPlayerIdFromPosition($maxCard->type_arg);
             $loosingPlayerId = $this->getPlayerIdFromPosition($minCard->type_arg);
-
             $operator = ">";
             $this->notifyWithName('duelResult', clienttranslate('${cardName1} beats ${cardName2}: ${winnerValue} ${operator} ${looserValue}'), [
                 'winnerValue' => $maxCard->modifiedValue,
@@ -226,6 +230,7 @@ trait StateTrait {
             $wasWinning = count($this->tokenManager->getSignetsOnCard($maxCard->id)) > 0;
             $hadSignet = $this->tokenManager->hasSignet($maxCard->id);
             $signetOwnerChanged = $this->addSignetOnCard($maxCard, $minCard);
+            //$this->dump('*******************signetOwnerChanged', $signetOwnerChanged);
             if ($signetOwnerChanged || !$hadSignet) {
                 $this->applyTreasurerAbilityIfNeeded($maxCard, $maxCard->location_arg, $minCard->id);
             }
@@ -570,7 +575,7 @@ trait StateTrait {
                 ]);
                 if ($duelNumber > 1) {
                     $previousCard = $duels[$duelNumber - 1][$playerId];
-                    $this->cardManager->incCardModifier($previousCard, $value);
+                    $this->incCardModifier($previousCard, $value);
                     $this->evaluateDuelValues([$previousCard, $this->cardManager->getOpposingCard($previousCard, $this->cardManager->getDuelsList())]);
                 }
                 break;
@@ -593,7 +598,7 @@ trait StateTrait {
                 $this->evaluateDuelValues([$ability, $opposing]);
                 break;
             case TAX_COLLECTOR:
-                $this->cardManager->incCardModifier($ability,  4);
+                $this->incCardModifier($ability,  4);
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
                 $this->evaluateDuelValues([$ability, $opposing]);
                 break;
@@ -780,7 +785,7 @@ trait StateTrait {
                 break;
             case INVENTOR:
                 //first selected card gets a +3
-                $this->cardManager->incCardModifier($card, 3);
+                $this->incCardModifier($card, 3);
                 $this->globals->set(GLB_INVENTOR_PLUS_CARD, $card->id);
                 //still needs to select another card
                 $this->globals->set(GLB_STEP_2, true);
@@ -846,7 +851,7 @@ trait StateTrait {
                 $this->stLooserAbility();
                 break;
             case PRODIGY:
-                $this->cardManager->incCardModifier($card, 3);
+                $this->incCardModifier($card, 3);
                 $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
                 $this->gamestate->nextState('finishDuel');
                 break;
@@ -859,7 +864,7 @@ trait StateTrait {
             case ENVOY:
                 $value = -3;
                 if ($card) {
-                    $this->cardManager->incCardModifier($card, $value);
+                    $this->incCardModifier($card, $value);
                     $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
                 } else {
                     $this->globals->set(GLB_NEXT_CARD_MODIFIER . $playerId, $value);
@@ -936,13 +941,13 @@ trait StateTrait {
                     $this->cardManager->replenishHands();
                 } else {
                     //add +7 influence
-                    $this->cardManager->incCardModifier($interactiveAbility, 7);
+                    $this->incCardModifier($interactiveAbility, 7);
                     $this->evaluateDuelValues([$interactiveAbility, $this->cardManager->getOpposingCard($interactiveAbility, $this->cardManager->getDuelsList())]);
                 }
                 break;
             case INVENTOR:
                 //second selected card gets a -3
-                $this->cardManager->incCardModifier($card, -3);
+                $this->incCardModifier($card, -3);
                 $firstModif = $this->cardManager->getCard($this->globals->get(GLB_INVENTOR_PLUS_CARD));
                 $this->globals->delete(GLB_INVENTOR_PLUS_CARD);
                 $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
@@ -1005,6 +1010,26 @@ trait StateTrait {
             default:
                 return true;
         }
+    }
+
+    function incCardModifier(CardiaCard $card, int $modifier): void {
+        $duels = $this->cardManager->getDuelsList();
+        if(isset($duels[$card->location_arg])) {
+            $previousTies = $this->getTiedDuelsOnValues($duels);
+            $wasTie = isset($previousTies[$card->location_arg]);
+            if ($wasTie) {
+                foreach ($this->getPlayers() as $playerId => $player) {
+                    $hasToRemoveSignet = $this->isActiveCardInPlay(JUDGE, $playerId);
+                    if ($hasToRemoveSignet) {
+                        $this->tokenManager->discardTokenOfTypeOnCard($previousTies[$card->location_arg][$playerId], TokenType::SIGIL);
+                        $this->notifyWithName('message', clienttranslate('Tie is broken, ${player_name}’s judge cease to apply'), [
+                        ], $playerId);
+                    }
+                }
+            }
+            
+        }
+        $this->cardManager->incCardModifier($card, $modifier);
     }
 
     function onRemovingOngoingTokenOnCard(CardiaCard $card) {
@@ -1118,7 +1143,7 @@ trait StateTrait {
                     && $this->globals->inc(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId, -1) == 0
                 ) {
                     $anyModif = true;
-                    $this->cardManager->incCardModifier($playerCard, $modifierToAdd);
+                    $this->incCardModifier($playerCard, $modifierToAdd);
                     $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED . $playerId);
                     $this->globals->delete(GLB_NEXT_CARD_MODIFIER_AFTER_ABILITY_TRIGGERED_COUNTDOWN . $playerId);
                 }
