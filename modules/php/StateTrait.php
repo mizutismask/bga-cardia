@@ -517,7 +517,7 @@ trait StateTrait {
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
                 $this->discardDuelCard($ability);
                 $this->discardDuelCard($opposing);
-                $this->cardManager->reorderDuels($duelNumber);
+                $this->reorderDuels($duelNumber);
                 break;
             case MEDIATOR:
                 $opposing = $this->cardManager->getOpposingCard($ability, $duels);
@@ -642,6 +642,20 @@ trait StateTrait {
                 break;
         }
         return $winnersIfAny;
+    }
+
+    public function reorderDuels(int $encounter) {
+        $this->cardManager->reorderDuels($encounter);
+        $duels = $this->cardManager->getDuelsList();
+        if (isset($duels[$encounter - 1])) {
+            foreach ($this->getPlayersIds() as $pId) {
+                //$this->dump('*******************applyTreasurerAbilityIfNeeded', $duels[$encounter - 1][$pId]->name);
+                $card = $duels[$encounter - 1][$pId];
+                if ($this->tokenManager->hasSignet($card->id)) {
+                    $this->applyTreasurerAbilityIfNeeded($card, $encounter - 1);
+                }
+            }
+        }
     }
 
     function applyTreasurerAbilityIfNeeded(CardiaCard $card, int $duelNumber, ?int $opposingCardId = null) {
@@ -837,7 +851,7 @@ trait StateTrait {
                 //order is critical here, do discard action before moving any card and mess with the duels
                 $this->discardDuelCard($opposingCard);
                 $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId, clienttranslate('${player_name} takes ${cardName} back in hand'), ["cardName" => $card->name]);
-                $this->cardManager->reorderDuels($encounter);
+                $this->reorderDuels($encounter);
                 $this->gamestate->nextState('finishDuel');
                 break;
             case MAGISTRA:
