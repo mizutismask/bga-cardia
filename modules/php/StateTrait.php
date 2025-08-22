@@ -200,8 +200,8 @@ trait StateTrait {
             }
         }
 
-        $duelDescription = join(' vs ', array_map(fn($c) => $c->name, $cards));
-        //$this->dump('********************evaluateDuelValues', duelDescription);
+        //$duelDescription = join(' vs ', array_map(fn($c) => $c->name, $cards));
+        //$this->dump('********************evaluateDuelValues', $duelDescription);
         //$this->dump('*******************hasWinner', $minCard->id != $maxCard->id);
         //$this->dump('*******************Winner', $maxCard->name);
 
@@ -716,7 +716,7 @@ trait StateTrait {
             $tie = !$this->array_some($duelCards, function ($c) use ($cardsWithSignet) {
                 return in_array($c->id, $cardsWithSignet);
             });
-            if (!$tie) {
+            if (!$tie || !$this->cardManager->isCardRevealed(reset($duelCards)->id)) {
                 unset($tied[$duelNumber]);
             }
         }
@@ -767,7 +767,7 @@ trait StateTrait {
             $card1 = array_pop($duelCards);
             $card2 = array_pop($duelCards);
             $tie = $this->getCardValue($card1) == $this->getCardValue($card2);
-            if (!$tie) {
+            if (!$tie || !$this->cardManager->isCardRevealed($card1->id)) {
                 unset($tied[$duelNumber]);
             }
         }

@@ -209,6 +209,7 @@ class CardManager extends DeckManager {
         $cards = $query->select($this->game->getTypicalTableFields())
             ->where("card_location", "=", MATERIAL_LOCATION_ENCOUNTER)
             ->where("card_type", "=", $cardType)
+            ->where("card_revealed", "=", intval(true))
             ->where("card_type_arg", "=", $this->game->getPlayerPosition($playerId))
             ->get();
 
