@@ -238,6 +238,10 @@ trait StateTrait {
             if (!$wasWinning) {
                 $this->addSerpentTempleDiscarder($maxCard->location_arg, $loosingPlayerId);
             }
+
+            if ($minCard->type == ARISTOCRAT) {
+                $this->tokenManager->discardTokenOfTypeOnCard($minCard, TokenType::SIGIL);
+            }
         } else {
 
             //tie->remove signets if any
