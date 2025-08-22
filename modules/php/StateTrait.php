@@ -187,6 +187,7 @@ trait StateTrait {
         $currentRound = $this->globals->get(GLB_ROUND);
 
         foreach ($cards as $card) {
+            if (!$this->cardManager->isCardRevealed($card->id)) return ["hasWinner" => false, "interrupt" => false];
             if ($minCard === null) {
                 $minCard = $card;
                 $maxCard = $card;
