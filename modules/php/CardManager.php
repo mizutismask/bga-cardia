@@ -140,8 +140,11 @@ class CardManager extends DeckManager {
         $query = new QueryBuilder(TABLE_CARD);
         $query->inc(["card_modifier" => $modifier], $card->id);
         $updatedModifiers = $this->getModifiers();
-        $this->game->notifyAllPlayers("updateModifiers", "", array(
+        $this->game->notifyAllPlayers("updateModifiers", clienttranslate('${cardName} gets ${modifierAmount} influence'), array(
             'modifiers' => $updatedModifiers,
+            'modifierAmount' => $modifier > 0 ? '+' . $modifier : $modifier,
+            'cardName' => $card->name,
+            'i18n' => ['cardName'],
         ));
         $playerId = $this->game->getPlayerIdFromPosition($card->type_arg);
         $previousValue = $this->game->getStat("game_highest_modifier", $playerId);

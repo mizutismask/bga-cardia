@@ -200,7 +200,8 @@ trait StateTrait {
             }
         }
 
-        //$this->dump('********************evaluateDuelValues', join(' vs ', array_map(fn($c) => $c->name, $cards)));
+        $duelDescription = join(' vs ', array_map(fn($c) => $c->name, $cards));
+        //$this->dump('********************evaluateDuelValues', duelDescription);
         //$this->dump('*******************hasWinner', $minCard->id != $maxCard->id);
         //$this->dump('*******************Winner', $maxCard->name);
 
@@ -245,10 +246,17 @@ trait StateTrait {
             }
 
             if ($mediatorTie) {
-                $this->notifyWithName('msg', clienttranslate('Mediator tie'), []);
+                $this->notifyWithName('msg', clienttranslate('${cardName1} VS ${cardName2}: Mediator tie'), [
+                    'cardName1' => reset($cards)->name,
+                    'cardName2' => end($cards)->name,
+                    'i18n' => ["cardName1", "cardName2"]
+                ]);
             } else {
-                $this->notifyWithName('msg', clienttranslate('Tie on value: ${winnerValue}'), [
+                $this->notifyWithName('msg', clienttranslate('${cardName1} VS ${cardName2}: Tie on value ${winnerValue}'), [
                     'winnerValue' => $maxCard->modifiedValue,
+                    'cardName1' => reset($cards)->name,
+                    'cardName2' => end($cards)->name,
+                    'i18n' => ["cardName1", "cardName2"],
                 ]);
             }
 
