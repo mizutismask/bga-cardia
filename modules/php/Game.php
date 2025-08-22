@@ -233,15 +233,17 @@ class Game extends \Bga\GameFramework\Table {
         foreach ($this->getPlayers() as $playerId => $player) {
             $signetCounts[$playerId] = $this->tokenManager->getSignetCount(intval($player["player_no"]));
         }
-        $maxSignets = min(5, max($signetCounts));
+        $maxSignets = max($signetCounts);
         $duelProgression  = 0;
         if ($stateName != "seeEndOfRound") {
             $duelProgression  =  100 * ($maxSignets) / 5;
         }
-
-        //$this->dump('******************maxSignets*', $maxSignets);
-        //$this->dump('******************duelProgression*', $duelProgression);
-
+/*
+        $this->dump('******************maxSignets*', $maxSignets);
+        $this->dump('******************stateName*', $stateName);
+        $this->dump('******************scoreProgression*', (100 * $this->getMaxScore() / 2));
+        $this->dump('******************duelProgression*', $duelProgression);
+*/
         $round = intval($this->globals->get(GLB_ROUND));
         return (100 * $this->getMaxScore() / 2) + $duelProgression / ($round == 3 ? 3 : 2);
     }

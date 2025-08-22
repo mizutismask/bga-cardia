@@ -123,7 +123,6 @@ $basicGameStates = [
         "description" => "",
         "type" => "game",
         "action" => "stFinishDuel",
-        "updateGameProgression" => true,
         "transitions" => [
             "nextRound" => ST_END_OF_ROUND,
             "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
@@ -137,9 +136,10 @@ $basicGameStates = [
         "name" => "endOfRound",
         "type" => "game",
         "action" => "stEndOfRound",
+        "updateGameProgression" => true,
         "transitions" => [
             "seeEndOfRound" => ST_PLAYER_SEE_END_OF_ROUND,
-            "nextRound" => ST_NEXT_ROUND, 
+            "nextRound" => ST_NEXT_ROUND,
         ]
     ],
 
@@ -165,6 +165,7 @@ $playerActionsGameStates = [
         "type" => "multipleactiveplayer",
         "args" => "argChooseDuelCard",
         'action' => 'stActivatePlayersToChooseDuelCard',
+        "updateGameProgression" => true,
         "possibleactions" => [
             "actChooseDuelCard",
         ],
@@ -180,6 +181,7 @@ $playerActionsGameStates = [
         'descriptionmyturn' => clienttranslate('${you} can pass when you’ve finished watching the end of the round'),
         'type' => 'multipleactiveplayer',
         'action' => 'stMakeEveryoneActive',
+        "updateGameProgression" => true,
         'possibleactions' => ['actPass'],
         'transitions' => [
             'nextRound' => ST_NEXT_ROUND,
@@ -333,7 +335,6 @@ $gameGameStates = [
         "description" => "",
         "type" => "game",
         "action" => "stNextRound",
-        "updateGameProgression" => true,
         "transitions" => [
             "chooseDuelCard" => ST_PLAYER_CHOOSE_DUEL_CARD,
             'endGame' => ST_END_GAME,
