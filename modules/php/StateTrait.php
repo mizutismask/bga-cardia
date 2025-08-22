@@ -1014,7 +1014,7 @@ trait StateTrait {
 
     function incCardModifier(CardiaCard $card, int $modifier): void {
         $duels = $this->cardManager->getDuelsList();
-        if(isset($duels[$card->location_arg])) {
+        if (isset($duels[$card->location_arg])) {
             $previousTies = $this->getTiedDuelsOnValues($duels);
             $wasTie = isset($previousTies[$card->location_arg]);
             if ($wasTie) {
@@ -1022,12 +1022,10 @@ trait StateTrait {
                     $hasToRemoveSignet = $this->isActiveCardInPlay(JUDGE, $playerId);
                     if ($hasToRemoveSignet) {
                         $this->tokenManager->discardTokenOfTypeOnCard($previousTies[$card->location_arg][$playerId], TokenType::SIGIL);
-                        $this->notifyWithName('message', clienttranslate('Tie is broken, ${player_name}’s judge cease to apply'), [
-                        ], $playerId);
+                        $this->notifyWithName('message', clienttranslate('Tie is broken, ${player_name}’s judge cease to apply'), [], $playerId);
                     }
                 }
             }
-            
         }
         $this->cardManager->incCardModifier($card, $modifier);
     }
@@ -1277,9 +1275,15 @@ trait StateTrait {
         $withCard = $this->getNoPlayableCardWinner($checkOnlyHand);
         if ($withCard && $withCard > -1) {
             $winners = [$withCard];
+            $loser = $this->getOpponentId($withCard);
+            $this->notifyWithName("msg",  clienttranslate('${player_name} has no more card to play'), [], $loser);
+            $this->notifyWithName('importantMessage', "", ["message" => clienttranslate('${player_name} has no more card to play'), "type" => "NEGATIVE", "temporary" => true, "player_name" => $this->getPlayerName($loser)], $loser);
         } else {
             if ($withCard && $withCard == -1) {
-                self::notifyAllPlayers('msg', clienttranslate('No more cards to play for any player and tie on signets count, end of round'), []);
+                $msg = clienttranslate('No more cards to play for any player and tie on signets count, end of round');
+                self::notifyAllPlayers('msg', $msg, []);
+                $this->notifyWithName('importantMessage', "", ["message" => $msg, "type" => "NEGATIVE", "temporary" => true,]);
+
                 $everyoneLooses = true;
             }
         }
