@@ -1009,7 +1009,11 @@ trait StateTrait {
                     foreach ($tokens as $token) {
                         $this->tokenManager->discardTokenOfTypeOnCard($source, TokenType::ONGOING);
                         $this->onRemovingOngoingTokenOnCard($source);
-                        $this->tokenManager->addOngoingTokenOnCard($destination->id);
+                        $winnersIfAny = $this->applyAbility($destination, $this->cardManager->getDuelsList(), $this->tokenManager->getSignetsOnCards(), $destination->location_arg);
+                        if ($winnersIfAny) {
+                            $this->globals->set(GLB_ROUND_EVERYONE_LOOSES, false);
+                            $this->globals->set(GLB_ROUND_WINNERS, $winnersIfAny);
+                        }
                     }
                 }
 
