@@ -239,10 +239,10 @@ trait ArgsTrait {
         switch ($card->type) {
             case REVOLUTIONARY:
                 $this->dump('*******************$this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg, MATERIAL_LOCATION_HAND)', $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));
-                return min(2,  $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));
+                $qty = min(2,  $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));
                 break;
             case SUCCESSOR:
-                $qty = 2;
+                $qty = min(2,  $this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $card->type_arg == 1 ? 2 : 1, MATERIAL_LOCATION_HAND));;
                 break;
         }
         return $qty;

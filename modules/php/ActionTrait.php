@@ -159,9 +159,9 @@ trait ActionTrait {
             $this->globals->set(GLB_SELECTED_FACTION, $faction->value);
         } else if (in_array($interactionType, [InteractionType::selectCardFromHand, InteractionType::selectCardFromDuels])) {
             $optional = $this->isCardSelectionOptional($interactiveAbility);
-            if (!$optional) {
+            $qty = $this->getCardSelectionQuantity($interactiveAbility);
+            if (!$optional && $qty > 0) {
                 $this->userAssertTrue(_("You have to select a card"), !empty($cardIds));
-                $qty = $this->getCardSelectionQuantity($interactiveAbility);
                 $this->userAssertTrue(_("You did not select the expected number of cards"), count($cardIds) == $qty);
             }
         }
