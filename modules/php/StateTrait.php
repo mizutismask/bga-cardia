@@ -334,7 +334,12 @@ trait StateTrait {
                     'i18n' => ['ability']
                 ]);
                 $myCard = $this->getFirstElementInArray(array_filter($duelCards, fn($c) => $c->type_arg == $this->getPlayerPosition($playerId)));
+                $wasWinning = count($this->tokenManager->getSignetsOnCard($myCard->id)) > 0;
                 $this->addSignetOnCard($myCard, null);
+
+                if (!$wasWinning) {
+                   $this->addSerpentTempleDiscarder($myCard->location_arg, $this->getOpponentId($playerId));
+                }
             }
         }
     }
@@ -1234,6 +1239,7 @@ trait StateTrait {
                 //apply serpent temple discard
                 $discarders = $this->globals->get(GLB_SERPENT_TEMPLE_DISCARDERS);
                 if ($discarders) {
+                    $this->dump('*******************discarders', $discarders);
                     $discarderPlayer = array_shift($discarders);
                     if ($discarderPlayer) {
                         if ($this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($discarderPlayer), MATERIAL_LOCATION_HAND) > 0) {
