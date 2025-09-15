@@ -1087,9 +1087,11 @@ trait StateTrait {
                 }
                 break;
             case TREASURER:
-                $winningCard = $this->getWinningCard($card->location_arg - 1);
-                if ($winningCard) {
-                    $this->tokenManager->discardTokenOfTypeOnCard($winningCard, TokenType::SIGIL, true);
+                if ($card->location_arg > 1) {
+                    $winningCard = $this->getWinningCard($card->location_arg - 1);
+                    if ($winningCard) {
+                        $this->tokenManager->discardTokenOfTypeOnCard($winningCard, TokenType::SIGIL, true);
+                    }
                 }
                 break;
             case ARISTOCRAT:
