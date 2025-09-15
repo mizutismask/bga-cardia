@@ -994,7 +994,7 @@ trait StateTrait {
                 $reevaluate = false;
                 if ($modifiers != 0) {
                     $this->cardManager->updateCardModifier($source, 0);
-                    $this->cardManager->updateCardModifier($destination, $modifiers);
+                    $this->cardManager->incCardModifier($destination, $modifiers);
                     $reevaluate = true;
                 }
                 $tokens = $this->tokenManager->getOngoingTokensOnCards();
