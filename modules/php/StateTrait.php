@@ -863,6 +863,10 @@ trait StateTrait {
                 $this->cardManager->updateCardModifier($card, 0);
                 //order is critical here, do discard action before moving any card and mess with the duels
                 $this->discardDuelCard($opposingCard);
+                //discard can remove ongoing tokens, and thus re-add signets so check again that there is no signet left
+                $this->tokenManager->discardTokensOnDuelCard($card);
+                $this->tokenManager->discardTokensOnDuelCard($opposingCard);
+
                 $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId, clienttranslate('${player_name} takes ${cardName} back in hand'), ["cardName" => $card->name]);
                 $this->reorderDuels($encounter);
                 $this->gamestate->nextState('finishDuel');
@@ -1062,7 +1066,7 @@ trait StateTrait {
         $opposingCard = $this->cardManager->getOpposingCard($card, $duels);
         switch ($card->type) {
             case MEDIATOR:
-                $this->evaluateDuelValues([$card, $opposingCard]);
+                //nothing to do, the reeval is done after this switch
                 break;
             case JUDGE:
                 //normal ties on numbers 
@@ -1104,7 +1108,7 @@ trait StateTrait {
             default:
                 throw new BgaSystemException("unexpected ongoing card type: " . $card->type);
         }
-        $this->evaluateDuelValues([$card, $this->cardManager->getOpposingCard($card, $this->cardManager->getDuelsList())]);
+        $this->evaluateDuelValues([$card, $opposingCard]);
     }
 
     function discardDuelCard(CardiaCard $card, $msg = "", $msgArgs = []) {
