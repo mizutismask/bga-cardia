@@ -560,9 +560,11 @@ trait StateTrait {
                 break;
             case TREASURER:
                 if ($duelNumber > 1) {
-                    $winningCard = $this->getWinningCard($duelNumber - 1);
-                    if ($winningCard) {
-                        $this->addSignetOnCard($winningCard, null, true);
+                    $winningCards = $this->getWinningCards($duelNumber - 1);
+                    if ($winningCards) {
+                        foreach ($winningCards as $wc) {
+                            $this->addSignetOnCard($wc, null, true);
+                        }
                     }
                 }
                 break;
@@ -746,15 +748,18 @@ trait StateTrait {
         return $ties;
     }
 
-    public function getWinningCard(int $duelNumber) {
+    /**
+     * Returns an array with 1 card in most cases. Could be 2 if both sides have a signet
+     * @param int $duelNumber 
+     * @return array 
+     */
+    public function getWinningCards(int $duelNumber): array {
         $duelCards = $this->cardManager->getDuelsList()[$duelNumber];
         $signets = $this->tokenManager->getSignetsOnCards();
         $cardsWithSignet = array_filter($duelCards, function ($c) use ($signets) {
             return !empty(array_filter($signets, fn($s) => $s->location == MATERIAL_LOCATION_CARD && $s->location_arg == $c->id));
         });
-
-        $winningCard = reset($cardsWithSignet);
-        return $winningCard;
+        return array_values($cardsWithSignet);
     }
 
     /**
@@ -1088,9 +1093,13 @@ trait StateTrait {
                 break;
             case TREASURER:
                 if ($card->location_arg > 1) {
-                    $winningCard = $this->getWinningCard($card->location_arg - 1);
-                    if ($winningCard) {
-                        $this->tokenManager->discardTokenOfTypeOnCard($winningCard, TokenType::SIGIL, true);
+                    $winningCards = $this->getWinningCards($card->location_arg - 1);
+                    if ($winningCards) {
+                        if ($winningCards) {
+                            foreach ($winningCards as $wc) {
+                                $this->tokenManager->discardTokenOfTypeOnCard($wc, TokenType::SIGIL, true);
+                            }
+                        }
                     }
                 }
                 break;
