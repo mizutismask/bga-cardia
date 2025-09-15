@@ -1437,9 +1437,10 @@ trait StateTrait {
         } else if (count($playersWithCards) == 0) {
             //if no player has cards, the player with the most signets wins
             $playersIds = $this->getPlayersIds();
-            $signetCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSignetCount($id), $playersIds));
+            $signetCounts = array_combine($playersIds, array_map(fn($id) => $this->tokenManager->getSignetCount($this->getPlayerPosition($id)), $playersIds));
             $maxSignets = max($signetCounts);
             $winners = array_keys(array_filter($signetCounts, fn($count) => $count == $maxSignets));
+            //$this->dump('*******************signetCounts', $signetCounts);
             //$this->dump('*******************check on signets, winners', $winners);
             if (count($winners) == 1) {
                 $winner = $winners[0];
@@ -1447,6 +1448,7 @@ trait StateTrait {
                 $winner = -1;
             }
         }
+        //$this->dump('*******************getNoPlayableCardWinner', $winner);
         return $winner;
     }
 
