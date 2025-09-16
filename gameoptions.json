@@ -14,6 +14,15 @@
 				"nobeginner ": true
 			}
 		},
+		"startcondition": {
+			"2": [
+				{
+					"type": "minplayers",
+					"value": 99,
+					"message": "This option will be available soon. For now, please choose Deck I."
+				}
+			]
+		},
 		"level": "major",
 		"default": 1
 	},
@@ -73,6 +82,50 @@
 				"description": "Do not reveal your cards in the current encounter after placing them. Instead, reveal and resolve the previous encounter. ",
 				"nobeginner ": true
 			}
+		},
+		"startcondition": {
+			"1": [
+				{
+					"type": "minplayers",
+					"value": 99,
+					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+				}
+			],
+			"2": [
+				{
+					"type": "minplayers",
+					"value": 99,
+					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+				}
+			],
+			"5": [
+				{
+					"type": "minplayers",
+					"value": 99,
+					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+				}
+			],
+			"6": [
+				{
+					"type": "minplayers",
+					"value": 99,
+					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+				}
+			],
+			"7": [
+				{
+					"type": "minplayers",
+					"value": 99,
+					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+				}
+			],
+			"8": [
+				{
+					"type": "minplayers",
+					"value": 99,
+					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+				}
+			]
 		},
 		"default": 0
 	}
