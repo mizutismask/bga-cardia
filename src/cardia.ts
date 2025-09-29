@@ -140,7 +140,9 @@ class Cardia extends BaseGame implements CardiaGame {
         `
 			dojo.place(html, `discards-wrapper`)
 
-			this.discards[player.id] = new LineStock<CardiaCard>(this.cardsManager, $('discard-' + player.id))
+			this.discards[player.id] = new LineStock<CardiaCard>(this.cardsManager, $('discard-' + player.id), {
+				sort: sortFunction('value')
+			})
 			this.discards[player.id].setSelectionMode('none')
 			this.discards[player.id].addCards(player.discard)
 		})
