@@ -876,7 +876,8 @@ trait StateTrait {
                 //discard can remove ongoing tokens, and thus re-add signets so check again that there is no signet left
                 $this->tokenManager->discardTokensOnDuelCard($card);
                 $this->tokenManager->discardTokensOnDuelCard($opposingCard);
-
+                
+                $this->cardManager->updateCardRevealed($card->id, false);
                 $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId, clienttranslate('${player_name} takes ${cardName} back in hand'), ["cardName" => $card->name]);
                 $this->reorderDuels($encounter);
                 $this->gamestate->nextState('finishDuel');

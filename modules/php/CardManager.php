@@ -297,7 +297,7 @@ class CardManager extends DeckManager {
 
     function updateCardRevealed(int $cardId, bool $newValue) {
         $query = new QueryBuilder(TABLE_CARD);
-        $query->update(["card_revealed" => $newValue], $cardId);
+        $query->update(["card_revealed" => intval($newValue)], $cardId);
     }
 
     function isCardRevealed(int $cardId): bool {
