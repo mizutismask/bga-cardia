@@ -14,15 +14,6 @@
 				"nobeginner ": true
 			}
 		},
-		"startcondition": {
-			"2": [
-				{
-					"type": "minplayers",
-					"value": 99,
-					"message": "This option will be available soon. For now, please choose Deck I."
-				}
-			]
-		},
 		"level": "major",
 		"default": 1
 	},
@@ -88,42 +79,21 @@
 				{
 					"type": "minplayers",
 					"value": 99,
-					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
-				}
-			],
-			"2": [
-				{
-					"type": "minplayers",
-					"value": 99,
-					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+					"message": "Serpent Temple, Scrapyard and Foggy Swamp will be available soon."
 				}
 			],
 			"5": [
 				{
 					"type": "minplayers",
 					"value": 99,
-					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
-				}
-			],
-			"6": [
-				{
-					"type": "minplayers",
-					"value": 99,
-					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
-				}
-			],
-			"7": [
-				{
-					"type": "minplayers",
-					"value": 99,
-					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+					"message": "Serpent Temple, Scrapyard and Foggy Swamp will be available soon."
 				}
 			],
 			"8": [
 				{
 					"type": "minplayers",
 					"value": 99,
-					"message": "This option will be available soon. For now, please choose between no location, Founder’s day or Grand Library."
+					"message": "Serpent Temple, Scrapyard and Foggy Swamp will be available soon."
 				}
 			]
 		},
