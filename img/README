@@ -19,6 +19,7 @@ montage `ls -v .` -crop 24x24 -tile 4 -geometry 220x342+0+0 deck1_ESP.jpg
 montage `ls -v .` -crop 24x24 -tile 4 -geometry 220x342+0+0 deck2_ESP.jpg
 montage `ls -v .` -rotate -90 -tile 4 -geometry 342x220+0+0 locations_ESP.jpg
 
+POR
 mkdir -p Deck1/cropped Deck2/cropped sceneries/cropped
 for dir in Deck1 Deck2 sceneries; do
   (
@@ -38,6 +39,35 @@ for dir in Deck1 Deck2 sceneries; do
         ;;
       sceneries)
         out=locations_ESP.jpg
+        geo=342x220+0+0
+        rot="-rotate -90"
+        ;;
+    esac
+
+    montage `ls -v cropped/*.png` $rot -tile 4 -geometry "$geo" "$out"
+  )
+done
+
+NL
+mkdir -p Deck1/cropped Deck2/cropped sceneries/cropped
+for dir in Deck1 Deck2 sceneries; do
+  (
+    cd "$dir"
+    mogrify -path cropped -shave 30x30 -quality 100 *.png
+
+    case "$dir" in
+      Deck1)
+        out=deck1_NL.jpg
+        geo=220x342+0+0
+        rot=""
+        ;;
+      Deck2)
+        out=deck2_NL.jpg
+        geo=220x342+0+0
+        rot=""
+        ;;
+      sceneries)
+        out=locations_NL.jpg
         geo=342x220+0+0
         rot="-rotate -90"
         ;;
