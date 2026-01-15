@@ -17,7 +17,8 @@ function getBackgroundInlineStyleForCardiaCard(card: CardiaCard) {
 }
 
 function getBackgroundInlineStyleForLocation(locationNumber: number) {
-	let file = 'locations.jpg'
+	//todo
+	let file = 'locations_EN.jpg'
 	const imagePosition = locationNumber - 1
 	const row = Math.floor(imagePosition / IMAGE_LOCATIONS_PER_ROW)
 	const xBackgroundPercent = (imagePosition - row * IMAGE_LOCATIONS_PER_ROW) * 100
