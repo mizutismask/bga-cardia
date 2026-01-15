@@ -102,6 +102,7 @@ interface CardiaGame extends Game {
 	addTooltipOnClickHelpButton(idButton: string, tooltipContent: string, delay?: number): void
 	handSelectionChange(selection: CardiaCard[], lastChange: CardiaCard): void
 	getSupportedLanguage(): string
+	isNotSpectator(): boolean
 }
 interface DuelsList {
 	[duelNumber: number]: {
