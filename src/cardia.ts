@@ -153,7 +153,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			dojo.place(
 				`<div class='player_board_location location-desktop location-${
 					this.gamedatas.location
-				}' id="player_board_location" style="${getBackgroundInlineStyleForLocation(this.gamedatas.location)}">`,
+				}' id="player_board_location" style="${getBackgroundInlineStyleForLocation(this.gamedatas.location, this.getSupportedLanguage())}">`,
 				`location-area`,
 				'first'
 			)
@@ -328,7 +328,7 @@ class Cardia extends BaseGame implements CardiaGame {
 			buttons.push(
 				new BgaHelpExpandableButton({
 					unfoldedHtml: `<div id="player-help-location-wrapper" class="player_board_location" style="${getBackgroundInlineStyleForLocation(
-						this.gamedatas.location
+						this.gamedatas.location, this.getSupportedLanguage()
 					)}">
 											</div>
 											<div style="min-width:240px">${this.gamedatas.locationOptions[this.gamedatas.location].description}</div>
@@ -900,6 +900,12 @@ class Cardia extends BaseGame implements CardiaGame {
 	///////////////////////////////////////////////////
 	//// Utility methods
 	///////////////////////////////////////////////////
+	public getSupportedLanguage() {
+		const locale = (navigator.language || navigator.languages[0]).toLowerCase()
+		const supported = ['fr', 'nl', 'it', 'es', 'pt']
+		const lang = locale.split('-')[0]
+		return supported.includes(lang) ? lang.toUpperCase() : 'EN'
+	}
 
 	/**
 	 * Returns the player ID corresponding to the given position.

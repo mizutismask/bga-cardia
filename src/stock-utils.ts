@@ -16,9 +16,8 @@ function getBackgroundInlineStyleForCardiaCard(card: CardiaCard) {
 	return `background-image: url('${g_gamethemeurl}img/${file}'); background-position: -${xBackgroundPercent}% -${yBackgroundPercent}%; background-size:1000%;`
 }
 
-function getBackgroundInlineStyleForLocation(locationNumber: number) {
-	//todo
-	let file = 'locations_EN.jpg'
+function getBackgroundInlineStyleForLocation(locationNumber: number, language: string) {
+	let file = `locations_${language}.jpg`
 	const imagePosition = locationNumber - 1
 	const row = Math.floor(imagePosition / IMAGE_LOCATIONS_PER_ROW)
 	const xBackgroundPercent = (imagePosition - row * IMAGE_LOCATIONS_PER_ROW) * 100
