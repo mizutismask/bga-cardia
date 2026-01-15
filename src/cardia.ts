@@ -15,6 +15,7 @@
  *
  */
 declare const playSound
+const SUPPORTED_LANGUAGES = ['fr', 'nl', 'it', 'es', 'pt'] //for card language, plus EN obviously
 
 const IMAGE_ITEMS_PER_ROW = 4
 const IMAGE_LOCATIONS_PER_ROW = 4
@@ -153,7 +154,10 @@ class Cardia extends BaseGame implements CardiaGame {
 			dojo.place(
 				`<div class='player_board_location location-desktop location-${
 					this.gamedatas.location
-				}' id="player_board_location" style="${getBackgroundInlineStyleForLocation(this.gamedatas.location, this.getSupportedLanguage())}">`,
+				}' id="player_board_location" style="${getBackgroundInlineStyleForLocation(
+					this.gamedatas.location,
+					this.getSupportedLanguage()
+				)}">`,
 				`location-area`,
 				'first'
 			)
@@ -328,7 +332,8 @@ class Cardia extends BaseGame implements CardiaGame {
 			buttons.push(
 				new BgaHelpExpandableButton({
 					unfoldedHtml: `<div id="player-help-location-wrapper" class="player_board_location" style="${getBackgroundInlineStyleForLocation(
-						this.gamedatas.location, this.getSupportedLanguage()
+						this.gamedatas.location,
+						this.getSupportedLanguage()
 					)}">
 											</div>
 											<div style="min-width:240px">${this.gamedatas.locationOptions[this.gamedatas.location].description}</div>
@@ -902,9 +907,8 @@ class Cardia extends BaseGame implements CardiaGame {
 	///////////////////////////////////////////////////
 	public getSupportedLanguage() {
 		const locale = (navigator.language || navigator.languages[0]).toLowerCase()
-		const supported = ['fr', 'nl', 'it', 'es', 'pt']
 		const lang = locale.split('-')[0]
-		return supported.includes(lang) ? lang.toUpperCase() : 'EN'
+		return SUPPORTED_LANGUAGES.includes(lang) ? lang.toUpperCase() : 'EN'
 	}
 
 	/**
@@ -968,10 +972,34 @@ class Cardia extends BaseGame implements CardiaGame {
 	}
 
 	public dontPreloadUselessAssets() {
-		if (this.getPlayersCount() == 1) {
-			//;(this as any).dontPreloadImage('centralBoard.png')//TODO
+		const userLocale = this.getSupportedLanguage()
+		
+		const allDeck1 = SUPPORTED_LANGUAGES.map((lang) => `deck1_${lang}.png`)
+		const allDeck2 = SUPPORTED_LANGUAGES.map((lang) => `deck2_${lang}.png`)
+		const deck1OtherLanguages = SUPPORTED_LANGUAGES.filter((sl) => userLocale !== sl).map(
+			(lang) => `deck1_${lang}.png`
+		)
+		const deck2OtherLanguages = SUPPORTED_LANGUAGES.filter((sl) => userLocale !== sl).map(
+			(lang) => `deck2_${lang}.png`
+		)
+		const allLocations = SUPPORTED_LANGUAGES.map((lang) => `locations${lang}.png`)
+		const locationsOtherLanguages = SUPPORTED_LANGUAGES.filter((sl) => userLocale !== sl).map(
+			(lang) => `locations${lang}.png`
+		)
+		const deck = this.gamedatas.expansion
+		if (deck == 1) {
+			allDeck2.forEach((f) => (this as any).dontPreloadImage(f))
+			deck1OtherLanguages.forEach((f) => (this as any).dontPreloadImage(f))
+		}
+		if (deck == 2) {
+			allDeck1.forEach((f) => (this as any).dontPreloadImage(f))
+			deck2OtherLanguages.forEach((f) => (this as any).dontPreloadImage(f))
+		}
+
+		if (this.gamedatas.location == 0) {
+			allLocations.forEach((f) => (this as any).dontPreloadImage(f))
 		} else {
-			//;(this as any).dontPreloadImage('centralBoardSolo.png')
+			locationsOtherLanguages.forEach((f) => (this as any).dontPreloadImage(f))
 		}
 	}
 
