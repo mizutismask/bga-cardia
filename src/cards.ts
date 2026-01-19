@@ -76,7 +76,7 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 	}
 
 	private setFrontBackground(cardDiv: HTMLDivElement, cardType: number) {
-		const imageUrl = `${g_gamethemeurl}img/deck${this.deckNumber}_${this.game.getSupportedLanguage()}.jpg`
+		const imageUrl = this.getCardFile()
 		cardDiv.style.backgroundImage = `url('${imageUrl}')`
 		const imagePosition = Number(cardType.toString().slice(1)) - 1
 		const row = Math.floor(imagePosition / IMAGE_ITEMS_PER_ROW)
@@ -85,6 +85,10 @@ class CardsManager extends CardsManagerBase<CardiaCard> {
 		cardDiv.style.backgroundPositionX = `-${xBackgroundPercent}%`
 		cardDiv.style.backgroundPositionY = `-${yBackgroundPercent}%`
 		cardDiv.style.backgroundSize = `${IMAGE_ITEMS_PER_ROW * 100}%`
+	}
+
+	public getCardFile() {
+		return `${g_gamethemeurl}img/deck${this.deckNumber}_${this.game.getSupportedLanguage()}.jpg`
 	}
 
 	private setBackBackground(cardDiv: HTMLDivElement, cardTypeArg: number, cardsUrl: string, imagesPerRow: number) {

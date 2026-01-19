@@ -61,13 +61,13 @@ class Cardia extends BaseGame implements CardiaGame {
 	public cardsManager: CardsManager
 	private originalTextChooseAction: string
 
-	private ticketsCounters: Counter[] = []
 	private handCardsCounters: Counter[] = []
 	private centralZone: CentralZone
 	public discards: LineStock<CardiaCard>[] = []
 
 	protected settings = [new Setting('customSounds', 'pref', 1)]
 	private displayedTooltip
+	private playersMetadataTries = 0
 
 	/*
             setup:
@@ -114,7 +114,37 @@ class Cardia extends BaseGame implements CardiaGame {
 		this.setupData()
 		this.setupNotifications()
 
+		this.waitForPlayersMetadata()
+
 		log('Ending game setup')
+	}
+
+	public updateCardLanguage() {}
+
+	private waitForPlayersMetadata(): void {
+		if (this.bga.gameui.players_metadata) {
+			const language = this.getSupportedLanguage()
+			let locationsFile = `locations_${language}.jpg`
+			let cardsFile = this.cardsManager.getCardFile()
+			document
+				.getElementById('player_board_location')
+				?.style.setProperty('background-image', `url('${g_gamethemeurl}img/${locationsFile}'`)
+			document
+				.getElementById('player-help-location-wrapper')
+				?.style.setProperty('background-image', `url('${g_gamethemeurl}img/${locationsFile}'`)
+			document.querySelectorAll<HTMLElement>('.cardia-card .front').forEach((c) => {
+				c.style.setProperty('background-image', `url('${cardsFile}')`)
+			})
+
+			return
+		}
+
+		if (++this.playersMetadataTries >= 3) {
+			console.warn('players_metadata still null after 3 attempts, cards language is resolved to default')
+			return
+		}
+
+		setTimeout(() => this.waitForPlayersMetadata(), 500)
 	}
 
 	/** @Override to make the current player second instead of first, to match his side of the duel.*/
@@ -134,9 +164,9 @@ class Cardia extends BaseGame implements CardiaGame {
 			<div class="cst-block">
 				<div id="discard-${player.id}"></div>
 				<div class="zone-title"><span class="player-name" style="color:#${player.color}">${this.format_string_recursive(
-				_('${player_name}’s discard'),
-				{ player_name: player.name }
-			)}</span></div>
+					_('${player_name}’s discard'),
+					{ player_name: player.name }
+				)}</span></div>
 			</div>
         `
 			dojo.place(html, `discards-wrapper`)
@@ -906,8 +936,10 @@ class Cardia extends BaseGame implements CardiaGame {
 	//// Utility methods
 	///////////////////////////////////////////////////
 	public getSupportedLanguage() {
-		const locale = (navigator.language || navigator.languages[0]).toLowerCase()
-		const lang = locale.split('-')[0]
+		
+		const lang = (this.bga.gameui as any).players_metadata?.[this.getPlayerId()]?.language ?? 'EN'
+		//log("this.players_metadata1", this.players_metadata)
+
 		return SUPPORTED_LANGUAGES.includes(lang) ? lang.toUpperCase() : 'EN'
 	}
 
@@ -973,7 +1005,7 @@ class Cardia extends BaseGame implements CardiaGame {
 
 	public dontPreloadUselessAssets() {
 		const userLocale = this.getSupportedLanguage()
-		
+
 		const allDeck1 = SUPPORTED_LANGUAGES.map((lang) => `deck1_${lang}.png`)
 		const allDeck2 = SUPPORTED_LANGUAGES.map((lang) => `deck2_${lang}.png`)
 		const deck1OtherLanguages = SUPPORTED_LANGUAGES.filter((sl) => userLocale !== sl).map(
