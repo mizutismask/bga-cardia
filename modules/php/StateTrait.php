@@ -338,7 +338,7 @@ trait StateTrait {
                 $this->addSignetOnCard($myCard, null);
 
                 if (!$wasWinning) {
-                   $this->addSerpentTempleDiscarder($myCard->location_arg, $this->getOpponentId($playerId));
+                    $this->addSerpentTempleDiscarder($myCard->location_arg, $this->getOpponentId($playerId));
                 }
             }
         }
@@ -876,7 +876,7 @@ trait StateTrait {
                 //discard can remove ongoing tokens, and thus re-add signets so check again that there is no signet left
                 $this->tokenManager->discardTokensOnDuelCard($card);
                 $this->tokenManager->discardTokensOnDuelCard($opposingCard);
-                
+
                 $this->cardManager->updateCardRevealed($card->id, false);
                 $this->cardManager->moveCardToLocation($card, MATERIAL_LOCATION_HAND, $playerId, true, $playerId, clienttranslate('${player_name} takes ${cardName} back in hand'), ["cardName" => $card->name]);
                 $this->reorderDuels($encounter);
@@ -1531,8 +1531,9 @@ trait StateTrait {
 
     function hasReachedEndOfGameRequirements(): bool {
         $playersIds = $this->getPlayersIds();
+        $requiredWins = $this->bga->tableOptions->get(103) == 1 ? 1 : 2;
         foreach ($playersIds as $playerId) {
-            if ($this->getPlayerScore($playerId) == 2) {
+            if ($this->getPlayerScore($playerId) == $requiredWins) {
                 return true;
             }
         }

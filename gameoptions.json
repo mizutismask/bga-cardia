@@ -98,5 +98,22 @@
 			]
 		},
 		"default": 0
+	},
+	"103": {
+		"name": "Fast game",
+		"values": {
+			"0": {
+				"name": "Off",
+				"tmdisplay": "2 winning rounds",
+				"description": "Recommended length"
+			},
+			"1": {
+				"name": "On",
+				"tmdisplay": "only 1 round",
+				"description": "Fast game"
+			}
+		},
+		"level": "major",
+		"default": 0
 	}
 }

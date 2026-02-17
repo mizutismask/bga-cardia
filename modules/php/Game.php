@@ -160,7 +160,7 @@ class Game extends \Bga\GameFramework\Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas() {
+    protected function getAllDatas(): array {
         $stateName = $this->getStateName();
         $isEnd = $stateName === 'endScore' || $stateName === 'gameEnd' || $stateName === 'debugGameEnd';
 
@@ -238,7 +238,7 @@ class Game extends \Bga\GameFramework\Table {
         if ($stateName != "seeEndOfRound") {
             $duelProgression  =  100 * ($maxSignets) / 5;
         }
-/*
+        /*
         $this->dump('******************maxSignets*', $maxSignets);
         $this->dump('******************stateName*', $stateName);
         $this->dump('******************scoreProgression*', (100 * $this->getMaxScore() / 2));
