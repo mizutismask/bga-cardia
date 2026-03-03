@@ -1286,7 +1286,7 @@ trait StateTrait {
             }
 
             if ($this->getOriginalAbilityToResolveType() == ELEMENTAL) {
-                $this->cardManager->pickAdditionalCard();
+                $this->cardManager->addCardsToHand(1, $this->getPlayerIdFromPosition($ability->type_arg), $ability->type_arg, true);
             }
             $this->globals->delete(GLB_ABILITY_TO_RESOLVE_COPIED_TYPE);
 
