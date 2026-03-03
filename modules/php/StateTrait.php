@@ -1022,6 +1022,7 @@ trait StateTrait {
                         }
                     }
                 }
+                $this->globals->delete(GLB_KINESIS_SOURCE_CARD);
 
                 $this->notifyWithName('message', clienttranslate('${player_name} moves modifiers and ongoing tokens from ${cardName} to ${cardName2}'), [
                     'cardName' => $source->name,
@@ -1240,7 +1241,7 @@ trait StateTrait {
                 //apply serpent temple discard
                 $discarders = $this->globals->get(GLB_SERPENT_TEMPLE_DISCARDERS);
                 if ($discarders) {
-                    $this->dump('*******************discarders', $discarders);
+                    //$this->dump('*******************discarders', $discarders);
                     $discarderPlayer = array_shift($discarders);
                     if ($discarderPlayer) {
                         if ($this->cardManager->countCardsOfTypeArgFromLocation(TABLE_CARD, $this->getPlayerPosition($discarderPlayer), MATERIAL_LOCATION_HAND) > 0) {
