@@ -113,6 +113,13 @@
 				"description": "Fast game"
 			}
 		},
+		"displaycondition": [
+			{
+				"type": "otheroption",
+				"id": 101,
+				"value": [99]
+			}
+		],
 		"level": "major",
 		"default": 0
 	}
