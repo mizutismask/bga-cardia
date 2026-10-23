@@ -2,6 +2,8 @@
 
 namespace Bga\Games\Cardia;
 
+use Bga\GameFramework\VisibleSystemException;
+
 trait UtilTrait {
 
     function array_find(array $array, callable $fn) {
@@ -207,8 +209,8 @@ trait UtilTrait {
     }
 
     public function checkVersion(int $clientVersion): void {
-        if ($clientVersion != intval($this->gamestate->table_globals[300])) {
-            throw new \BgaVisibleSystemException(self::_("A new version of this game is now available. Please reload the page (F5)."));
+        if ($clientVersion != intval($this->tableOptions->getGameVersion())) {
+            throw new VisibleSystemException(clienttranslate("A new version of this game is now available. Please reload the page (F5)."));
         }
     }
 

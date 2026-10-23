@@ -2,10 +2,11 @@
 
 namespace Bga\Games\Cardia;
 
+use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\SystemException;
 use Bga\Games\Cardia\objects\CardiaCard;
-use Deck;
 
-class DeckManager extends \APP_DbObject {
+class DeckManager {
     protected Deck $deck;
     protected $game;
     protected $cast;
@@ -207,7 +208,7 @@ class DeckManager extends \APP_DbObject {
 
     protected function castSingle($c, bool $optional = false) {
         if (!$optional && (!$c || !array_key_exists('id', $c))) {
-            throw new \BgaSystemException("$this->cast doesn't exists " . json_encode($c));
+            throw new SystemException("$this->cast doesn't exists " . json_encode($c));
         }
         return $c ? $this->newInstance($c) : null;
     }
